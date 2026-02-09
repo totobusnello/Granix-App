@@ -1,0 +1,2131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRANIX - Teaser Investidor | Pre-Seed</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --green: #00C853;
+            --green-dark: #00A844;
+            --blue-deep: #1A237E;
+            --blue-medium: #283593;
+            --blue-light: #3949AB;
+            --white: #FFFFFF;
+            --gray-50: #F8F9FA;
+            --gray-100: #ECEFF1;
+            --gray-200: #CFD8DC;
+            --gray-400: #90A4AE;
+            --gray-600: #546E7A;
+            --gray-800: #37474F;
+            --gray-900: #263238;
+            --red-soft: #EF5350;
+            --yellow-soft: #FFB300;
+            --purple-soft: #7E57C2;
+        }
+
+        @page {
+            size: 1280px 720px;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-900);
+            line-height: 1.5;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* ===== SLIDE SYSTEM ===== */
+        .slide {
+            width: 1280px;
+            height: 720px;
+            margin: 20px auto;
+            background: var(--white);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+            page-break-after: always;
+        }
+
+        @media print {
+            body { background: white; }
+            .slide { margin: 0; box-shadow: none; }
+        }
+
+        /* ===== COMMON ELEMENTS ===== */
+        .slide-header {
+            padding: 40px 60px 0;
+        }
+
+        .slide-header h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--blue-deep);
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .slide-header .subtitle {
+            font-size: 18px;
+            color: var(--green);
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .header-line {
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--green), var(--blue-deep));
+            margin-top: 16px;
+            border-radius: 2px;
+        }
+
+        .slide-body {
+            padding: 30px 60px;
+        }
+
+        .slide-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: var(--blue-deep);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+        }
+
+        .slide-footer span {
+            color: rgba(255,255,255,0.6);
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .slide-footer .page-num {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        /* Logo SVG inline */
+        .logo-mark {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-mark .icon {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo-mark .icon .sprout {
+            font-size: 24px;
+            color: var(--green);
+            line-height: 1;
+        }
+
+        .logo-mark .wordmark {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--blue-deep);
+            letter-spacing: 1px;
+        }
+
+        .logo-mark .wordmark .ix {
+            color: var(--green);
+        }
+
+        /* ===== SLIDE 1: CAPA ===== */
+        .slide-cover {
+            background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-medium) 50%, var(--blue-light) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 80px;
+        }
+
+        .slide-cover .logo-mark .wordmark {
+            color: var(--white);
+            font-size: 64px;
+        }
+
+        .slide-cover .logo-mark .icon {
+            width: 72px;
+            height: 72px;
+            border-color: var(--green);
+            border-width: 4px;
+        }
+
+        .slide-cover .logo-mark .icon .sprout {
+            font-size: 36px;
+        }
+
+        .slide-cover .tagline {
+            font-size: 28px;
+            color: var(--green);
+            font-weight: 600;
+            margin-top: 24px;
+        }
+
+        .slide-cover .desc {
+            font-size: 18px;
+            color: rgba(255,255,255,0.7);
+            margin-top: 12px;
+            max-width: 600px;
+        }
+
+        .slide-cover .badge-round {
+            margin-top: 40px;
+            background: var(--green);
+            color: var(--blue-deep);
+            font-size: 16px;
+            font-weight: 800;
+            padding: 12px 32px;
+            border-radius: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .slide-cover .cover-date {
+            position: absolute;
+            bottom: 40px;
+            right: 80px;
+            color: rgba(255,255,255,0.4);
+            font-size: 14px;
+        }
+
+        .cover-decoration {
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .cover-decoration-2 {
+            position: absolute;
+            bottom: -200px;
+            right: 100px;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: rgba(0,200,83,0.05);
+        }
+
+        /* ===== SLIDE 2: PROBLEMA ===== */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 24px;
+        }
+
+        .problem-left .big-stat {
+            font-size: 72px;
+            font-weight: 900;
+            color: var(--blue-deep);
+            line-height: 1;
+        }
+
+        .problem-left .big-stat-label {
+            font-size: 20px;
+            color: var(--gray-600);
+            margin-top: 8px;
+            max-width: 400px;
+        }
+
+        .problem-left .big-stat-source {
+            font-size: 12px;
+            color: var(--gray-400);
+            margin-top: 4px;
+        }
+
+        .gap-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .gap-list li {
+            padding: 14px 20px;
+            background: var(--gray-50);
+            border-left: 4px solid var(--red-soft);
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 15px;
+            color: var(--gray-800);
+        }
+
+        .gap-list li strong {
+            color: var(--blue-deep);
+        }
+
+        .problem-quote {
+            margin-top: 20px;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, var(--blue-deep), var(--blue-medium));
+            border-radius: 12px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            font-style: italic;
+        }
+
+        /* ===== SLIDE 3: SOLUCAO ===== */
+        .solution-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .seeds-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .seed-card {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .seed-card .seed-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .seed-card .seed-name {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .seed-card .seed-desc {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .seed-gastar { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); color: #E65100; }
+        .seed-guardar { background: linear-gradient(135deg, #E8F5E9, #C8E6C9); color: #1B5E20; }
+        .seed-doar { background: linear-gradient(135deg, #FCE4EC, #F8BBD0); color: #880E4F; }
+        .seed-investir { background: linear-gradient(135deg, #E8EAF6, #C5CAE9); color: #1A237E; }
+
+        .solution-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .solution-right .feature-list {
+            list-style: none;
+        }
+
+        .solution-right .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .solution-right .feature-list li .check {
+            color: var(--green);
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .solution-concept {
+            margin-top: 16px;
+            padding: 16px 20px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--gray-600);
+            border-left: 4px solid var(--green);
+        }
+
+        /* ===== SLIDE 4: COMPARATIVO ===== */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 60px 1fr;
+            gap: 0;
+            margin-top: 24px;
+            align-items: center;
+        }
+
+        .compare-card {
+            padding: 30px;
+            border-radius: 16px;
+            height: 100%;
+        }
+
+        .compare-us {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+        }
+
+        .compare-br {
+            background: linear-gradient(135deg, rgba(0,200,83,0.05), rgba(0,200,83,0.12));
+            border: 2px solid var(--green);
+        }
+
+        .compare-card .compare-flag {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .compare-card h3 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--blue-deep);
+            margin-bottom: 16px;
+        }
+
+        .compare-card .compare-stats {
+            list-style: none;
+        }
+
+        .compare-card .compare-stats li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .compare-card .compare-stats li .val {
+            font-weight: 700;
+            color: var(--blue-deep);
+        }
+
+        .compare-arrow {
+            text-align: center;
+            font-size: 36px;
+            color: var(--green);
+            font-weight: 900;
+        }
+
+        .compare-bottom {
+            margin-top: 20px;
+            padding: 18px 24px;
+            background: var(--blue-deep);
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .compare-bottom .highlight {
+            color: var(--green);
+        }
+
+        /* ===== SLIDE 5: MERCADO ===== */
+        .market-funnel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .funnel-item {
+            text-align: center;
+            padding: 28px 24px;
+            border-radius: 16px;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .funnel-tam {
+            background: linear-gradient(135deg, var(--blue-deep), var(--blue-medium));
+            color: white;
+        }
+
+        .funnel-sam {
+            background: linear-gradient(135deg, var(--blue-medium), var(--blue-light));
+            color: white;
+        }
+
+        .funnel-som {
+            background: linear-gradient(135deg, var(--green-dark), var(--green));
+            color: white;
+        }
+
+        .funnel-item .funnel-value {
+            font-size: 42px;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .funnel-item .funnel-label {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        .funnel-item .funnel-desc {
+            font-size: 13px;
+            margin-top: 8px;
+            opacity: 0.7;
+        }
+
+        .funnel-arrow {
+            font-size: 28px;
+            color: var(--gray-400);
+        }
+
+        .market-drivers {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .driver-card {
+            text-align: center;
+            padding: 16px 12px;
+            background: var(--gray-50);
+            border-radius: 10px;
+        }
+
+        .driver-card .driver-num {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--green);
+        }
+
+        .driver-card .driver-text {
+            font-size: 12px;
+            color: var(--gray-600);
+            margin-top: 4px;
+        }
+
+        /* ===== SLIDE 6: PRODUTO ===== */
+        .product-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .phone-mockup {
+            width: 280px;
+            height: 480px;
+            background: linear-gradient(180deg, var(--blue-deep) 0%, var(--blue-medium) 100%);
+            border-radius: 36px;
+            padding: 16px;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(26,35,126,0.3);
+            position: relative;
+        }
+
+        .phone-screen {
+            background: white;
+            border-radius: 24px;
+            height: 100%;
+            padding: 20px 16px;
+            overflow: hidden;
+        }
+
+        .phone-screen .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .phone-screen .app-greeting {
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        .phone-screen .app-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--blue-deep);
+        }
+
+        .phone-screen .app-balance {
+            text-align: center;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            border-radius: 16px;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .phone-screen .app-balance .balance-label {
+            font-size: 10px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .phone-screen .app-balance .balance-value {
+            font-size: 28px;
+            font-weight: 900;
+            margin-top: 2px;
+        }
+
+        .phone-screen .app-seeds {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .phone-screen .mini-seed {
+            padding: 10px 8px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .phone-screen .mini-seed .mini-val {
+            font-size: 14px;
+            font-weight: 900;
+            margin-top: 2px;
+        }
+
+        .phone-screen .app-tasks-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .phone-screen .app-task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 10px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 11px;
+        }
+
+        .phone-screen .app-task .task-reward {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .feature-card {
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: 10px;
+            border-left: 3px solid var(--green);
+        }
+
+        .feature-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--blue-deep);
+            margin-bottom: 4px;
+        }
+
+        .feature-card p {
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+
+        /* ===== SLIDE 7: MODELO DE NEGOCIO ===== */
+        .biz-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .pricing-table {
+            display: flex;
+            gap: 12px;
+        }
+
+        .plan-card {
+            flex: 1;
+            padding: 20px 16px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid var(--gray-200);
+        }
+
+        .plan-card.featured {
+            border-color: var(--green);
+            background: rgba(0,200,83,0.04);
+            position: relative;
+        }
+
+        .plan-card.featured::before {
+            content: "POPULAR";
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--green);
+            color: white;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 12px;
+            border-radius: 10px;
+            letter-spacing: 1px;
+        }
+
+        .plan-card .plan-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .plan-card .plan-price {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--blue-deep);
+            margin: 8px 0;
+        }
+
+        .plan-card .plan-price .currency {
+            font-size: 16px;
+        }
+
+        .plan-card .plan-price .period {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--gray-400);
+        }
+
+        .plan-card .plan-features {
+            list-style: none;
+            text-align: left;
+            font-size: 11px;
+            color: var(--gray-600);
+        }
+
+        .plan-card .plan-features li {
+            padding: 3px 0;
+        }
+
+        .plan-card .plan-features li::before {
+            content: "\2713 ";
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .revenue-mix {
+            margin-top: 16px;
+        }
+
+        .revenue-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .rev-sub { background: var(--blue-deep); flex: 78; }
+        .rev-int { background: var(--green); flex: 14; }
+        .rev-float { background: var(--purple-soft); flex: 8; }
+
+        .revenue-legend {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+        }
+
+        .revenue-legend span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+        }
+
+        .arpu-box {
+            margin-top: 20px;
+            padding: 16px 20px;
+            background: var(--gray-50);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .arpu-box .arpu-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--green);
+        }
+
+        .arpu-box .arpu-label {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        /* ===== SLIDE 8: NUMEROS-CHAVE ===== */
+        .numbers-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .numbers-table thead th {
+            background: var(--blue-deep);
+            color: white;
+            padding: 12px 16px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .numbers-table thead th:first-child {
+            text-align: left;
+            border-radius: 10px 0 0 0;
+        }
+
+        .numbers-table thead th:last-child {
+            border-radius: 0 10px 0 0;
+        }
+
+        .numbers-table tbody td {
+            padding: 10px 16px;
+            text-align: right;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .numbers-table tbody td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: var(--blue-deep);
+        }
+
+        .numbers-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .numbers-table tbody tr:nth-child(even) {
+            background: var(--gray-50);
+        }
+
+        .numbers-table .highlight-row td {
+            background: rgba(0,200,83,0.08) !important;
+            font-weight: 700;
+        }
+
+        .numbers-table .year-5 {
+            color: var(--green);
+            font-weight: 800;
+        }
+
+        .kpi-row {
+            display: flex;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .kpi-box {
+            flex: 1;
+            text-align: center;
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: 10px;
+            border-top: 3px solid var(--green);
+        }
+
+        .kpi-box .kpi-value {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--blue-deep);
+        }
+
+        .kpi-box .kpi-label {
+            font-size: 12px;
+            color: var(--gray-600);
+            margin-top: 2px;
+        }
+
+        /* ===== SLIDE 9: UNIT ECONOMICS ===== */
+        .ue-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .ue-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .ue-card {
+            padding: 24px 20px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .ue-card .ue-value {
+            font-size: 36px;
+            font-weight: 900;
+            line-height: 1.1;
+        }
+
+        .ue-card .ue-label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .ue-card .ue-bench {
+            font-size: 11px;
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+
+        .ue-ltvcac {
+            background: linear-gradient(135deg, rgba(0,200,83,0.08), rgba(0,200,83,0.15));
+            border: 2px solid var(--green);
+        }
+        .ue-ltvcac .ue-value { color: var(--green); }
+        .ue-ltvcac .ue-label { color: var(--green-dark); }
+
+        .ue-payback {
+            background: linear-gradient(135deg, rgba(26,35,126,0.04), rgba(26,35,126,0.1));
+            border: 2px solid var(--blue-deep);
+        }
+        .ue-payback .ue-value { color: var(--blue-deep); }
+        .ue-payback .ue-label { color: var(--blue-deep); }
+
+        .ue-ltv {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+        }
+        .ue-ltv .ue-value { color: var(--gray-800); }
+
+        .ue-cac {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+        }
+        .ue-cac .ue-value { color: var(--gray-800); }
+
+        .ue-comparison {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .ue-comparison h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--blue-deep);
+            margin-bottom: 16px;
+        }
+
+        .compare-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .compare-row .cr-label {
+            width: 120px;
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .compare-row .cr-bar-container {
+            flex: 1;
+            height: 28px;
+            background: var(--gray-100);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .compare-row .cr-bar {
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .cr-bar.granix { background: var(--green); }
+        .cr-bar.greenlight { background: var(--blue-light); opacity: 0.6; }
+
+        .ue-breakeven {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--blue-deep), var(--blue-medium));
+            border-radius: 12px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .ue-breakeven .be-value {
+            font-size: 42px;
+            font-weight: 900;
+            color: var(--green);
+        }
+
+        .ue-breakeven .be-text {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .ue-breakeven .be-text strong {
+            color: var(--green);
+        }
+
+        /* ===== SLIDE 10: ROADMAP ===== */
+        .roadmap-timeline {
+            display: flex;
+            gap: 0;
+            margin-top: 30px;
+            position: relative;
+        }
+
+        .roadmap-timeline::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 40px;
+            right: 40px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--green), var(--blue-deep));
+            border-radius: 2px;
+        }
+
+        .rm-phase {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            padding: 0 8px;
+        }
+
+        .rm-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--green);
+            border: 4px solid white;
+            box-shadow: 0 0 0 2px var(--green);
+            margin: 14px auto 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .rm-phase:last-child .rm-dot {
+            background: var(--blue-deep);
+            box-shadow: 0 0 0 2px var(--blue-deep);
+        }
+
+        .rm-year {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--blue-deep);
+        }
+
+        .rm-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--green);
+            margin-top: 2px;
+        }
+
+        .rm-items {
+            list-style: none;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--gray-600);
+            text-align: left;
+            padding: 0 10px;
+        }
+
+        .rm-items li {
+            padding: 3px 0;
+        }
+
+        .rm-items li::before {
+            content: "\2022 ";
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .rm-meta {
+            margin-top: 12px;
+            padding: 10px;
+            background: var(--gray-50);
+            border-radius: 8px;
+            font-size: 11px;
+        }
+
+        .rm-meta .rm-users {
+            font-weight: 800;
+            color: var(--blue-deep);
+            font-size: 16px;
+        }
+
+        .rm-meta .rm-funding {
+            color: var(--green);
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        /* ===== SLIDE 11: TIME ===== */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+            padding: 0 40px;
+        }
+
+        .team-card {
+            text-align: center;
+            padding: 30px 24px;
+            border: 2px dashed var(--gray-200);
+            border-radius: 16px;
+            background: var(--gray-50);
+        }
+
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--gray-200);
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: var(--gray-400);
+        }
+
+        .team-card .team-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--blue-deep);
+        }
+
+        .team-card .team-role {
+            font-size: 14px;
+            color: var(--green);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .team-card .team-bio {
+            font-size: 12px;
+            color: var(--gray-600);
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .team-values {
+            display: flex;
+            gap: 16px;
+            margin-top: 30px;
+            padding: 0 40px;
+        }
+
+        .team-value-card {
+            flex: 1;
+            padding: 16px;
+            background: var(--blue-deep);
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        .team-value-card .tv-num {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--green);
+        }
+
+        .team-value-card .tv-text {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+
+        /* ===== SLIDE 12: ASK ===== */
+        .slide-ask {
+            background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-medium) 100%);
+            color: white;
+        }
+
+        .ask-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            margin-top: 20px;
+        }
+
+        .ask-left h2 {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--green);
+            margin-bottom: 8px;
+        }
+
+        .ask-left .ask-desc {
+            font-size: 18px;
+            opacity: 0.7;
+            margin-bottom: 24px;
+        }
+
+        .ask-terms {
+            list-style: none;
+        }
+
+        .ask-terms li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 15px;
+        }
+
+        .ask-terms li .term-label {
+            opacity: 0.6;
+        }
+
+        .ask-terms li .term-value {
+            font-weight: 700;
+        }
+
+        .ask-right h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            opacity: 0.8;
+        }
+
+        .use-of-funds {
+            list-style: none;
+        }
+
+        .use-of-funds li {
+            margin-bottom: 12px;
+        }
+
+        .uof-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .uof-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .uof-fill {
+            height: 100%;
+            background: var(--green);
+            border-radius: 4px;
+        }
+
+        .ask-contact {
+            margin-top: 24px;
+            padding: 20px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+        }
+
+        .ask-contact .contact-name {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .ask-contact .contact-role {
+            font-size: 14px;
+            color: var(--green);
+        }
+
+        .ask-contact .contact-info {
+            font-size: 13px;
+            opacity: 0.6;
+            margin-top: 8px;
+        }
+
+        .ask-cta {
+            margin-top: 20px;
+            display: inline-block;
+            background: var(--green);
+            color: var(--blue-deep);
+            font-size: 16px;
+            font-weight: 800;
+            padding: 14px 36px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== SLIDE 1: CAPA ==================== -->
+<div class="slide slide-cover">
+    <div class="cover-decoration"></div>
+    <div class="cover-decoration-2"></div>
+    <div class="logo-mark">
+        <div class="icon"><span class="sprout">&#x1F331;</span></div>
+        <span class="wordmark">GRAN<span class="ix">IX</span></span>
+    </div>
+    <div class="tagline">Investir e crescer juntos</div>
+    <div class="desc">Educacao financeira para criancas e jovens brasileiros. O app que ensina seu filho a gastar, guardar, doar e investir de verdade.</div>
+    <div class="badge-round">PRE-SEED | R$ 1,5M</div>
+    <div class="cover-date">CONFIDENCIAL | Fevereiro 2026</div>
+</div>
+
+<!-- ==================== SLIDE 2: PROBLEMA ==================== -->
+<div class="slide">
+    <div class="slide-header">
+        <h1>O Problema</h1>
+        <div class="subtitle">Pais querem ensinar, mas nao tem ferramentas</div>
+        <div class="header-line"></div>
+    </div>
+    <div class="slide-body">
+        <div class="problem-grid">
+            <div class="problem-left">
+                <div class="big-stat">85%</div>
+                <div class="big-stat-label">dos pais brasileiros querem ensinar educacao financeira aos filhos, mas nao sabem como</div>
+                <div class="big-stat-source">Fonte: Pesquisa Serasa 2021</div>
+                <div style="margin-top:24px">
+                    <div class="big-stat" style="font-size:48px">37,9M</div>
+                    <div class="big-stat-label" style="font-size:16px">criancas de 5-17 anos. Apenas 26% bancarizadas.</div>
+                    <div class="big-stat-source">Fonte: IBGE/PNAD 2024</div>
+                </div>
+            </div>
+            <div class="problem-right">
+                <ul class="gap-list">
+                    <li><strong>Sem educacao financeira:</strong> Nenhum app brasileiro ensina com trilhas e gamificacao estruturada</li>
+                    <li><strong>Sem investimentos reais:</strong> Menores nao tem acesso a Tesouro Direto ou CDB em nenhum app</li>
+                    <li><strong>Controles basicos:</strong> Saldo unico, sem divisao por objetivos. Pais nao tem granularidade</li>
+                    <li><strong>Zero gamificacao:</strong> Experiencia bancaria tradicional, feita para adultos, nao para criancas</li>
+                </ul>
+                <div class="problem-quote">
+                    "10 milhoes de contas para menores no Brasil. 80% concentradas em 3 players gratuitos. Nenhum ensina de verdade."
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer">
+        <span>GRANIX | Teaser Investidor</span>
+        <span class="page-num">02 / 12</span>
+    </div>
+</div>
+
+<!-- ==================== SLIDE 3: SOLUCAO ==================== -->
+<div class="slide">
+    <div class="slide-header">
+        <h1>A Solucao: As 4 Sementes</h1>
+        <div class="subtitle">Cada real que entra e plantado em 4 objetivos</div>
+        <div class="header-line"></div>
+    </div>
+    <div class="slide-body">
+        <div class="solution-grid">
+            <div>
+                <div class="seeds-container">
+                    <div class="seed-card seed-gastar">
+                        <div class="seed-icon">&#x1F6D2;</div>
+                        <div class="seed-name">Gastar</div>
+                        <div class="seed-desc">Cartao de debito com controles parentais em tempo real</div>
+                    </div>
+                    <div class="seed-card seed-guardar">
+                        <div class="seed-icon">&#x1F331;</div>
+                        <div class="seed-name">Guardar</div>
+                        <div class="seed-desc">Metas visuais de economia com juros pagos pelos pais</div>
+                    </div>
+                    <div class="seed-card seed-doar">
+                        <div class="seed-icon">&#x1F49A;</div>
+                        <div class="seed-name">Doar</div>
+                        <div class="seed-desc">Escolher causas e ONGs para contribuir com parte da mesada</div>
+                    </div>
+                    <div class="seed-card seed-investir">
+                        <div class="seed-icon">&#x1F4C8;</div>
+                        <div class="seed-name">Investir</div>
+                        <div class="seed-desc">Tesouro Direto e CDB de verdade, com supervisao parental</div>
+                    </div>
+                </div>
+                <div class="solution-concept">
+                    <strong>Conceito GRANIX:</strong> Assim como uma semente precisa ser plantada, regada e cuidada para crescer, o dinheiro precisa de proposito e disciplina. As 4 Sementes ensinam isso desde cedo.
+                </div>
+            </div>
+            <div class="solution-right">
+                <ul class="feature-list">
+                    <li><span class="check">&#10003;</span> Mesada automatica com divisao personalizada</li>
+                    <li><span class="check">&#10003;</span> Cartao fisico e virtual para criancas</li>
+                    <li><span class="check">&#10003;</span> Tarefas remuneradas (lavar louca = R$ 5)</li>
+                    <li><span class="check">&#10003;</span> Educacao financeira gamificada (estilo Duolingo)</li>
+                    <li><span class="check">&#10003;</span> Investimentos reais supervisionados</li>
+                    <li><span class="check">&#10003;</span> Controle parental: limites por categoria, loja, horario</li>
+                    <li><span class="check">&#10003;</span> Notificacoes de gastos em tempo real</li>
+                    <li><span class="check">&#10003;</span> Dashboard familiar com relatorios</li>
+                    <li><span class="check">&#10003;</span> Programa de recompensas e badges</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer">
+        <span>GRANIX | Teaser Investidor</span>
+        <span class="page-num">03 / 12</span>
+    </div>
+</div>
+
+<!-- ==================== SLIDE 4: COMPARATIVO GREENLIGHT ==================== -->
+<div class="slide">
+    <div class="slide-header">
+        <h1>O Modelo ja foi Validado</h1>
+        <div class="subtitle">Greenlight provou a tese nos EUA. O Brasil e a proxima fronteira.</div>
+        <div class="header-line"></div>
+    </div>
+    <div class="slide-body">
+        <div class="compare-grid">
+            <div class="compare-card compare-us">
+                <div class="compare-flag">&#x1F1FA;&#x1F1F8; Greenlight (EUA)</div>
+                <h3>O Benchmark</h3>
+                <ul class="compare-stats">
+                    <li><span>Fundacao</span><span class="val">2014 (Atlanta, GA)</span></li>
+                    <li><span>Usuarios</span><span class="val">6,5M familias</span></li>
+                    <li><span>Receita 2024</span><span class="val">US$ 228,5M ARR</span></li>
+                    <li><span>Valuation</span><span class="val">US$ 2,3 bilhoes</span></li>
+                    <li><span>Funding total</span><span class="val">US$ 556M</span></li>
+                    <li><span>Investidores</span><span class="val">a16z, JPMorgan, Wells Fargo</span></li>
+                    <li><span>Populacao 5-17 anos</span><span class="val">64M</span></li>
+                </ul>
+            </div>
+            <div class="compare-arrow">&#x27A1;</div>
+            <div class="compare-card compare-br">
+                <div class="compare-flag">&#x1F1E7;&#x1F1F7; GRANIX (Brasil)</div>
+                <h3>A Oportunidade</h3>
+                <ul class="compare-stats">
+                    <li><span>Populacao 5-17 anos</span><span class="val">37,9M (59% dos EUA)</span></li>
+                    <li><span>Familias target (A/B/C)</span><span class="val">18M familias</span></li>
+                    <li><span>Contas menores hoje</span><span class="val">10M (26% penetracao)</span></li>
+                    <li><span>Concorrentes c/ 4 Sementes</span><span class="val" style="color:var(--green)">ZERO</span></li>
+                    <li><span>CAGR fintech BR</span><span class="val">14,9% ate 2034</span></li>
+                    <li><span>Transacoes mobile</span><span class="val">90%+ via celular</span></li>
+                    <li><span>Meta Ano 5 (conservador)</span><span class="val">300K familias</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="compare-bottom">
+            Se o Greenlight vale <span class="highlight">US$ 2,3B</span> com 6,5M familias nos EUA, qual o potencial no Brasil com <span class="highlight">18M familias target</span> e <span class="highlight">zero concorrentes</span> no nicho?
+        </div>
+    </div>
+    <div class="slide-footer">
+        <span>GRANIX | Teaser Investidor</span>
+        <span class="page-num">04 / 12</span>
+    </div>
+</div>
+
+<!-- ==================== SLIDE 5: MERCADO ==================== -->
+<div class="slide">
+    <div class="slide-header">
+        <h1>Tamanho de Mercado</h1>
+        <div class="subtitle">Oportunidade de R$ 8,1 bilhoes com alta penetracao digital</div>
+        <div class="header-line"></div>
+    </div>
+    <div class="slide-body">
+        <div class="market-funnel">
+            <div class="funnel-item funnel-tam">
+                <div class="funnel-value">R$ 8,1B</div>
+                <div class="funnel-label">TAM</div>
+                <div class="funnel-desc">Mercado total fintechs familiares Brasil</div>
+            </div>
+            <div class="funnel-arrow">&#x25B6;</div>
+            <div class="funnel-item funnel-sam">
+                <div class="funnel-value">R$ 1,45B</div>
+                <div class="funnel-label">SAM</div>
+                <div class="funnel-desc">6,7M familias qualificadas (A/B/C, smartphone, interesse)</div>
+            </div>
+            <div class="funnel-arrow">&#x25B6;</div>
+            <div class="funnel-item funnel-som">
+                <div class="funnel-value">R$ 81M</div>
+                <div class="funnel-label">SOM Ano 5</div>
+                <div class="funnel-desc">300K familias ativas (cenario conservador)</div>
+            </div>
+        </div>
+        <div class="market-drivers">
+            <div class="driver-card">
+                <div class="driver-num">85%</div>
+                <div class="driver-text">dos pais querem ensinar financas aos filhos</div>
+            </div>
+            <div class="driver-card">
+                <div class="driver-num">90%+</div>
+                <div class="driver-text">transacoes bancarias ja sao via mobile</div>
+            </div>
+            <div class="driver-card">
+                <div class="driver-num">14,9%</div>
+                <div class="driver-text">CAGR do mercado fintech BR ate 2034</div>
+            </div>
+            <div class="driver-card">
+                <div class="driver-num">227%</div>
+                <div class="driver-text">crescimento busca por "kids debit card"</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer">
+        <span>GRANIX | Teaser Investidor</span>
+        <span class="page-num">05 / 12</span>
+    </div>
+</div>
+
+<!-- ==================== SLIDE 6: PRODUTO ==================== -->
+<div class="slide">
+    <div class="slide-header">
+        <h1>O Produto</h1>
+        <div class="subtitle">App mobile para pais e filhos + Cartao fisico</div>
+        <div class="header-line"></div>
+    </div>
+    <div class="slide-body">
+        <div class="product-grid">
+            <div>
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="app-header">
+                            <div>
+                                <div class="app-greeting">Ola, Pedro!</div>
+                                <div class="app-name">GRANIX</div>
+                            </div>
+                            <div style="font-size:24px">&#x1F331;</div>
+                        </div>
+                        <div class="app-balance">
+                            <div class="balance-label">Meu saldo total</div>
+                            <div class="balance-value">R$ 247,50</div>
+                        </div>
+                        <div class="app-seeds">
+                            <div class="mini-seed seed-gastar">
+                                <div>&#x1F6D2; Gastar</div>
+                                <div class="mini-val">R$ 85,00</div>
+                            </div>
+                            <div class="mini-seed seed-guardar">
+                                <div>&#x1F331; Guardar</div>
+                                <div class="mini-val">R$ 92,50</div>
+                            </div>
+                            <div class="mini-seed seed-doar">
+                                <div>&#x1F49A; Doar</div>
+                                <div class="mini-val">R$ 20,00</div>
+                            </div>
+                            <div class="mini-seed seed-investir">
+                                <div>&#x1F4C8; Investir</div>
+                                <div class="mini-val">R$ 50,00</div>
+                            </div>
+                        </div>
+                        <div class="app-tasks-title">Tarefas da semana</div>
+                        <div class="app-task">
+                            <span>&#9744; Arrumar o quarto</span>
+                            <span class="task-reward">+R$ 5</span>
+                        </div>
+                        <div class="app-task">
+                            <span>&#9745; Lavar a louca</span>
+                            <span class="task-reward">+R$ 5</span>
+                        </div>
+                        <div class="app-task">
+                            <span>&#9744; Ler 30 min</span>
+                            <span class="task-reward">+R$ 3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h4>&#x1F4B3; Cartao de Debito</h4>
+                        <p>Fisico e virtual. Controles parentais em tempo real. Bloqueio por categoria ou loja.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>&#x1F3AF; Mesada Automatica</h4>
+                        <p>Configura uma vez, recorrente. Divisao automatica entre as 4 Sementes.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>&#x1F3AE; Educacao Gamificada</h4>
+                        <p>Missoes, badges, rankings. Conteudo adaptado por faixa etaria (6-12 e 13-17).</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>&#x1F4CA; Investimentos Reais</h4>
+                        <p>Tesouro Direto e CDB de verdade. Simulador de rentabilidade. Supervisao parental.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>&#x1F6E1; Controle Parental</h4>
+                        <p>Limites por categoria, loja e horario. Notificacoes em tempo real. Dashboard completo.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>&#x1F4B0; Tarefas & Recompensas</h4>
+                        <p>Pais criam tarefas, filhos completam. Cashback em parceiros educacionais.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>&#x1F4F1; Dois Apps em Um</h4>
+                        <p>Visao do pai (controle total) e visao do filho (engajamento). Uma unica familia.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>&#x1F331; 4 Sementes</h4>
+                        <p>Diferencial unico: cada real e dividido em Gastar, Guardar, Doar e Investir.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer">
+        <span>GRANIX | Teaser Investidor</span>
+        <span class="page-num">06 / 12</span>
+    </div>
+</div>
+
+<!-- ==================== SLIDE 7: MODELO DE NEGOCIO ==================== -->
+<div class="slide">
+    <div class="slide-header">
+        <h1>Modelo de Negocio</h1>
+        <div class="subtitle">Freemium + 3 fontes de receita recorrentes</div>
+        <div class="header-line"></div>
+    </div>
+    <div class="slide-body">
+        <div class="biz-grid">
+            <div>
+                <div class="pricing-table">
+                    <div class="plan-card">
+                        <div class="plan-name">Gratuito</div>
+                        <div class="plan-price"><span class="currency">R$</span> 0 <span class="period">/mes</span></div>
+                        <ul class="plan-features">
+                            <li>Cartao virtual basico</li>
+                            <li>Funcoes limitadas</li>
+                            <li>Funil de conversao</li>
+                        </ul>
+                    </div>
+                    <div class="plan-card featured">
+                        <div class="plan-name">Familia</div>
+                        <div class="plan-price"><span class="currency">R$</span> 29 <span class="period">/mes</span></div>
+                        <ul class="plan-features">
+                            <li>Cartao fisico</li>
+                            <li>Mesada automatica</li>
+                            <li>4 Sementes completo</li>
+                            <li>Metas e relatorios</li>
+                        </ul>
+                    </div>
+                    <div class="plan-card">
+                        <div class="plan-name">Familia+</div>
+                        <div class="plan-price"><span class="currency">R$</span> 49 <span class="period">/mes</span></div>
+                        <ul class="plan-features">
+                            <li>Investimentos reais</li>
+                            <li>Cashback</li>
+                            <li>Multi-filhos</li>
+                            <li>Conteudo premium</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="arpu-box">
+                    <div class="arpu-label">ARPU Pagantes</div>
+                    <div class="arpu-value">R$ 17,50/mes</div>
+                    <div class="arpu-label" style="margin-top:4px">50% base gratuita | 35% Familia | 15% Familia+</div>
+                </div>
+            </div>
+            <div>
+                <h3 style="font-size:16px; color:var(--blue-deep); font-weight:700; margin-bottom:12px;">3 Fontes de Receita Recorrentes</h3>
+                <div class="revenue-bar">
+                    <div class="rev-sub"></div>
+                    <div class="rev-int"></div>
+                    <div class="rev-float"></div>
+                </div>
+                <div class="revenue-legend">
+                    <span><span class="legend-dot" style="background:var(--blue-deep)"></span> Assinaturas 78%</span>
+                    <span><span class="legend-dot" style="background:var(--green)"></span> Interchange 14%</span>
+                    <span><span class="legend-dot" style="background:var(--purple-soft)"></span> Float 8%</span>
+                </div>
+
+                <div style="margin-top:24px">
+                    <h3 style="font-size:16px; color:var(--blue-deep); font-weight:700; margin-bottom:12px;">Receita Total por Familia</h3>
+                    <div style="display:flex; gap:12px;">
+                        <div style="flex:1; padding:14px; background:var(--gray-50); border-radius:10px; text-align:center;">
+                            <div style="font-size:11px; color:var(--gray-400); text-transform:uppercase; letter-spacing:1px;">Assinatura</div>
+                            <div style="font-size:20px; font-weight:900; color:var(--blue-deep);">R$ 17,50</div>
+                        </div>
+                        <div style="flex:1; padding:14px; background:var(--gray-50); border-radius:10px; text-align:center;">
+                            <div style="font-size:11px; color:var(--gray-400); text-transform:uppercase; letter-spacing:1px;">Interchange</div>
+                            <div style="font-size:20px; font-weight:900; color:var(--green);">R$ 3,24</div>
+                        </div>
+                        <div style="flex:1; padding:14px; background:var(--gray-50); border-radius:10px; text-align:center;">
+                            <div style="font-size:11px; color:var(--gray-400); text-transform:uppercase; letter-spacing:1px;">Float</div>
+                            <div style="font-size:20px; font-weight:900; color:var(--purple-soft);">R$ 1,80</div>
+                        </div>
+                    </div>
+                    <div style="text-align:center; margin-top:12px; font-size:14px; color:var(--gray-600);">
+                        Receita total: <strong style="color:var(--blue-deep); font-size:18px;">R$ 22,55/familia/mes</strong>
+                    </div>
+                </div>
+
+                <div style="margin-top:20px; padding:14px 18px; background:var(--blue-deep); border-radius:10px; color:white; font-size:13px;">
+                    <strong style="color:var(--green);">Margem Bruta: 84,5%</strong> &mdash; COGS de R$ 3,50/usuario/mes inclui BaaS, cartoes, KYC, cloud e suporte
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer">
+        <span>GRANIX | Teaser Investidor</span>
+        <span class="page-num">07 / 12</span>
+    </div>
+</div>
+
+<!-- ==================== SLIDE 8: NUMEROS-CHAVE ==================== -->
+<div class="slide">
+    <div class="slide-header">
+        <h1>Projecao Financeira (Conservador)</h1>
+        <div class="subtitle">300K familias e R$ 81M ARR em 5 anos com EBITDA de 51%</div>
+        <div class="header-line"></div>
+    </div>
+    <div class="slide-body">
+        <table class="numbers-table">
+            <thead>
+                <tr>
+                    <th>Metrica</th>
+                    <th>Ano 1</th>
+                    <th>Ano 2</th>
+                    <th>Ano 3</th>
+                    <th>Ano 4</th>
+                    <th>Ano 5</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Familias Ativas</td>
+                    <td>15K</td>
+                    <td>45K</td>
+                    <td>100K</td>
+                    <td>180K</td>
+                    <td class="year-5">300K</td>
+                </tr>
+                <tr>
+                    <td>Criancas Ativas</td>
+                    <td>27K</td>
+                    <td>81K</td>
+                    <td>180K</td>
+                    <td>324K</td>
+                    <td class="year-5">540K</td>
+                </tr>
+                <tr class="highlight-row">
+                    <td>ARR</td>
+                    <td>R$ 4,1M</td>
+                    <td>R$ 12,2M</td>
+                    <td>R$ 27,0M</td>
+                    <td>R$ 48,7M</td>
+                    <td class="year-5">R$ 81,1M</td>
+                </tr>
+                <tr>
+                    <td>Margem Bruta</td>
+                    <td>84,5%</td>
+                    <td>84,5%</td>
+                    <td>84,5%</td>
+                    <td>84,5%</td>
+                    <td class="year-5">84,5%</td>
+                </tr>
+                <tr class="highlight-row">
+                    <td>EBITDA</td>
+                    <td style="color:var(--red-soft)">-R$ 1,3M</td>
+                    <td>R$ 1,2M</td>
+                    <td>R$ 8,7M</td>
+                    <td>R$ 21,0M</td>
+                    <td class="year-5">R$ 41,4M</td>
+                </tr>
+                <tr>
+                    <td>Margem EBITDA</td>
+                    <td style="color:var(--red-soft)">-32%</td>
+                    <td>10%</td>
+                    <td>32%</td>
+                    <td>43%</td>
+                    <td class="year-5">51%</td>
+                </tr>
+                <tr>
+                    <td>Lucro Liquido</td>
+                    <td style="color:var(--red-soft)">-R$ 1,3M</td>
+                    <td>R$ 0,7M</td>
+                    <td>R$ 5,6M</td>
+                    <td>R$ 13,7M</td>
+                    <td class="year-5">R$ 27,1M</td>
+                </tr>
+                <tr>
+                    <td>Headcount</td>
+                    <td>17</td>
+                    <td>30</td>
+                    <td>42</td>
+                    <td>55</td>
+                    <td class="year-5">68</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="kpi-row">
+            <div class="kpi-box">
+                <div class="kpi-value">200%</div>
+                <div class="kpi-label">Crescimento ARR Ano 2</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-value">R$ 1,19M</div>
+                <div class="kpi-label">Receita/funcionario Ano 5</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-value">118%</div>
+                <div class="kpi-label">Rule of 40 (Ano 5)</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-value">33%</div>
+                <div class="kpi-label">Margem Liquida Ano 5</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer">
+        <span>GRANIX | Teaser Investidor</span>
+        <span class="page-num">08 / 12</span>
+    </div>
+</div>
+
+<!-- ==================== SLIDE 9: UNIT ECONOMICS ==================== -->
+<div class="slide">
+    <div class="slide-header">
+        <h1>Unit Economics</h1>
+        <div class="subtitle">LTV/CAC de 8,5x com payback de 5 meses &mdash; solidos desde o Ano 1</div>
+        <div class="header-line"></div>
+    </div>
+    <div class="slide-body">
+        <div class="ue-grid">
+            <div>
+                <div class="ue-metrics">
+                    <div class="ue-card ue-ltvcac">
+                        <div class="ue-value">8,5x</div>
+                        <div class="ue-label">LTV / CAC</div>
+                        <div class="ue-bench">Benchmark: > 3x</div>
+                    </div>
+                    <div class="ue-card ue-payback">
+                        <div class="ue-value">~5 m</div>
+                        <div class="ue-label">Payback</div>
+                        <div class="ue-bench">Benchmark: &lt; 12 meses</div>
+                    </div>
+                    <div class="ue-card ue-ltv">
+                        <div class="ue-value">R$ 756</div>
+                        <div class="ue-label" style="color:var(--gray-600)">LTV (3 anos)</div>
+                        <div class="ue-bench" style="color:var(--gray-400)">Margem bruta x 36 meses</div>
+                    </div>
+                    <div class="ue-card ue-cac">
+                        <div class="ue-value">R$ 90</div>
+                        <div class="ue-label" style="color:var(--gray-600)">CAC Medio</div>
+                        <div class="ue-bench" style="color:var(--gray-400)">Benchmark: &lt; R$ 120</div>
+                    </div>
+                </div>
+                <div class="ue-breakeven">
+                    <div class="be-value">M16</div>
+                    <div>
+                        <div style="font-size:16px; font-weight:700;">Break-even Operacional</div>
+                        <div class="be-text">Com <strong>~27.000 familias</strong> ativas, a operacao se paga. Alcancado no mes 16 &mdash; Q1 do Ano 2.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="ue-comparison">
+                <h3>GRANIX vs Greenlight (Ano 3)</h3>
+                <div class="compare-row">
+                    <div class="cr-label">Margem Bruta</div>
+                    <div class="cr-bar-container">
+                        <div class="cr-bar granix" style="width:84.5%">GRANIX 84,5%</div>
+                    </div>
+                </div>
+                <div class="compare-row">
+                    <div class="cr-label"></div>
+                    <div class="cr-bar-container">
+                        <div class="cr-bar greenlight" style="width:75%">Greenlight ~75%</div>
+                    </div>
+                </div>
+                <div style="height:16px"></div>
+                <div class="compare-row">
+                    <div class="cr-label">Funding Acum.</div>
+                    <div class="cr-bar-container">
+                        <div class="cr-bar granix" style="width:25%">R$ 20,5M</div>
+                    </div>
+                </div>
+                <div class="compare-row">
+                    <div class="cr-label"></div>
+                    <div class="cr-bar-container">
+                        <div class="cr-bar greenlight" style="width:80%">~US$ 80M</div>
+                    </div>
+                </div>
+                <div style="height:16px"></div>
+                <div class="compare-row">
+                    <div class="cr-label">Headcount</div>
+                    <div class="cr-bar-container">
+                        <div class="cr-bar granix" style="width:28%">42 pessoas</div>
+                    </div>
+                </div>
+                <div class="compare-row">
+                    <div class="cr-label"></div>
+                    <div class="cr-bar-container">
+                        <div class="cr-bar greenlight" style="width:100%">~150 pessoas</div>
+                    </div>
+                </div>
+                <div style="margin-top:16px; padding:12px 16px; background:var(--gray-50); border-radius:8px; font-size:13px; color:var(--gray-600); border-left:3px solid var(--green);">
+                    <strong style="color:var(--blue-deep);">5x menos capital</strong> e <strong style="color:var(--blue-deep);">3,5x menos pessoas</strong> que o Greenlight no mesmo estagio. Operacao lean com alta produtividade.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer">
+        <span>GRANIX | Teaser Investidor</span>
+        <span class="page-num">09 / 12</span>
+    </div>
+</div>
+
+<!-- ==================== SLIDE 10: ROADMAP ==================== -->
+<div class="slide">
+    <div class="slide-header">
+        <h1>Roadmap de Execucao</h1>
+        <div class="subtitle">De MVP a 300K familias em 5 anos</div>
+        <div class="header-line"></div>
+    </div>
+    <div class="slide-body">
+        <div class="roadmap-timeline">
+            <div class="rm-phase">
+                <div class="rm-year">2026</div>
+                <div class="rm-dot"></div>
+                <div class="rm-title">MVP & Validacao</div>
+                <ul class="rm-items">
+                    <li>Desenvolvimento MVP</li>
+                    <li>Licencas e compliance</li>
+                    <li>Beta fechado (2K familias)</li>
+                    <li>Lancamento publico</li>
+                </ul>
+                <div class="rm-meta">
+                    <div class="rm-users">15K familias</div>
+                    <div class="rm-funding">Pre-Seed R$ 1,5M</div>
+                </div>
+            </div>
+            <div class="rm-phase">
+                <div class="rm-year">2027</div>
+                <div class="rm-dot"></div>
+                <div class="rm-title">Crescimento</div>
+                <ul class="rm-items">
+                    <li>Escala marketing</li>
+                    <li>Parcerias com escolas</li>
+                    <li>Referral program</li>
+                    <li>Break-even M16</li>
+                </ul>
+                <div class="rm-meta">
+                    <div class="rm-users">45K familias</div>
+                    <div class="rm-funding">Seed R$ 4M</div>
+                </div>
+            </div>
+            <div class="rm-phase">
+                <div class="rm-year">2028</div>
+                <div class="rm-dot"></div>
+                <div class="rm-title">Escala & Produto</div>
+                <ul class="rm-items">
+                    <li>Modulo investimentos</li>
+                    <li>Programa recompensas</li>
+                    <li>Expansao regional</li>
+                    <li>100K milestone</li>
+                </ul>
+                <div class="rm-meta">
+                    <div class="rm-users">100K familias</div>
+                    <div class="rm-funding">Serie A R$ 15M</div>
+                </div>
+            </div>
+            <div class="rm-phase">
+                <div class="rm-year">2029</div>
+                <div class="rm-dot"></div>
+                <div class="rm-title">Lideranca</div>
+                <ul class="rm-items">
+                    <li>Expansao nacional</li>
+                    <li>Consolidacao marca</li>
+                    <li>Open Finance</li>
+                    <li>Preparacao LATAM</li>
+                </ul>
+                <div class="rm-meta">
+                    <div class="rm-users">180K familias</div>
+                    <div class="rm-funding" style="color:var(--gray-400)">Cash positive</div>
+                </div>
+            </div>
+            <div class="rm-phase">
+                <div class="rm-year">2030</div>
+                <div class="rm-dot"></div>
+                <div class="rm-title">Maturidade</div>
+                <ul class="rm-items">
+                    <li>300K familias</li>
+                    <li>R$ 81M ARR</li>
+                    <li>EBITDA 51%</li>
+                    <li>Exit / Serie B</li>
+                </ul>
+                <div class="rm-meta">
+                    <div class="rm-users">300K familias</div>
+                    <div class="rm-funding" style="color:var(--gray-400)">Exit potencial</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer">
+        <span>GRANIX | Teaser Investidor</span>
+        <span class="page-num">10 / 12</span>
+    </div>
+</div>
+
+<!-- ==================== SLIDE 11: TIME ==================== -->
+<div class="slide">
+    <div class="slide-header">
+        <h1>O Time</h1>
+        <div class="subtitle">Fundadores com skin in the game &mdash; 55% do equity pos-aportes</div>
+        <div class="header-line"></div>
+    </div>
+    <div class="slide-body">
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-avatar">&#x1F464;</div>
+                <div class="team-name">[Nome Fundador 1]</div>
+                <div class="team-role">CEO / Founder</div>
+                <div class="team-bio">
+                    [Background: experiencia em fintech/tech/financas]<br>
+                    [Formacao academica]<br>
+                    [Por que esta pessoa e certa para liderar]
+                </div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">&#x1F464;</div>
+                <div class="team-name">[Nome Fundador 2]</div>
+                <div class="team-role">CTO / Co-Founder</div>
+                <div class="team-bio">
+                    [Background: engenharia, produto, tecnologia]<br>
+                    [Formacao academica]<br>
+                    [Experiencia tecnica relevante]
+                </div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar">&#x1F464;</div>
+                <div class="team-name">[Nome Fundador 3]</div>
+                <div class="team-role">COO / Co-Founder</div>
+                <div class="team-bio">
+                    [Background: operacoes, growth, marketing]<br>
+                    [Formacao academica]<br>
+                    [Track record de escala]
+                </div>
+            </div>
+        </div>
+        <div class="team-values">
+            <div class="team-value-card">
+                <div class="tv-num">55%</div>
+                <div class="tv-text">Equity fundadores pos-aportes</div>
+            </div>
+            <div class="team-value-card">
+                <div class="tv-num">17</div>
+                <div class="tv-text">Pessoas no Ano 1 (lean team)</div>
+            </div>
+            <div class="team-value-card">
+                <div class="tv-num">68</div>
+                <div class="tv-text">Pessoas no Ano 5 (crescimento gradual)</div>
+            </div>
+            <div class="team-value-card">
+                <div class="tv-num">R$ 1,19M</div>
+                <div class="tv-text">Receita/funcionario Ano 5</div>
+            </div>
+        </div>
+    </div>
+    <div class="slide-footer">
+        <span>GRANIX | Teaser Investidor</span>
+        <span class="page-num">11 / 12</span>
+    </div>
+</div>
+
+<!-- ==================== SLIDE 12: ASK ==================== -->
+<div class="slide slide-ask">
+    <div class="slide-header" style="padding-top:50px;">
+        <h1 style="color:white;">Junte-se a Rodada Pre-Seed</h1>
+        <div class="subtitle" style="color:var(--green);">Construindo o futuro financeiro das familias brasileiras</div>
+        <div class="header-line" style="background:var(--green);"></div>
+    </div>
+    <div class="slide-body">
+        <div class="ask-grid">
+            <div class="ask-left">
+                <h2>R$ 1,5M</h2>
+                <div class="ask-desc">Pre-Seed Round</div>
+                <ul class="ask-terms">
+                    <li><span class="term-label">Equity</span><span class="term-value">10%</span></li>
+                    <li><span class="term-label">Valuation (pre-money)</span><span class="term-value">R$ 13,5M</span></li>
+                    <li><span class="term-label">Instrumento</span><span class="term-value">SAFE / Equity</span></li>
+                    <li><span class="term-label">Runway</span><span class="term-value">14 meses</span></li>
+                    <li><span class="term-label">Objetivo</span><span class="term-value">MVP + 15K familias</span></li>
+                    <li><span class="term-label">Retorno potencial (Exit Ano 5)</span><span class="term-value" style="color:var(--green)">19x / IRR 80%</span></li>
+                </ul>
+                <div class="ask-cta">Vamos conversar</div>
+            </div>
+            <div class="ask-right">
+                <h3>Uso dos Recursos</h3>
+                <ul class="use-of-funds">
+                    <li>
+                        <div class="uof-label"><span>Produto & Engenharia</span><span>45%</span></div>
+                        <div class="uof-bar"><div class="uof-fill" style="width:45%"></div></div>
+                    </li>
+                    <li>
+                        <div class="uof-label"><span>Marketing & Aquisicao</span><span>25%</span></div>
+                        <div class="uof-bar"><div class="uof-fill" style="width:25%"></div></div>
+                    </li>
+                    <li>
+                        <div class="uof-label"><span>Time & Operacoes</span><span>20%</span></div>
+                        <div class="uof-bar"><div class="uof-fill" style="width:20%"></div></div>
+                    </li>
+                    <li>
+                        <div class="uof-label"><span>Legal & Compliance</span><span>10%</span></div>
+                        <div class="uof-bar"><div class="uof-fill" style="width:10%"></div></div>
+                    </li>
+                </ul>
+                <div class="ask-contact">
+                    <div class="contact-name">Toto Busnello</div>
+                    <div class="contact-role">Founder & CEO</div>
+                    <div class="contact-info">
+                        toto@granix.com.br<br>
+                        www.granix.com.br<br>
+                        linkedin.com/in/totobusnello
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
