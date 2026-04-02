@@ -473,16 +473,23 @@ bank_partners (
 
 ### 9.2 Conformidade Regulatória — Dados de Menores
 
-A GRANIX opera sob múltiplos marcos regulatórios aplicáveis a plataformas digitais que processam dados de menores de idade no Brasil:
+> Seção revisada e validada pelo Lex (04/2026).
 
-**LGPD (Lei 13.709/2018) — Dados de Menores**
-O tratamento de dados de crianças (até 12 anos) e adolescentes (12-18 anos) exige consentimento específico e em destaque de ao menos um responsável legal, conforme o art. 14 da LGPD e as diretrizes da ANPD. A GRANIX coleta e processa exclusivamente dados comportamentais e educacionais — sem dados financeiros identificáveis (que permanecem no banco parceiro). O consentimento parental é coletado no onboarding com linguagem clara e acessível, incluindo: (i) lista explícita dos dados coletados, (ii) finalidade de cada categoria de dado, (iii) prazo de retenção, e (iv) direito de revogação a qualquer momento. Dados de menores jamais são compartilhados com terceiros para fins publicitários.
+**Conformidade Regulatória — Proteção de Dados de Menores**
 
-**ECA e Marco Legal da Internet (Lei 12.965/2014 — Marco Civil)**
-O Estatuto da Criança e do Adolescente (Lei 8.069/1990), combinado com o Marco Civil da Internet, estabelece proteção especial para o ambiente digital de menores. O art. 17 do Marco Civil veda a coleta de dados de crianças sem consentimento parental expresso. A GRANIX implementa: (i) verificação de idade na criação do perfil do filho, (ii) todas as comunicações de marketing direcionadas aos pais, nunca diretamente à criança, e (iii) controles parentais completos com visibilidade total sobre todas as interações do filho na plataforma. *Nota: verificar com equipe jurídica o número e status vigente de eventual legislação específica "ECA Digital" de 2025, que pode complementar ou alterar esses requisitos.*
+A arquitetura da plataforma GRANIX foi concebida em conformidade com o arcabouço regulatório aplicável ao tratamento de dados pessoais de crianças e adolescentes no Brasil. Em aderência ao **art. 14 da LGPD (Lei nº 13.709/2018)**, todo tratamento de dados pessoais de menores — incluindo dados comportamentais coletados para personalização de conteúdo — está condicionado ao **consentimento específico e em destaque** de pelo menos um dos pais ou responsável legal. A GRANIX implementa mecanismos de coleta e verificação de consentimento parental baseados nas tecnologias disponíveis, adotando os princípios de *privacy-by-design* e *data minimization*, sempre orientados pelo princípio do melhor interesse da criança, conforme orientação da ANPD. O **Relatório de Impacto à Proteção de Dados Pessoais (RIPD)** específico para a população infanto-juvenil é mantido atualizado e disponível para auditorias regulatórias e processos de due diligence de instituições financeiras parceiras.
 
-**Regulação BACEN — Contas de Menores**
-A Resolução BCB nº 4.753/2019 e normativos subsequentes regulam a abertura e operação de contas para menores de idade. Como a GRANIX não abre contas — essa responsabilidade é integralmente do banco parceiro — a conformidade com essas normas é responsabilidade contratual do banco. O contrato de parceria GRANIX ↔ Banco inclui cláusula de representação e garantia de que o banco cumpre toda a regulação aplicável a contas de menores, incluindo exigências de representação legal e limites de movimentação. A GRANIX complementa com: consentimento parental no próprio onboarding GRANIX (dupla camada) e log auditável de todos os comandos enviados ao banco.
+No âmbito do **ECA Digital (Lei nº 15.211/2025)**, em vigor desde **17 de março de 2026**, a plataforma oferece ferramentas de controle parental nativas e acessíveis, que permitem ao responsável legal gerenciar interações, limitar tempo de uso, controlar sistemas de recomendação baseados em IA e restringir o compartilhamento de dados. A verificação de idade é realizada por mecanismos confiáveis — integrando validação com bases de dados governamentais e/ou financeiras —, garantindo a vinculação de contas de menores de 16 anos aos respectivos responsáveis. O uso de Inteligência Artificial para personalização de conteúdo financeiro é monitorado para assegurar aderência às restrições legais sobre perfilamento de menores e publicidade direcionada. O modelo de IA opera exclusivamente com base no melhor interesse do usuário menor, sem inferência de propensão de consumo, segmentação comercial ou compartilhamento de perfis com terceiros, afastando a incidência das vedações previstas no art. 7º, §§ 3º e 4º da Lei nº 15.211/2025.
+
+No que se refere à dimensão financeira, a GRANIX opera em modelo de orquestração: não movimenta recursos diretamente nem detém dados financeiros dos usuários. O **KYC, a abertura e a movimentação de contas** são realizados pelo banco parceiro sob sua própria licença regulatória, em conformidade com a **Res. CMN 4.753/2019** (contas de depósito — bancos tradicionais) ou **Res. BCB 96/2021** (contas de pagamento — fintechs/IPs), incluindo os requisitos de representação legal e consentimento dos responsáveis legais para contas de menores (Código Civil, arts. 3º e 4º). O contrato de parceria GRANIX ↔ Banco inclui cláusula de representação e garantia de cumprimento dessas normas. A GRANIX complementa com: (i) consentimento parental no próprio onboarding GRANIX (dupla camada), e (ii) log auditável imutável de todos os comandos enviados ao banco, garantindo rastreabilidade e defensabilidade em processos de due diligence regulatória.
+
+**Mapeamento Controlador/Operador (LGPD)**
+
+A GRANIX é:
+- **Controladora** dos dados comportamentais e educacionais coletados na plataforma
+- **Operadora** em relação aos dados financeiros e de identificação, que permanecem sob controle do banco parceiro
+
+Essa distinção é documentada explicitamente no contrato de parceria e no DPA (Data Processing Agreement) firmado com cada banco parceiro, delimitando responsabilidades e viabilizando auditorias independentes.
 
 ### 9.3 Responsible Disclosure
 
