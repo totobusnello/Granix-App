@@ -262,3 +262,114 @@ erDiagram
     CHILD ||--|| VIRTUAL_POT : "Doar"
     VIRTUAL_POT ||--o{ POT_TRANSACTION : "records"
 ```
+
+---
+
+## 9. Fluxo de Disputa/Chargeback
+
+```mermaid
+sequenceDiagram
+    participant REDE as Bandeira/PIX
+    participant BANCO as Banco Parceiro
+    participant GRANIX_API as GRANIX Core
+    participant DB as GRANIX DB
+    participant OPS as Ops GRANIX
+    actor Pai
+    actor Filho
+
+    REDE->>BANCO: Solicitação de chargeback/reversão
+    BANCO->>BANCO: Executa estorno na conta real
+
+    BANCO->>GRANIX_API: Webhook {event: transaction.reversed,<br/>original_tx_id: abc, amount: 1500}
+
+    GRANIX_API->>DB: Buscar transação original (abc)
+
+    alt Transação encontrada
+        DB-->>GRANIX_API: TX encontrada (pote: "Gastar", R$15)
+        GRANIX_API->>DB: Verificar saldo atual do pote origem
+
+        alt Pote tem saldo suficiente para reverter
+            GRANIX_API->>DB: UPDATE virtual_pot "Gastar" +R$15<br/>(crédito de volta ao pote origem)
+            GRANIX_API->>DB: INSERT pot_transaction<br/>{type: REVERSAL, amount: +1500}
+
+            GRANIX_API->>GRANIX_API: Verificar XP vinculado à tarefa original
+            opt Tarefa com XP associado
+                GRANIX_API->>DB: UPDATE xp_ledger<br/>Remover XP da tarefa revertida
+                GRANIX_API->>DB: Recalcular nível/conquistas
+            end
+
+            GRANIX_API->>Pai: 🔔 "Transação de R$15 revertida — valor devolvido ao pote Gastar"
+            GRANIX_API->>Filho: 🔔 "R$15 devolvido ao pote Gastar"
+
+        else Pote não tem saldo (ex: já foi redistribuído)
+            GRANIX_API->>DB: INSERT flag {type: REVERSAL_FAILED,<br/>reason: INSUFFICIENT_POT_BALANCE}
+            GRANIX_API->>OPS: 🚨 Alerta: reversão requer revisão manual<br/>{family_id, pot, delta, original_tx}
+            GRANIX_API->>Pai: 🔔 "Transação de R$15 em análise de reversão"
+        end
+
+        GRANIX_API->>BANCO: POST /webhooks/ack<br/>{event_id: xyz, status: processed}
+
+    else Transação não encontrada
+        GRANIX_API->>DB: INSERT flag {type: REVERSAL_ORPHAN,<br/>bank_tx_id: abc}
+        GRANIX_API->>OPS: 🚨 Reversão sem transação original — revisar
+        GRANIX_API->>BANCO: POST /webhooks/ack<br/>{event_id: xyz, status: not_found}
+    end
+
+    Note over GRANIX_API: GRANIX nunca movimenta dinheiro.<br/>Apenas ajusta potes virtuais e notifica.
+```
+
+---
+
+## 10. Fluxo de Billing/Revenue Share
+
+```mermaid
+sequenceDiagram
+    participant CRON as Cron Mensal (dia 1)
+    participant GRANIX_API as GRANIX Core
+    participant DB as GRANIX DB
+    participant BILLING as Sistema Billing GRANIX
+    participant BANCO_BILLING as Billing do Banco
+    participant DASHBOARD as Dashboard Parceiro
+    actor GRANIX_FIN as Financeiro GRANIX
+    actor BANCO_FIN as Financeiro Banco
+
+    Note over CRON: Ciclo mensal de faturamento
+
+    CRON->>GRANIX_API: Disparar cálculo de uso mensal
+    GRANIX_API->>DB: Consultar métricas por tenant/banco
+
+    Note right of DB: Famílias ativas<br/>Transações processadas<br/>Volume de interchange<br/>Assinaturas premium
+
+    DB-->>GRANIX_API: Métricas consolidadas do mês
+
+    GRANIX_API->>GRANIX_API: Calcular componentes da fatura
+
+    Note over GRANIX_API: 1. SaaS fee fixo (setup + plataforma)<br/>2. Fee por família ativa/mês<br/>3. Revenue share de interchange<br/>4. Split premium: 70% GRANIX / 30% banco
+
+    GRANIX_API->>BILLING: Gerar fatura consolidada
+
+    BILLING->>BANCO_BILLING: POST /billing/invoices<br/>{tenant_id, period, line_items[],<br/>total, due_date, payment_methods}
+
+    BANCO_BILLING-->>BILLING: 200 OK {invoice_id: INV-2026-04}
+
+    BANCO_BILLING->>BANCO_FIN: Fatura recebida para aprovação
+
+    alt Fatura aprovada
+        BANCO_FIN->>BANCO_BILLING: Aprovar pagamento
+        BANCO_BILLING->>BILLING: Pagamento via boleto/PIX/TED<br/>{invoice_id, payment_ref}
+        BILLING->>GRANIX_API: Confirmar recebimento
+        GRANIX_API->>DB: UPDATE invoice status = PAID
+        GRANIX_API->>DASHBOARD: Atualizar dashboard parceiro<br/>(receita, métricas, histórico)
+        GRANIX_API->>GRANIX_FIN: 🔔 Pagamento recebido — Banco X
+    else Fatura contestada
+        BANCO_FIN->>BILLING: Disputa {invoice_id, motivo}
+        BILLING->>GRANIX_FIN: 🚨 Fatura contestada — revisar
+    end
+
+    Note over GRANIX_FIN,BANCO_FIN: Reconciliação trimestral
+
+    GRANIX_FIN->>BANCO_FIN: Reunião de reconciliação Q1<br/>Métricas · Receita · Roadmap
+    BANCO_FIN-->>GRANIX_FIN: Feedback + projeções próximo trimestre
+
+    Note over GRANIX_API: Modelo de receita:<br/>• SaaS fee fixo mensal<br/>• R$ X por família ativa<br/>• % sobre interchange<br/>• Premium: 70% GRANIX / 30% banco
+```

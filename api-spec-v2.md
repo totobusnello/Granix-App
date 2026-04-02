@@ -19,8 +19,11 @@
 8. [Tarefas](#8-tarefas)
 9. [Metas](#9-metas)
 10. [Webhooks](#10-webhooks)
-11. [Rate Limiting](#11-rate-limiting)
-12. [Erros](#12-erros)
+11. [Confiabilidade de Webhooks](#11-confiabilidade-de-webhooks)
+12. [Fluxo de Status de Comandos Bancarios](#12-fluxo-de-status-de-comandos-bancarios)
+13. [Reconciliacao de Saldos](#13-reconciliacao-de-saldos)
+14. [Rate Limiting](#14-rate-limiting)
+15. [Erros](#15-erros)
 
 ---
 
@@ -135,6 +138,194 @@ GET  /bank-commands/{command_id}          # Status do comando
 }
 ```
 > O banco executa a transferência. A GRANIX registra o comando e atualiza o saldo virtual dos potes.
+
+---
+
+## 12. Fluxo de Status de Comandos Bancarios
+
+A GRANIX envia comandos ao banco parceiro e rastreia o ciclo de vida completo de cada comando. Esta secao detalha a maquina de estados, codigos de erro especificos e politicas de timeout/retry.
+
+### 12.1 Maquina de Estados
+
+```
+pending → processing → completed
+                    ↘ failed
+                    ↘ expired
+```
+
+| Status | Descricao |
+|--------|-----------|
+| `pending` | Comando criado, aguardando envio ao banco |
+| `processing` | Comando recebido pelo banco, em processamento |
+| `completed` | Banco confirmou execucao com sucesso |
+| `failed` | Banco rejeitou o comando (erro de negocio ou tecnico) |
+| `expired` | Banco nao respondeu dentro do prazo de 5 minutos |
+
+### 12.2 Consultar Status do Comando
+
+---
+
+#### GET /bank-commands/{command_id}
+
+Retorna o status atual de um comando enviado ao banco parceiro.
+
+**Request:**
+```http
+GET /v1/bank-commands/cmd_abc123def456
+Authorization: Bearer <access_token>
+X-Tenant-ID: bradesco-prod
+```
+
+**Response: 200 OK (comando em processamento)**
+```json
+{
+  "data": {
+    "command_id": "cmd_abc123def456",
+    "type": "ALLOWANCE_RELEASE",
+    "status": "processing",
+    "amount_cents": 5000,
+    "child_external_account_id": "banco_account_123",
+    "idempotency_key": "550e8400-e29b-41d4-a716-446655440000",
+    "created_at": "2026-01-30T10:00:00Z",
+    "updated_at": "2026-01-30T10:00:02Z",
+    "expires_at": "2026-01-30T10:05:00Z",
+    "metadata": {
+      "pot": "spending",
+      "reason": "weekly_allowance"
+    },
+    "timeline": [
+      {
+        "status": "pending",
+        "timestamp": "2026-01-30T10:00:00Z"
+      },
+      {
+        "status": "processing",
+        "timestamp": "2026-01-30T10:00:02Z",
+        "detail": "Comando recebido pelo banco"
+      }
+    ]
+  },
+  "links": {
+    "self": "/v1/bank-commands/cmd_abc123def456"
+  }
+}
+```
+
+**Response: 200 OK (comando concluido)**
+```json
+{
+  "data": {
+    "command_id": "cmd_abc123def456",
+    "type": "ALLOWANCE_RELEASE",
+    "status": "completed",
+    "amount_cents": 5000,
+    "child_external_account_id": "banco_account_123",
+    "idempotency_key": "550e8400-e29b-41d4-a716-446655440000",
+    "created_at": "2026-01-30T10:00:00Z",
+    "updated_at": "2026-01-30T10:00:08Z",
+    "completed_at": "2026-01-30T10:00:08Z",
+    "bank_reference_id": "bank_ref_789xyz",
+    "metadata": {
+      "pot": "spending",
+      "reason": "weekly_allowance"
+    },
+    "timeline": [
+      {
+        "status": "pending",
+        "timestamp": "2026-01-30T10:00:00Z"
+      },
+      {
+        "status": "processing",
+        "timestamp": "2026-01-30T10:00:02Z",
+        "detail": "Comando recebido pelo banco"
+      },
+      {
+        "status": "completed",
+        "timestamp": "2026-01-30T10:00:08Z",
+        "detail": "Transferencia confirmada pelo banco"
+      }
+    ]
+  },
+  "links": {
+    "self": "/v1/bank-commands/cmd_abc123def456",
+    "transaction": "/v1/transactions/txn_related_456"
+  }
+}
+```
+
+**Response: 200 OK (comando com falha)**
+```json
+{
+  "data": {
+    "command_id": "cmd_abc123def456",
+    "type": "ALLOWANCE_RELEASE",
+    "status": "failed",
+    "amount_cents": 5000,
+    "child_external_account_id": "banco_account_123",
+    "created_at": "2026-01-30T10:00:00Z",
+    "updated_at": "2026-01-30T10:00:05Z",
+    "failed_at": "2026-01-30T10:00:05Z",
+    "error": {
+      "code": "INSUFFICIENT_FUNDS",
+      "message": "Saldo insuficiente na conta de origem",
+      "retryable": false
+    },
+    "retry_info": {
+      "auto_retry": false,
+      "reason": "Erro de negocio nao permite retry automatico"
+    }
+  }
+}
+```
+
+---
+
+### 12.3 Codigos de Erro Bancarios
+
+| Codigo | HTTP | Descricao | Retry Automatico |
+|--------|------|-----------|-----------------|
+| `BANK_TIMEOUT` | 504 | Banco nao respondeu dentro do prazo | Sim (1x apos 30s) |
+| `INSUFFICIENT_FUNDS` | 422 | Saldo insuficiente na conta de origem | Nao |
+| `ACCOUNT_BLOCKED` | 422 | Conta do destinatario bloqueada ou inativa | Nao |
+| `INVALID_RECIPIENT` | 422 | Conta do destinatario nao encontrada ou invalida | Nao |
+| `COMPLIANCE_HOLD` | 422 | Operacao retida por compliance/prevencao a fraude | Nao |
+
+### 12.4 Politica de Timeout
+
+- Comandos que nao recebem callback do banco em **5 minutos** sao automaticamente marcados como `expired`
+- O job de expiracao roda a cada 30 segundos
+- Comandos expirados geram o evento de webhook `bank_command.expired`
+
+### 12.5 Politica de Retry
+
+| Cenario | Retry Automatico | Delay | Maximo de Tentativas |
+|---------|-----------------|-------|---------------------|
+| `BANK_TIMEOUT` | Sim | 30 segundos | 1 |
+| `INSUFFICIENT_FUNDS` | Nao | — | — |
+| `ACCOUNT_BLOCKED` | Nao | — | — |
+| `INVALID_RECIPIENT` | Nao | — | — |
+| `COMPLIANCE_HOLD` | Nao | — | — |
+
+> **Regra:** Apenas erros de timeout (`BANK_TIMEOUT`) recebem retry automatico. Erros de negocio nunca sao retentados automaticamente — o pai/responsavel deve ser notificado para tomar acao.
+
+**Response de comando em retry:**
+```json
+{
+  "data": {
+    "command_id": "cmd_abc123def456",
+    "status": "processing",
+    "retry_info": {
+      "auto_retry": true,
+      "attempt": 2,
+      "first_attempt_at": "2026-01-30T10:00:00Z",
+      "retry_at": "2026-01-30T10:00:30Z",
+      "reason": "BANK_TIMEOUT na primeira tentativa"
+    }
+  }
+}
+```
+
+---
 
 ## 2. Autenticacao
 
@@ -2940,9 +3131,399 @@ function verifyWebhookSignature(payload, signature, secret, timestamp) {
 
 ---
 
-## 11. Rate Limiting
+## 11. Confiabilidade de Webhooks
 
-### 11.1 Limites por Endpoint
+### 11.1 SLA de Entrega e Retentativas
+
+Todos os webhooks seguem uma politica de entrega com **3 tentativas** usando backoff exponencial:
+
+| Tentativa | Delay apos falha | Tempo acumulado |
+|-----------|------------------|-----------------|
+| 1a (original) | — | 0s |
+| 2a (retry 1) | 5 segundos | 5s |
+| 3a (retry 2) | 30 segundos | 35s |
+| 4a (retry 3) | 5 minutos | 5min 35s |
+
+**Criterios de falha:**
+- HTTP status >= 400
+- Timeout de conexao (10 segundos)
+- Timeout de resposta (30 segundos)
+- Erro de DNS ou SSL
+
+**Criterio de sucesso:** HTTP status 2xx recebido dentro do timeout.
+
+> **Nota:** O header `X-Webhook-Attempt` indica a tentativa atual (1 a 4). O campo `meta.attempt` no payload tambem reflete esse valor.
+
+### 11.2 Dead-Letter Queue (DLQ)
+
+Eventos que falham em todas as 4 tentativas (1 original + 3 retries) sao movidos para a Dead-Letter Queue. Eventos na DLQ sao retidos por **30 dias** antes de serem descartados.
+
+---
+
+#### GET /webhooks/dlq
+
+Listar eventos na Dead-Letter Queue.
+
+**Query Parameters:**
+
+| Parametro | Tipo | Descricao |
+|-----------|------|-----------|
+| `webhook_id` | string | Filtrar por webhook especifico |
+| `event_type` | string | Filtrar por tipo de evento |
+| `since` | datetime | Eventos apos esta data |
+| `cursor` | string | Cursor para paginacao |
+| `page_size` | integer | Itens por pagina (max 100, default 20) |
+
+**Response: 200 OK**
+```json
+{
+  "data": [
+    {
+      "dlq_entry_id": "dlq_abc123",
+      "event_id": "evt_txn_789",
+      "event_type": "transaction.created",
+      "webhook_id": "webhook_123",
+      "webhook_url": "https://myapp.com/webhooks/greenlight",
+      "original_timestamp": "2026-01-30T15:30:00Z",
+      "failed_at": "2026-01-30T15:36:00Z",
+      "attempts": 4,
+      "last_error": {
+        "http_status": 503,
+        "message": "Service Unavailable",
+        "response_body_preview": "Maintenance in progress"
+      },
+      "payload": {
+        "id": "evt_txn_789",
+        "type": "transaction.created",
+        "created_at": "2026-01-30T15:30:00Z",
+        "data": {
+          "transaction_id": "txn_abc789",
+          "account_id": "acc_child_abc",
+          "child_id": "usr_child_123",
+          "type": "purchase",
+          "amount": -15.90
+        }
+      },
+      "expires_at": "2026-03-01T15:36:00Z"
+    }
+  ],
+  "meta": {
+    "total_count": 3,
+    "page_size": 20,
+    "has_more": false
+  },
+  "links": {
+    "self": "/v1/webhooks/dlq?cursor=abc"
+  }
+}
+```
+
+---
+
+#### POST /webhooks/dlq/{event_id}/replay
+
+Reenviar um evento da Dead-Letter Queue. O evento sera entregue novamente seguindo o fluxo normal de retentativas.
+
+**Request:**
+```http
+POST /v1/webhooks/dlq/evt_txn_789/replay
+Authorization: Bearer <access_token>
+X-Tenant-ID: bradesco-prod
+```
+
+**Response: 202 Accepted**
+```json
+{
+  "data": {
+    "event_id": "evt_txn_789",
+    "replay_id": "replay_456def",
+    "status": "queued",
+    "original_event_type": "transaction.created",
+    "original_timestamp": "2026-01-30T15:30:00Z",
+    "replayed_at": "2026-01-31T09:00:00Z"
+  },
+  "meta": {
+    "message": "Evento re-enfileirado para entrega. Sera processado com a politica padrao de retentativas.",
+    "dlq_entry_removed": true
+  }
+}
+```
+
+**Response: 404 Not Found**
+```json
+{
+  "error": {
+    "code": "DLQ_EVENT_NOT_FOUND",
+    "message": "Evento nao encontrado na Dead-Letter Queue. Pode ja ter sido reenviado ou expirado.",
+    "details": {
+      "event_id": "evt_txn_789"
+    }
+  }
+}
+```
+
+---
+
+### 11.3 Health Check de Webhooks
+
+Endpoint que permite ao banco parceiro verificar se o receptor de webhooks da GRANIX esta operacional.
+
+---
+
+#### GET /webhooks/health
+
+**Request:**
+```http
+GET /v1/webhooks/health
+X-Tenant-ID: bradesco-prod
+```
+
+**Response: 200 OK**
+```json
+{
+  "data": {
+    "status": "healthy",
+    "uptime_percent_24h": 99.98,
+    "avg_processing_time_ms": 45,
+    "queue_depth": 12,
+    "last_event_received_at": "2026-01-30T15:30:00Z",
+    "last_event_processed_at": "2026-01-30T15:30:01Z"
+  }
+}
+```
+
+**Response: 503 Service Unavailable**
+```json
+{
+  "data": {
+    "status": "degraded",
+    "uptime_percent_24h": 98.50,
+    "avg_processing_time_ms": 2500,
+    "queue_depth": 1450,
+    "last_event_received_at": "2026-01-30T15:30:00Z",
+    "last_event_processed_at": "2026-01-30T15:25:00Z",
+    "issues": [
+      "Alta latencia no processamento de eventos",
+      "Fila de eventos acima do limite normal"
+    ]
+  }
+}
+```
+
+### 11.4 Monitoramento e Alertas
+
+| Metrica | Limiar | Acao |
+|---------|--------|------|
+| Taxa de sucesso de webhooks | < 99.5% em janela de 5 min | Alerta automatico para equipe de operacoes |
+| Profundidade da fila | > 500 eventos | Alerta de capacidade |
+| Latencia de processamento | > 5 segundos (p95) | Alerta de performance |
+| Eventos na DLQ | > 10 em 1 hora | Alerta de falhas recorrentes |
+
+> **Regra de escalacao:** Se a taxa de sucesso cair abaixo de 95% por mais de 15 minutos, o sistema aciona alerta critico com notificacao ao banco parceiro via email e SMS.
+
+---
+
+## 13. Reconciliacao de Saldos
+
+A GRANIX mantem potes virtuais como camada de organizacao sobre o saldo real na conta bancaria do filho. A reconciliacao garante que a soma dos potes virtuais corresponde ao saldo real reportado pelo banco.
+
+### 13.1 Reconciliacao Automatica
+
+- Executada **diariamente as 02:00 BRT** para todas as contas ativas
+- Compara a soma de todos os potes virtuais (`spend + save + give + invest`) com o saldo reportado pela API do banco
+- Resultados armazenados por 90 dias para auditoria
+
+### 13.2 Algoritmo de Reconciliacao
+
+```
+saldo_potes = sum(pot.balance for pot in child.pots)
+saldo_banco = bank_api.get_balance(child.external_account_id)
+divergencia = abs(saldo_potes - saldo_banco)
+
+se divergencia <= R$ 0.01:
+    status = "synced"  (tolerancia de arredondamento)
+se divergencia > R$ 0.01 e divergencia <= R$ 50.00:
+    status = "divergent"
+    acao = criar ticket para revisao manual
+se divergencia > R$ 50.00:
+    status = "divergent"
+    acao = alerta para operacoes + notificacao ao pai/responsavel
+```
+
+### 13.3 Trigger Manual de Reconciliacao
+
+---
+
+#### POST /reconciliation/trigger
+
+Disparar reconciliacao manualmente para uma conta de filho. Util apos falhas de processamento ou investigacao de divergencias.
+
+**Request:**
+```json
+{
+  "child_id": "usr_child_123",
+  "reason": "Pai reportou divergencia de saldo"
+}
+```
+
+**Response: 202 Accepted**
+```json
+{
+  "data": {
+    "reconciliation_id": "recon_abc123",
+    "child_id": "usr_child_123",
+    "status": "pending",
+    "triggered_by": "usr_abc123def456",
+    "triggered_at": "2026-01-30T14:00:00Z",
+    "reason": "Pai reportou divergencia de saldo",
+    "estimated_completion": "2026-01-30T14:00:30Z"
+  },
+  "meta": {
+    "message": "Reconciliacao iniciada. Consulte o status pelo endpoint GET /reconciliation/status/{child_id}."
+  }
+}
+```
+
+---
+
+### 13.4 Consultar Status de Reconciliacao
+
+---
+
+#### GET /reconciliation/status/{child_id}
+
+Retorna o resultado da ultima reconciliacao para a conta de um filho.
+
+**Request:**
+```http
+GET /v1/reconciliation/status/usr_child_123
+Authorization: Bearer <access_token>
+X-Tenant-ID: bradesco-prod
+```
+
+**Response: 200 OK (sincronizado)**
+```json
+{
+  "data": {
+    "reconciliation_id": "recon_abc123",
+    "child_id": "usr_child_123",
+    "child_name": "Pedro",
+    "status": "synced",
+    "bank_balance": 245.50,
+    "pots_total": 245.50,
+    "divergence": 0.00,
+    "last_synced_at": "2026-01-30T02:00:15Z",
+    "pots_breakdown": {
+      "spend": 120.00,
+      "save": 85.50,
+      "give": 20.00,
+      "invest": 20.00
+    },
+    "triggered_by": "system_daily",
+    "completed_at": "2026-01-30T02:00:15Z"
+  },
+  "links": {
+    "self": "/v1/reconciliation/status/usr_child_123",
+    "child": "/v1/users/me/children/usr_child_123",
+    "account": "/v1/accounts/acc_child_abc"
+  }
+}
+```
+
+**Response: 200 OK (divergente — divergencia pequena)**
+```json
+{
+  "data": {
+    "reconciliation_id": "recon_def456",
+    "child_id": "usr_child_123",
+    "child_name": "Pedro",
+    "status": "divergent",
+    "bank_balance": 245.50,
+    "pots_total": 245.23,
+    "divergence": 0.27,
+    "last_synced_at": "2026-01-30T02:00:15Z",
+    "pots_breakdown": {
+      "spend": 119.73,
+      "save": 85.50,
+      "give": 20.00,
+      "invest": 20.00
+    },
+    "triggered_by": "system_daily",
+    "completed_at": "2026-01-30T02:00:15Z",
+    "review": {
+      "ticket_id": "ticket_789",
+      "priority": "low",
+      "message": "Divergencia de R$ 0,27 detectada. Ticket criado para revisao manual."
+    }
+  }
+}
+```
+
+**Response: 200 OK (divergente — divergencia critica)**
+```json
+{
+  "data": {
+    "reconciliation_id": "recon_ghi789",
+    "child_id": "usr_child_123",
+    "child_name": "Pedro",
+    "status": "divergent",
+    "bank_balance": 245.50,
+    "pots_total": 180.00,
+    "divergence": 65.50,
+    "last_synced_at": "2026-01-30T02:00:15Z",
+    "pots_breakdown": {
+      "spend": 70.00,
+      "save": 75.00,
+      "give": 20.00,
+      "invest": 15.00
+    },
+    "triggered_by": "system_daily",
+    "completed_at": "2026-01-30T02:00:15Z",
+    "review": {
+      "ticket_id": "ticket_critical_456",
+      "priority": "critical",
+      "message": "Divergencia critica de R$ 65,50 detectada. Equipe de operacoes alertada. Notificacao enviada ao responsavel.",
+      "ops_alerted_at": "2026-01-30T02:00:16Z",
+      "parent_notified_at": "2026-01-30T02:00:16Z"
+    }
+  }
+}
+```
+
+**Response: 200 OK (reconciliacao pendente)**
+```json
+{
+  "data": {
+    "reconciliation_id": "recon_jkl012",
+    "child_id": "usr_child_123",
+    "child_name": "Pedro",
+    "status": "pending",
+    "bank_balance": null,
+    "pots_total": 245.50,
+    "divergence": null,
+    "last_synced_at": "2026-01-29T02:00:15Z",
+    "triggered_by": "manual",
+    "started_at": "2026-01-30T14:00:00Z"
+  },
+  "meta": {
+    "message": "Reconciliacao em andamento. Aguardando resposta do banco."
+  }
+}
+```
+
+### 13.5 Limites de Divergencia
+
+| Faixa de Divergencia | Status | Acao Automatica |
+|---------------------|--------|-----------------|
+| <= R$ 0,01 | `synced` | Nenhuma (tolerancia de arredondamento) |
+| > R$ 0,01 e <= R$ 50,00 | `divergent` | Ticket de revisao manual (prioridade baixa) |
+| > R$ 50,00 | `divergent` | Alerta para operacoes + notificacao ao pai/responsavel |
+
+---
+
+## 14. Rate Limiting
+
+### 14.1 Limites por Endpoint
 
 | Categoria | Limite | Janela | Burst |
 |-----------|--------|--------|-------|
@@ -2953,7 +3534,7 @@ function verifyWebhookSignature(payload, signature, secret, timestamp) {
 | **PIX** | 10 req | 1 min | 3 |
 | **Export** | 3 req | 1 dia | 1 |
 
-### 11.2 Headers de Rate Limit
+### 14.2 Headers de Rate Limit
 
 Todas as respostas incluem:
 
@@ -2964,7 +3545,7 @@ X-RateLimit-Reset: 1706634660
 X-RateLimit-Retry-After: 30
 ```
 
-### 11.3 Resposta de Rate Limit Excedido
+### 14.3 Resposta de Rate Limit Excedido
 
 **Response: 429 Too Many Requests**
 ```json
@@ -2986,9 +3567,9 @@ X-RateLimit-Retry-After: 30
 
 ---
 
-## 12. Erros
+## 15. Erros
 
-### 12.1 Formato Padrao de Erro
+### 15.1 Formato Padrao de Erro
 
 ```json
 {
@@ -3006,7 +3587,7 @@ X-RateLimit-Retry-After: 30
 }
 ```
 
-### 12.2 Codigos de Status HTTP
+### 15.2 Codigos de Status HTTP
 
 | Status | Significado | Uso |
 |--------|-------------|-----|
@@ -3024,7 +3605,7 @@ X-RateLimit-Retry-After: 30
 | 500 | Internal Error | Erro do servidor |
 | 503 | Service Unavailable | Manutencao |
 
-### 12.3 Catalogo de Erros
+### 15.3 Catalogo de Erros
 
 #### Erros de Autenticacao (AUTH_*)
 
@@ -3099,6 +3680,33 @@ X-RateLimit-Retry-After: 30
 | `USER_KYC_PENDING` | 422 | Verificacao de identidade pendente |
 | `USER_KYC_REJECTED` | 422 | Verificacao de identidade rejeitada |
 
+#### Erros de Comando Bancario (BANK_*)
+
+| Codigo | HTTP | Mensagem |
+|--------|------|----------|
+| `BANK_TIMEOUT` | 504 | Banco nao respondeu dentro do prazo |
+| `BANK_INSUFFICIENT_FUNDS` | 422 | Saldo insuficiente na conta de origem |
+| `BANK_ACCOUNT_BLOCKED` | 422 | Conta bloqueada ou inativa |
+| `BANK_INVALID_RECIPIENT` | 422 | Destinatario invalido ou nao encontrado |
+| `BANK_COMPLIANCE_HOLD` | 422 | Operacao retida por compliance |
+| `BANK_COMMAND_EXPIRED` | 422 | Comando expirou sem resposta do banco |
+| `BANK_COMMAND_NOT_FOUND` | 404 | Comando nao encontrado |
+
+#### Erros de Reconciliacao (RECON_*)
+
+| Codigo | HTTP | Mensagem |
+|--------|------|----------|
+| `RECON_ALREADY_RUNNING` | 409 | Reconciliacao ja em andamento para esta conta |
+| `RECON_BANK_UNAVAILABLE` | 503 | Banco indisponivel para consulta de saldo |
+| `RECON_CHILD_NOT_FOUND` | 404 | Conta de filho nao encontrada |
+
+#### Erros de Webhook DLQ (DLQ_*)
+
+| Codigo | HTTP | Mensagem |
+|--------|------|----------|
+| `DLQ_EVENT_NOT_FOUND` | 404 | Evento nao encontrado na Dead-Letter Queue |
+| `DLQ_REPLAY_FAILED` | 422 | Falha ao re-enfileirar evento |
+
 #### Erros de Permissao (PERMISSION_*)
 
 | Codigo | HTTP | Mensagem |
@@ -3108,7 +3716,7 @@ X-RateLimit-Retry-After: 30
 | `PERMISSION_OWNER_ONLY` | 403 | Acao permitida apenas para o proprietario |
 | `PERMISSION_CHILD_RESTRICTED` | 403 | Acao restrita para menores |
 
-### 12.4 Exemplo de Erro de Validacao
+### 15.4 Exemplo de Erro de Validacao
 
 **Response: 400 Bad Request**
 ```json
@@ -3142,7 +3750,7 @@ X-RateLimit-Retry-After: 30
 }
 ```
 
-### 12.5 Exemplo de Erro de Negocio
+### 15.5 Exemplo de Erro de Negocio
 
 **Response: 422 Unprocessable Entity**
 ```json
@@ -3233,6 +3841,18 @@ X-RateLimit-Retry-After: 30
 - `completed` - Concluida
 - `cancelled` - Cancelada
 
+### Status de Comando Bancario
+- `pending` - Aguardando envio ao banco
+- `processing` - Em processamento pelo banco
+- `completed` - Executado com sucesso
+- `failed` - Rejeitado pelo banco
+- `expired` - Sem resposta do banco (timeout de 5 min)
+
+### Status de Reconciliacao
+- `pending` - Em andamento
+- `synced` - Saldos conferem (divergencia <= R$ 0,01)
+- `divergent` - Divergencia detectada
+
 ### Status de Transacao
 - `pending` - Pendente
 - `pending_approval` - Aguardando aprovacao
@@ -3246,5 +3866,5 @@ X-RateLimit-Retry-After: 30
 
 **Fim do Documento**
 
-*Ultima atualizacao: Janeiro 2026*
+*Ultima atualizacao: Abril 2026*
 *Versao: 1.0.0*

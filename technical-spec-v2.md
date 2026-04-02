@@ -21,6 +21,8 @@
 9. [Segurança e Compliance](#9-segurança-e-compliance)
 10. [Infraestrutura e DevOps](#10-infraestrutura-e-devops)
 11. [Observabilidade](#11-observabilidade)
+12. [Billing e Revenue Share](#12-billing-e-revenue-share)
+13. [Resolução de Conflitos Offline](#13-resolução-de-conflitos-offline)
 
 ---
 
@@ -546,9 +548,201 @@ A GRANIX mantém um programa de Vulnerability Disclosure Policy (VDP) público e
 
 ---
 
+## 12. Billing e Revenue Share
+
+### 12.1 Ciclo de Faturamento
+
+O faturamento é mensal, com corte no último dia do mês e emissão da fatura em **D+5** (5 dias úteis após o encerramento do ciclo). O banco parceiro recebe a fatura via API e e-mail ao contato financeiro cadastrado.
+
+### 12.2 Componentes da Fatura
+
+Cada fatura é composta por três linhas:
+
+| Componente | Descrição | Exemplo |
+|-----------|-----------|---------|
+| **SaaS Fee (fixo)** | Valor mensal fixo contratado, independente de uso | R$ 15.000/mês |
+| **Per-Active-Family Fee** | Cobrança por família ativa no mês (família com >= 1 transação registrada no período) | R$ 2,50 × 4.200 famílias = R$ 10.500 |
+| **Interchange Share** | 0,25% do volume total de transações em cartão das famílias ativas | 0,25% × R$ 1.800.000 = R$ 4.500 |
+
+**Definição de "família ativa":** Família com pelo menos 1 transação (crédito ou débito em qualquer pote) registrada no mês-calendário.
+
+### 12.3 Revenue Share — Assinatura Premium
+
+Para famílias que contratam o plano premium (conteúdo educacional avançado, missões exclusivas, relatórios detalhados):
+
+| Parte | Percentual |
+|-------|-----------|
+| GRANIX | 70% |
+| Banco parceiro | 30% |
+
+> **Nota:** Modelo sugerido, a ser negociado individualmente com cada banco parceiro. O percentual pode variar conforme volume de famílias e exclusividade regional.
+
+### 12.4 API de Billing
+
+```
+POST   /api/v1/billing/invoices              # Gerar fatura do mês (job automático em D+5)
+GET    /api/v1/billing/invoices/{id}          # Detalhe de uma fatura específica
+GET    /api/v1/billing/summary/{month}        # Resumo do mês (ex: 2026-04)
+```
+
+**Payload de resposta — `GET /billing/summary/{month}`:**
+
+```json
+{
+  "month": "2026-04",
+  "tenant_id": "uuid-banco-parceiro",
+  "active_families": 4200,
+  "total_card_volume_cents": 180000000,
+  "saas_fee_cents": 1500000,
+  "per_family_fee_cents": 1050000,
+  "interchange_share_cents": 450000,
+  "premium_revenue_cents": 320000,
+  "premium_split_granix_cents": 224000,
+  "premium_split_bank_cents": 96000,
+  "invoice_total_cents": 3000000,
+  "status": "pending"
+}
+```
+
+### 12.5 Liquidação
+
+- **Prazo:** 15 dias úteis após emissão da fatura
+- **Meios de pagamento aceitos:** Boleto bancário, PIX (chave CNPJ) ou TED
+- **Atraso:** Juros de 1% a.m. + multa de 2% conforme contrato-padrão
+
+### 12.6 Reconciliação Trimestral
+
+A cada trimestre (janeiro, abril, julho, outubro), GRANIX e banco parceiro realizam uma reconciliação conjunta:
+
+1. **GRANIX exporta:** Relatório detalhado de famílias ativas, volume transacionado e receita premium por mês
+2. **Banco exporta:** Relatório de contas ativas, volume de cartão processado e receita de assinatura cobrada
+3. **Cruzamento:** Time financeiro GRANIX + time do banco verificam divergências
+4. **Ajuste:** Diferenças identificadas são compensadas na fatura do mês seguinte (crédito ou débito)
+5. **Assinatura:** Ata de reconciliação assinada por ambas as partes e armazenada por 5 anos
+
+### 12.7 Dashboard de Métricas para o Banco
+
+O Admin Dashboard (seção 1.2) expõe em tempo real as seguintes métricas ao banco parceiro:
+
+| Métrica | Granularidade | Atualização |
+|---------|--------------|-------------|
+| Famílias ativas | Diária | Tempo real (via webhook) |
+| Volume de transações (cartão + PIX) | Diária / Mensal | Batch diário (02h BRT) |
+| Churn rate | Mensal | D+1 do mês |
+| NPS | Mensal | Após coleta (push in-app) |
+| Receita premium acumulada | Mensal | Tempo real |
+| Engajamento médio (sessões/família) | Semanal | Batch semanal |
+
+---
+
+## 13. Resolução de Conflitos Offline
+
+### 13.1 Fila Offline no Dispositivo
+
+O app mobile (React Native) mantém uma fila local de mutações quando o dispositivo está sem conectividade:
+
+| Parâmetro | Valor |
+|-----------|-------|
+| Storage engine | MMKV (criptografado com chave derivada do device + user) |
+| TTL máximo | 24 horas — mutações expiradas são descartadas com notificação ao usuário |
+| Tamanho máximo da fila | 50 itens — ao atingir o limite, novas mutações são bloqueadas com aviso "Conecte-se à internet para continuar" |
+| Tipos de mutação suportados | Alocação de pote, aprovação/rejeição de tarefa, alteração de limite, criação de meta |
+
+### 13.2 Estratégia de Sincronização
+
+Quando o dispositivo recupera conectividade:
+
+```
+[1] App detecta rede disponível (NetInfo listener)
+         │
+         ▼
+[2] Validar TTL de cada item na fila
+    ├── Expirado (> 24h) → descartar + notificar usuário
+    └── Válido → continuar
+         │
+         ▼
+[3] Replay em ordem FIFO (First In, First Out)
+    ├── Cada mutação é enviada individualmente ao servidor
+    ├── Aguarda resposta (ACK ou REJECT) antes de enviar a próxima
+    └── Retry: até 3 tentativas com backoff exponencial (1s, 4s, 16s)
+         │
+         ▼
+[4] Resultado: mutação confirmada → remover da fila
+    Resultado: mutação rejeitada → rollback (seção 13.4)
+    Resultado: 3 falhas → pausar fila + notificar usuário
+```
+
+### 13.3 Regras de Resolução de Conflito
+
+Quando o estado do servidor diverge do estado assumido pelo cliente offline, aplicam-se as seguintes regras:
+
+| Cenário | Regra | Justificativa |
+|---------|-------|---------------|
+| **Pai alterou limite offline** vs **Filho gastou no mesmo período** | Limite do pai SEMPRE prevalece | Segurança primeiro — controle parental é inviolável |
+| **Pai aprovou tarefa offline** vs **Tarefa foi excluída no servidor** | Rejeitar aprovação; notificar pai que a tarefa não existe mais | Evitar crédito indevido em pote |
+| **Alocação de pote offline** vs **Saldo mudou enquanto offline** | Recalcular percentuais proporcionalmente ao novo saldo | Manter a intenção do usuário (proporção) sem ultrapassar saldo real |
+| **Conflito não-resolvível automaticamente** | Marcar como `conflict_pending_review`; enviar push notification ao pai | Pai é a autoridade final em qualquer disputa |
+
+**Exemplo de recálculo proporcional de potes:**
+
+```
+Offline: usuário alocou R$ 100 → Gastar 40%, Guardar 30%, Investir 20%, Doar 10%
+Servidor: saldo real agora é R$ 80 (houve débito enquanto offline)
+
+Recálculo:
+  Gastar:  80 × 0,40 = R$ 32
+  Guardar: 80 × 0,30 = R$ 24
+  Investir: 80 × 0,20 = R$ 16
+  Doar:    80 × 0,10 = R$ 8
+  SOMA = R$ 80 ✅
+```
+
+### 13.4 UI Otimista e Rollback
+
+**Indicadores visuais de estado pendente:**
+
+| Estado | Indicador Visual |
+|--------|-----------------|
+| Mutação na fila (aguardando sync) | Borda pontilhada + ícone de relógio (⏱) |
+| Sincronizando | Spinner + texto "Sincronizando..." |
+| Confirmado pelo servidor | Estado normal (borda sólida, sem ícone) |
+| Rejeitado pelo servidor | Borda vermelha + ícone de alerta (⚠) |
+
+**Fluxo de rollback (mutação rejeitada):**
+
+```
+[1] Servidor retorna REJECT com reason_code
+         │
+         ▼
+[2] App reverte o estado local para o valor pré-mutação
+    (snapshot salvo no MMKV antes de aplicar UI otimista)
+         │
+         ▼
+[3] Exibir notificação in-app ao usuário:
+    "Sua alteração em [nome da ação] não pôde ser aplicada: [motivo legível].
+     Os valores foram restaurados."
+         │
+         ▼
+[4] Registrar evento no analytics-service:
+    {event: "offline_mutation_rejected", reason_code, mutation_type, user_role}
+```
+
+**Reason codes padronizados:**
+
+| Código | Significado |
+|--------|------------|
+| `BALANCE_CHANGED` | Saldo real divergiu do esperado |
+| `ENTITY_DELETED` | Entidade referenciada não existe mais |
+| `LIMIT_OVERRIDE` | Limite parental foi alterado por outro dispositivo |
+| `TTL_EXPIRED` | Mutação expirou (> 24h) |
+| `VERSION_CONFLICT` | Optimistic locking falhou (version mismatch) |
+
+---
+
 ## Histórico de Versões
 
 | Versão | Data | Autor | Mudança |
 |--------|------|-------|---------|
 | 1.0 | Jan 2026 | Toto | Versão inicial (modelo B2C standalone) — **arquivada** |
 | 2.0 | Abr 2026 | Toto + Forge | Pivot para modelo B2B2C SaaS; potes virtuais; multi-tenant |
+| 2.1 | Abr 2026 | Toto + Claude | Adição: Billing e Revenue Share (seção 12); Resolução de Conflitos Offline (seção 13) |
