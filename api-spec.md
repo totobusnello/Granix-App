@@ -1,7 +1,8 @@
-# API REST Specification - Fintech Educacao Financeira Familiar
+# API REST Specification — GRANIX Platform v2.0
 
-> **Versao:** 1.0.0 | **Data:** Janeiro 2026
-> **Base URL:** `https://api.greenlightbrasil.com.br/v1`
+> **Versao:** 2.0.0 | **Data:** Abril 2026
+> **Substitui**: `docs/archive/pre-pivot/` (modelo B2C)
+> **Base URL:** `https://api.granix.com.br/v1`
 > **Formato:** OpenAPI 3.1 Style
 
 ---
@@ -11,7 +12,7 @@
 1. [Visao Geral](#1-visao-geral)
 2. [Autenticacao](#2-autenticacao)
 3. [Usuarios](#3-usuarios)
-4. [Contas e Baldes](#4-contas-e-baldes)
+4. [Potes Virtuais](#4-virtual-pots)
 5. [Cartoes](#5-cartoes)
 6. [Transacoes](#6-transacoes)
 7. [Mesada](#7-mesada)
@@ -40,6 +41,7 @@
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer <access_token>
+X-Tenant-ID: <bank_tenant_id>
 X-Device-ID: <device_uuid>
 X-Request-ID: <uuid>
 Accept-Language: pt-BR
@@ -87,6 +89,52 @@ X-Platform: ios|android|web      # Plataforma
 ```
 
 ---
+
+
+---
+
+## 1.6 Autenticação Multi-tenant
+
+Cada banco parceiro tem um `tenant_id` único. **Todas as requisições devem incluir:**
+
+```http
+X-Tenant-ID: bradesco-prod        # ID do banco parceiro
+```
+
+### Fluxo de autenticação
+1. Banco parceiro autentica via OAuth2 client_credentials → recebe `tenant_token`
+2. App da família autentica via SSO do banco → recebe `user_token` com `tenant_id` embutido
+3. Todas as queries são escoped por `tenant_id` automaticamente (row-level security)
+
+### Endpoints de configuração por tenant
+```
+GET  /tenants/{tenant_id}/config          # Configurações do banco (branding, features habilitadas)
+PUT  /tenants/{tenant_id}/config          # Atualizar configurações (admin banco)
+GET  /tenants/{tenant_id}/branding        # Assets de marca (logo, cores, tipografia)
+```
+
+---
+
+## 1.7 Orquestração de Comandos ao Banco
+
+A GRANIX **não executa operações financeiras diretamente**. Orquestra comandos via API do banco parceiro.
+
+```
+POST /bank-commands                       # Enviar comando ao banco (ex: autorizar mesada)
+GET  /bank-commands/{command_id}          # Status do comando
+```
+
+**Payload exemplo — liberar mesada:**
+```json
+{
+  type: ALLOWANCE_RELEASE,
+  amount_cents: 5000,
+  child_external_account_id: banco_account_123,
+  idempotency_key: uuid-v4,
+  metadata: { pot: spending, reason: weekly_allowance }
+}
+```
+> O banco executa a transferência. A GRANIX registra o comando e atualiza o saldo virtual dos potes.
 
 ## 2. Autenticacao
 
@@ -794,7 +842,7 @@ Resetar PIN do filho (apenas pai).
 
 ---
 
-## 4. Contas e Baldes
+## 4. Potes Virtuais
 
 ### 4.1 Endpoints de Conta
 

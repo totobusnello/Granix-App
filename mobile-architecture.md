@@ -1,6 +1,7 @@
-# Arquitetura Mobile - Greenlight Brasil
+# Arquitetura Mobile — GRANIX Platform v2.0
 
-> **Documento de Planejamento Tecnico** | Versao 1.0 | Janeiro 2026
+> **Documento de Planejamento Tecnico** | Versao 2.0 | Abril 2026
+> **Substitui**: `docs/archive/pre-pivot/` (modelo B2C standalone)
 >
 > **Projeto**: Apps Mobile de Educacao Financeira Familiar
 > **Stack**: React Native 0.76+
@@ -37,7 +38,7 @@
 |                         MONOREPO STRUCTURE                        |
 +------------------------------------------------------------------+
 |                                                                    |
-|  greenlight-brasil/                                               |
+|  granix/                                               |
 |  |                                                                 |
 |  +-- apps/                                                         |
 |  |   +-- parent-app/     # App do Pai (React Native)             |
@@ -103,6 +104,52 @@
 
 ---
 
+
+---
+
+## 1.5 Modos de Deploy — Multi-tenant B2B2C
+
+A GRANIX suporta 3 modelos de integração com o app do banco parceiro:
+
+### Modo A — WebView Embedada (MVP Rápido)
+```
+App do Banco
+  └── WebView → GRANIX Web App (branded por tenant)
+```
+- **Para:** Bancos tradicionais com app legado
+- **Prazo integração:** 2-3 semanas
+- **Limite:** UX parcialmente limitada, performance inferior
+
+### Modo B — White-label App (App Dedicado)
+```
+App GRANIX (white-label marca do banco)
+  └── SSO via banco → API GRANIX ↔ API Banco
+```
+- **Para:** Bancos que querem app dedicado para famílias
+- **Prazo integração:** 4-8 semanas (aprovação App Stores)
+- **Limite:** Requer manutenção de app extra pelo banco
+
+### Modo C ⭐ — SDK Nativo (Recomendado)
+```
+App do Banco (React Native / Flutter)
+  └── @granix/sdk → GRANIX Core Engine
+```
+- **Para:** Bancos com app moderno (React Native/Flutter)
+- **Prazo integração:** 3-5 dias (instalar SDK + config)
+- **Vantagem:** Experiência nativa completa, performance máxima, branding 100% do banco
+- **Como:** `npm install @granix/sdk` + `GranixProvider` no root do app
+
+### Multi-tenancy no App
+Cada banco configura via `/tenants/{id}/branding`:
+```typescript
+<GranixProvider
+  tenantId="bradesco-prod"
+  theme={bradescoBranding}   // cores, logo, tipografia
+  features={enabledFeatures} // potes, missoes, ai-coach
+/>
+```
+
+---
 ## 2. Estrutura de Pastas
 
 ### Estrutura do App (Parent e Child)
