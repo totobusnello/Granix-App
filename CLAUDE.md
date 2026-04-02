@@ -15,8 +15,9 @@ Plataforma B2B2C de educacao financeira familiar. GRANIX fornece SDK + AI Engine
 - **Revenue:** SaaS mensal para banco + revenue share em assinaturas premium
 - Revenue share entre GRANIX (70%) e IF (30%) — modelo sugerido, a ser negociado
 
-## Documentos Tecnicos v2.0 (na raiz)
+## Documentos Tecnicos v2.0
 
+Em `docs/specs/`:
 - `PRD-v2.md` — Product Requirements Document
 - `api-spec-v2.md` — API Specification
 - `technical-spec-v2.md` — Technical Specification
@@ -25,7 +26,8 @@ Plataforma B2B2C de educacao financeira familiar. GRANIX fornece SDK + AI Engine
 ## Estrutura da Pasta
 
 ```
-/                        Raiz: landing pages + docs tecnicos v2
+/                        Raiz: landing pages (index.html, teaser.html)
+docs/specs/              Documentacao tecnica v2.0 (PRD, API, tech spec, mobile arch)
 docs/decks/              Pitch decks e apresentacoes (HTML, PPTX, PDF)
 docs/arquitetura/        Diagramas C4/UML (PNG + PPTX) + flow diagrams (Mermaid)
 docs/estrategia/         Pivot strategy, roteiros, design docs

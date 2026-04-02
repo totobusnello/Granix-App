@@ -30,12 +30,12 @@ Granix-App/
 ├── index.html                       Landing page
 ├── teaser.html                      Teaser investidor
 │
-├── PRD-v2.md                        Product Requirements v2.0
-├── api-spec-v2.md                   API Specification v2.0
-├── mobile-architecture-v2.md        Mobile Architecture v2.0
-├── technical-spec-v2.md             Technical Spec v2.0
-│
 ├── docs/
+│   ├── specs/                       Documentacao tecnica v2.0
+│   │   ├── PRD-v2.md                Product Requirements
+│   │   ├── api-spec-v2.md           API Specification
+│   │   ├── technical-spec-v2.md     Technical Spec
+│   │   └── mobile-architecture-v2.md Mobile Architecture
 │   ├── decks/                       Pitch decks e apresentacoes
 │   ├── arquitetura/                 Diagramas C4/UML + flow diagrams
 │   ├── estrategia/                  Pivot strategy, roteiros, design docs
@@ -64,10 +64,10 @@ Granix-App/
 
 ## Documentacao Chave
 
-- [PRD v2.0](PRD-v2.md) — Product Requirements Document atualizado
-- [API Spec v2.0](api-spec-v2.md) — Especificacao de API
-- [Tech Spec v2.0](technical-spec-v2.md) — Especificacao tecnica
-- [Mobile Arch v2.0](mobile-architecture-v2.md) — Arquitetura mobile
+- [PRD v2.0](docs/specs/PRD-v2.md) — Product Requirements Document atualizado
+- [API Spec v2.0](docs/specs/api-spec-v2.md) — Especificacao de API
+- [Tech Spec v2.0](docs/specs/technical-spec-v2.md) — Especificacao tecnica
+- [Mobile Arch v2.0](docs/specs/mobile-architecture-v2.md) — Arquitetura mobile
 - [Pitch Partners](docs/decks/pitch-partners-v2.html) — Deck para IFs
 - [Jornada Trilha Broto](docs/decks/jornada-trilha-broto.html) — Experiencia interativa
 - [Arquitetura](docs/arquitetura/) — Diagramas C4 e fluxos
