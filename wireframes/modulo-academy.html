@@ -1,0 +1,2248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRANIX Academy — Wireframe Interativo</title>
+  <style>
+    /* ─── TOKENS ──────────────────────────────────────────────── */
+    :root {
+      --green:        #00C853;
+      --green-dark:   #00A844;
+      --green-xdark:  #1B5E20;
+      --green-light:  #E8F5E9;
+      --green-mid:    #66BB6A;
+      --blue:         #1A237E;
+      --blue-light:   #3949AB;
+      --blue-pale:    #E8EAF6;
+      --orange:       #FF6D00;
+      --orange-light: #FFF3E0;
+      --yellow:       #FFD600;
+      --yellow-light: #FFFDE7;
+      --red:          #F44336;
+      --red-light:    #FFEBEE;
+      --bg:           #F5F7FA;
+      --white:        #FFFFFF;
+      --text:         #1A1A2E;
+      --text-2:       #4A4A6A;
+      --text-3:       #8888AA;
+      --border:       #E2E4EF;
+      --shadow-sm:    0 2px 8px rgba(26,35,126,.07);
+      --shadow-md:    0 6px 24px rgba(26,35,126,.10);
+      --shadow-lg:    0 16px 48px rgba(26,35,126,.14);
+      --radius-sm:    10px;
+      --radius-md:    16px;
+      --radius-lg:    24px;
+      --radius-xl:    32px;
+    }
+
+    /* ─── RESET ───────────────────────────────────────────────── */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { font-size: 16px; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0F1220;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    /* ─── OUTER CHROME ────────────────────────────────────────── */
+    .page-header {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+    }
+    .page-header .logo {
+      font-family: 'Georgia', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: -0.5px;
+    }
+    .page-header .logo span { color: #fff; }
+    .page-header .label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    .screen-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 32px;
+      width: 100%;
+      max-width: 900px;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 100px;
+      border: 1.5px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { background: rgba(255,255,255,.12); color: rgba(255,255,255,.85); }
+    .tab-btn.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0,200,83,.4);
+    }
+
+    /* ─── PHONE FRAME ─────────────────────────────────────────── */
+    .phone-wrap {
+      position: relative;
+      width: 375px;
+      flex-shrink: 0;
+    }
+    .phone-frame {
+      width: 375px;
+      height: 812px;
+      background: #1A1B2E;
+      border-radius: 46px;
+      border: 2.5px solid rgba(255,255,255,.15);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,.6),
+        0 40px 80px rgba(0,0,0,.7),
+        inset 0 1px 0 rgba(255,255,255,.12);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* notch */
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 130px;
+      height: 34px;
+      background: #1A1B2E;
+      border-radius: 0 0 20px 20px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .notch-cam {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #0d0e1a;
+      border: 1.5px solid rgba(255,255,255,.1);
+    }
+    .notch-mic {
+      width: 40px; height: 4px;
+      border-radius: 2px;
+      background: #0d0e1a;
+    }
+
+    /* status bar */
+    .status-bar {
+      height: 44px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 24px 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,.9);
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+    .status-bar .time { font-variant-numeric: tabular-nums; }
+    .status-icons { display: flex; gap: 5px; align-items: center; }
+
+    /* scrollable content area */
+    .phone-content {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      position: relative;
+    }
+    .phone-content::-webkit-scrollbar { display: none; }
+
+    /* bottom nav */
+    .bottom-nav {
+      height: 72px;
+      background: var(--white);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: stretch;
+      flex-shrink: 0;
+      border-radius: 0 0 44px 44px;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      transition: all .2s;
+      padding-bottom: 8px;
+    }
+    .nav-item .nav-icon {
+      font-size: 20px;
+      line-height: 1;
+    }
+    .nav-item .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-3);
+    }
+    .nav-item.active .nav-label { color: var(--green); }
+    .nav-item.active .nav-icon { filter: none; }
+    .nav-dot {
+      width: 4px; height: 4px;
+      border-radius: 2px;
+      background: var(--green);
+      margin-top: 1px;
+    }
+
+    /* ─── SCREENS ─────────────────────────────────────────────── */
+    .screen {
+      display: none;
+      flex-direction: column;
+      min-height: 100%;
+      background: var(--bg);
+    }
+    .screen.active { display: flex; }
+
+    /* ─── SHARED COMPONENTS ───────────────────────────────────── */
+
+    /* Header */
+    .screen-header {
+      padding: 16px 20px 12px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+    }
+    .screen-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .back-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--text);
+      border: none;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    /* XP chip */
+    .xp-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--yellow-light);
+      border: 1.5px solid var(--yellow);
+      border-radius: 100px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #7A5700;
+    }
+
+    /* Progress bar */
+    .progress-bar-wrap {
+      background: var(--border);
+      border-radius: 100px;
+      height: 8px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--green), var(--green-dark));
+      transition: width .6s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    /* Section title */
+    .section-title {
+      font-family: 'Georgia', serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 10px;
+    }
+
+    /* Pill badge */
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-pill.green { background: var(--green-light); color: var(--green-dark); }
+    .badge-pill.orange { background: var(--orange-light); color: var(--orange); }
+    .badge-pill.blue { background: var(--blue-pale); color: var(--blue); }
+
+    /* Button */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 24px;
+      border-radius: var(--radius-md);
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(0,200,83,.35);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,200,83,.45); }
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-orange {
+      background: linear-gradient(135deg, var(--orange), #E65100);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(255,109,0,.35);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      text-decoration: underline;
+      font-size: 13px;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SCREEN 1 — ACADEMY HOME
+    ════════════════════════════════════════════════════════════ */
+    .home-hero {
+      background: linear-gradient(160deg, var(--blue) 0%, #2E3DA0 60%, #3949AB 100%);
+      padding: 20px 20px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .home-hero::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.04);
+    }
+    .home-hero::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -20px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: rgba(0,200,83,.08);
+    }
+    .greeting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .greeting-text h2 {
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      color: #fff;
+      font-weight: 700;
+    }
+    .greeting-text p {
+      font-size: 12px;
+      color: rgba(255,255,255,.6);
+      margin-top: 2px;
+    }
+    .avatar-wrap {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), #00E676);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      border: 2px solid rgba(255,255,255,.2);
+    }
+    .xp-streak-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .xp-stat {
+      flex: 1;
+      background: rgba(255,255,255,.1);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .xp-stat .stat-val {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      font-family: 'Georgia', serif;
+    }
+    .xp-stat .stat-label {
+      font-size: 10px;
+      color: rgba(255,255,255,.55);
+      margin-top: 2px;
+    }
+    .xp-stat .stat-icon { font-size: 18px; }
+    .streak-fire { font-size: 18px; }
+
+    .trilha-progress {
+      background: rgba(255,255,255,.08);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .trilha-progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .trilha-progress-row span:first-child {
+      font-size: 12px; font-weight: 600; color: rgba(255,255,255,.85);
+    }
+    .trilha-progress-row span:last-child {
+      font-size: 12px; font-weight: 700; color: var(--green);
+    }
+    .progress-bar-wrap.white { background: rgba(255,255,255,.15); }
+
+    .home-body { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* Daily lesson card */
+    .daily-lesson-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      cursor: pointer;
+      transition: transform .2s;
+    }
+    .daily-lesson-card:hover { transform: scale(1.01); }
+    .daily-lesson-illus {
+      height: 140px;
+      background: linear-gradient(135deg, #43A047 0%, #00C853 50%, #69F0AE 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .daily-lesson-illus::before {
+      content: '';
+      position: absolute;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+      top: -60px; right: -60px;
+    }
+    .illus-coin {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.15);
+      border: 3px solid rgba(255,255,255,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px;
+    }
+    .daily-tag {
+      position: absolute;
+      top: 12px; left: 12px;
+      background: rgba(255,255,255,.25);
+      backdrop-filter: blur(8px);
+      border-radius: 100px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+    .daily-lesson-info {
+      padding: 14px 16px;
+    }
+    .daily-lesson-info h3 {
+      font-family: 'Georgia', serif;
+      font-size: 16px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .daily-lesson-info p {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 1.5;
+    }
+    .daily-lesson-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Streak badge */
+    .streak-badge {
+      background: linear-gradient(135deg, #FF6D00, #FF8F00);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 16px rgba(255,109,0,.3);
+    }
+    .streak-badge .fire-big { font-size: 32px; }
+    .streak-text h4 { font-size: 16px; font-weight: 800; color: #fff; }
+    .streak-text p { font-size: 11px; color: rgba(255,255,255,.75); margin-top: 2px; }
+
+    /* Track mini cards */
+    .tracks-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .tracks-scroll::-webkit-scrollbar { display: none; }
+    .track-mini {
+      flex-shrink: 0;
+      width: 140px;
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 14px 12px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all .2s;
+      position: relative;
+    }
+    .track-mini.active { border-color: var(--green); }
+    .track-mini.locked { opacity: .6; }
+    .track-mini-icon { font-size: 28px; margin-bottom: 8px; }
+    .track-mini h4 { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .track-mini p { font-size: 10px; color: var(--text-3); }
+    .track-mini .mini-prog {
+      margin-top: 8px;
+    }
+    .lock-overlay {
+      position: absolute;
+      top: 8px; right: 8px;
+      font-size: 14px;
+    }
+
+    /* Challenge banner */
+    .challenge-banner {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .challenge-icon { font-size: 32px; }
+    .challenge-text h4 { font-size: 13px; font-weight: 700; color: #fff; }
+    .challenge-text p { font-size: 11px; color: rgba(255,255,255,.65); margin-top: 2px; }
+    .challenge-cta {
+      margin-left: auto;
+      background: rgba(255,255,255,.15);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SCREEN 2 — TRILHAS
+    ════════════════════════════════════════════════════════════ */
+    .trilhas-header {
+      background: linear-gradient(160deg, var(--blue) 0%, #2E3DA0 100%);
+      padding: 20px 20px 24px;
+    }
+    .trilhas-header h2 {
+      font-family: 'Georgia', serif;
+      font-size: 22px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .trilhas-header p { font-size: 13px; color: rgba(255,255,255,.6); }
+
+    .trilhas-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+    .trilha-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: transform .2s;
+    }
+    .trilha-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .trilha-card.locked { opacity: .75; }
+
+    .trilha-card-header {
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .trilha-badge {
+      width: 56px; height: 56px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px;
+      flex-shrink: 0;
+    }
+    .trilha-badge.semente { background: linear-gradient(135deg, #C8E6C9, #A5D6A7); }
+    .trilha-badge.broto   { background: linear-gradient(135deg, #81C784, #4CAF50); }
+    .trilha-badge.arvore  { background: linear-gradient(135deg, #388E3C, #1B5E20); }
+    .trilha-badge.floresta{ background: linear-gradient(135deg, #1B5E20, #0A2E0A); }
+
+    .trilha-info { flex: 1; }
+    .trilha-info h3 {
+      font-family: 'Georgia', serif;
+      font-size: 16px;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .trilha-info .age-tag {
+      font-size: 11px; color: var(--text-3); margin-bottom: 6px;
+    }
+    .trilha-status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 100px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .trilha-status-chip.completa { background: var(--green-light); color: var(--green-dark); }
+    .trilha-status-chip.ativa    { background: #FFF8E1; color: #F57F17; }
+    .trilha-status-chip.bloqueada{ background: #F5F5F5; color: #9E9E9E; }
+
+    .trilha-card-lessons {
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .lesson-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .lesson-dot {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .lesson-dot.done  { background: var(--green); color: #fff; }
+    .lesson-dot.curr  { background: var(--orange); color: #fff; }
+    .lesson-dot.todo  { background: var(--border); color: var(--text-3); }
+    .lesson-dot.lock  { background: #E0E0E0; color: #BDBDBD; }
+    .lesson-row span { font-size: 13px; color: var(--text-2); }
+    .lesson-row span.done-text { text-decoration: line-through; color: var(--text-3); }
+
+    .trilha-card-footer {
+      padding: 12px 16px;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .trilha-card-footer .prog-text { font-size: 12px; color: var(--text-3); }
+    .trilha-card-footer .prog-val  { font-size: 12px; font-weight: 700; color: var(--green); }
+
+    /* ════════════════════════════════════════════════════════════
+       SCREEN 3 — LICAO
+    ════════════════════════════════════════════════════════════ */
+    .licao-header {
+      background: var(--white);
+      padding: 12px 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .licao-header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .licao-steps {
+      display: flex;
+      gap: 5px;
+      padding-bottom: 12px;
+    }
+    .step-dot {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      transition: background .3s;
+    }
+    .step-dot.done { background: var(--green); }
+    .step-dot.curr { background: var(--orange); }
+
+    .licao-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .licao-illus {
+      height: 180px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 50%, #90CAF9 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .licao-illus::before {
+      content: '';
+      position: absolute;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.4);
+      top: -80px; right: -60px;
+    }
+    .licao-illus-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      z-index: 1;
+    }
+    .licao-illus-main { font-size: 64px; }
+    .licao-illus-caption {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(26,35,126,.5);
+      letter-spacing: .5px;
+    }
+
+    .licao-text-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .licao-text-card h3 {
+      font-family: 'Georgia', serif;
+      font-size: 17px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .licao-text-card p {
+      font-size: 14px;
+      color: var(--text-2);
+      line-height: 1.6;
+    }
+    .licao-text-card p strong { color: var(--green-dark); }
+
+    .licao-interactive {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--orange);
+    }
+    .licao-interactive h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--orange);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .licao-interactive p {
+      font-size: 14px;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .calc-result {
+      background: var(--green-light);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .calc-result .result-val {
+      font-family: 'Georgia', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--green-dark);
+    }
+    .calc-result .result-label { font-size: 12px; color: var(--green-dark); opacity: .7; }
+
+    /* slider */
+    .slider-wrap { margin: 8px 0; }
+    .slider-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-3);
+      margin-bottom: 6px;
+    }
+    input[type="range"] {
+      width: 100%;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--green) 50%, var(--border) 50%);
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--green);
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,200,83,.4);
+      cursor: pointer;
+    }
+
+    .licao-footer {
+      padding: 0 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .xp-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SCREEN 4 — QUIZ
+    ════════════════════════════════════════════════════════════ */
+    .quiz-header {
+      background: var(--white);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .quiz-timer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .timer-circle {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: conic-gradient(var(--orange) 0deg, var(--orange) 216deg, var(--border) 216deg);
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .timer-circle::after {
+      content: '';
+      position: absolute;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: white;
+    }
+    .timer-num {
+      position: relative;
+      z-index: 1;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--orange);
+    }
+    .quiz-progress-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .quiz-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: all .2s;
+    }
+    .quiz-dot.done  { background: var(--green); }
+    .quiz-dot.curr  { background: var(--orange); width: 20px; border-radius: 4px; }
+
+    .quiz-body { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+    .quiz-question-card {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .quiz-question-card::before {
+      content: '';
+      position: absolute;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.05);
+      top: -40px; right: -20px;
+    }
+    .quiz-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,.55);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .quiz-question-card h3 {
+      font-family: 'Georgia', serif;
+      font-size: 17px;
+      color: #fff;
+      line-height: 1.4;
+    }
+
+    .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-option {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      border: 2px solid var(--border);
+      transition: all .2s;
+      box-shadow: var(--shadow-sm);
+    }
+    .quiz-option:hover { border-color: var(--blue-light); transform: translateX(2px); }
+    .quiz-option.correct { border-color: var(--green); background: var(--green-light); }
+    .quiz-option.wrong   { border-color: var(--red); background: var(--red-light); }
+    .quiz-option.selected-wrong { border-color: var(--red); background: var(--red-light); }
+
+    .option-letter {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text-2);
+      flex-shrink: 0;
+      transition: all .2s;
+    }
+    .quiz-option.correct .option-letter { background: var(--green); color: #fff; }
+    .quiz-option.wrong   .option-letter { background: var(--red); color: #fff; }
+    .option-text { font-size: 15px; font-weight: 600; color: var(--text); }
+    .quiz-option.correct .option-text { color: var(--green-dark); }
+    .quiz-option.wrong   .option-text { color: var(--red); }
+
+    .quiz-feedback {
+      background: var(--green-light);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      border: 1.5px solid var(--green);
+      display: none;
+    }
+    .quiz-feedback.show { display: flex; }
+    .quiz-feedback.wrong-fb { background: var(--red-light); border-color: var(--red); }
+    .quiz-feedback .fb-icon { font-size: 20px; flex-shrink: 0; }
+    .quiz-feedback p { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+    .quiz-feedback strong { color: var(--text); }
+
+    /* ════════════════════════════════════════════════════════════
+       SCREEN 5 — LESSON COMPLETE
+    ════════════════════════════════════════════════════════════ */
+    .complete-screen {
+      background: linear-gradient(180deg, var(--blue) 0%, #1E2A80 40%, var(--bg) 40%);
+    }
+    .confetti-area {
+      height: 260px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* confetti dots */
+    .confetti-dot {
+      position: absolute;
+      border-radius: 3px;
+      animation: confettiFall 3s ease-in infinite;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(300px) rotate(720deg); opacity: 0; }
+    }
+    .trophy-wrap {
+      animation: trophyBounce 1s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes trophyBounce {
+      0%   { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .trophy-circle {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FFD600, #FF8F00);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 52px;
+      box-shadow: 0 12px 40px rgba(255,214,0,.5);
+      border: 3px solid rgba(255,255,255,.3);
+      animation: glowPulse 2s ease-in-out infinite 1s;
+    }
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 12px 40px rgba(255,214,0,.5); }
+      50%       { box-shadow: 0 12px 60px rgba(255,214,0,.8); }
+    }
+    .confetti-area h2 {
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      color: #fff;
+      margin-top: 16px;
+      text-align: center;
+    }
+    .confetti-area p {
+      font-size: 13px;
+      color: rgba(255,255,255,.65);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    .complete-body {
+      padding: 0 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: -20px;
+    }
+    .reward-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .reward-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .reward-row:last-child { padding-bottom: 0; border-bottom: none; }
+    .reward-icon {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+    .reward-icon.xp-icon { background: var(--yellow-light); }
+    .reward-icon.badge-icon { background: #F3E5F5; }
+    .reward-text h4 { font-size: 14px; font-weight: 700; color: var(--text); }
+    .reward-text p  { font-size: 12px; color: var(--text-3); margin-top: 1px; }
+    .reward-val {
+      margin-left: auto;
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .challenge-card {
+      background: var(--orange-light);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      border: 1.5px solid rgba(255,109,0,.2);
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .challenge-card .c-icon { font-size: 28px; flex-shrink: 0; }
+    .challenge-card h4 { font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 4px; }
+    .challenge-card p { font-size: 13px; color: var(--text-2); line-height: 1.5; }
+
+    .share-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-2);
+      cursor: pointer;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SCREEN 6 — SIMULADOR
+    ════════════════════════════════════════════════════════════ */
+    .sim-header {
+      background: linear-gradient(160deg, #1B5E20 0%, #2E7D32 100%);
+      padding: 20px 20px 24px;
+    }
+    .sim-header h2 {
+      font-family: 'Georgia', serif;
+      font-size: 20px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .sim-header p { font-size: 13px; color: rgba(255,255,255,.6); }
+
+    .sim-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+    .sim-inputs {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .sim-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--text-3);
+      margin-bottom: 6px;
+    }
+    .sim-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+    }
+    .sim-input-wrap:focus-within { border-color: var(--green); }
+    .sim-currency { font-size: 14px; font-weight: 700; color: var(--green); }
+    .sim-input-wrap input[type="text"],
+    .sim-input-wrap input[type="number"] {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      outline: none;
+    }
+
+    /* Chart */
+    .sim-chart {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .chart-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 14px;
+    }
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      height: 120px;
+      padding-bottom: 20px;
+      position: relative;
+    }
+    .bar-chart::after {
+      content: '';
+      position: absolute;
+      bottom: 20px; left: 0; right: 0;
+      height: 1px;
+      background: var(--border);
+    }
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .bar-fill {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      transition: height .5s cubic-bezier(.34,1.56,.64,1);
+      position: relative;
+    }
+    .bar-fill.principal { background: var(--blue-pale); }
+    .bar-fill.rendimento { background: linear-gradient(180deg, var(--green), var(--green-dark)); }
+    .bar-label {
+      font-size: 8px;
+      color: var(--text-3);
+      text-align: center;
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+      justify-content: center;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--text-3);
+    }
+    .legend-dot {
+      width: 8px; height: 8px;
+      border-radius: 2px;
+    }
+
+    .sim-result {
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .sim-result::before {
+      content: '';
+      position: absolute;
+      width: 150px; height: 150px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.07);
+      top: -50px; right: -50px;
+    }
+    .sim-result .result-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,.65);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .sim-result .result-amount {
+      font-family: 'Georgia', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .sim-result .result-breakdown {
+      font-size: 12px;
+      color: rgba(255,255,255,.65);
+      margin-top: 6px;
+    }
+    .sim-result .result-period {
+      display: inline-block;
+      margin-top: 10px;
+      background: rgba(255,255,255,.15);
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .sim-cta {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .xp-logo-small {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #1A1A1A, #3A3A3A);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      color: #FF6B00;
+      flex-shrink: 0;
+      letter-spacing: -1px;
+    }
+    .sim-cta-text h4 { font-size: 13px; font-weight: 700; color: var(--text); }
+    .sim-cta-text p  { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+    .sim-cta-arrow {
+      margin-left: auto;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    /* ─── ANIMATIONS ──────────────────────────────────────────── */
+    @keyframes slideUp {
+      from { transform: translateY(16px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .screen.active > * {
+      animation: slideUp .35s ease both;
+    }
+    .screen.active > *:nth-child(2) { animation-delay: .05s; }
+    .screen.active > *:nth-child(3) { animation-delay: .10s; }
+    .screen.active > *:nth-child(4) { animation-delay: .15s; }
+
+    /* ─── FOOTER LABEL ────────────────────────────────────────── */
+    .page-footer {
+      margin-top: 32px;
+      font-size: 11px;
+      color: rgba(255,255,255,.2);
+      text-align: center;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── PAGE CHROME ──────────────────────────────────────────── -->
+<header class="page-header">
+  <div class="logo">GRAN<span>IX</span></div>
+  <div class="label">Academy Module · Wireframe Interativo</div>
+</header>
+
+<!-- ─── SCREEN TABS ──────────────────────────────────────────── -->
+<nav class="screen-tabs">
+  <button class="tab-btn active" onclick="goTo('home')">1 · Home</button>
+  <button class="tab-btn" onclick="goTo('trilhas')">2 · Trilhas</button>
+  <button class="tab-btn" onclick="goTo('licao')">3 · Licao</button>
+  <button class="tab-btn" onclick="goTo('quiz')">4 · Quiz</button>
+  <button class="tab-btn" onclick="goTo('complete')">5 · Completo</button>
+  <button class="tab-btn" onclick="goTo('simulador')">6 · Simulador</button>
+</nav>
+
+<!-- ─── PHONE FRAME ──────────────────────────────────────────── -->
+<div class="phone-wrap">
+  <div class="phone-frame">
+
+    <!-- notch -->
+    <div class="phone-notch">
+      <div class="notch-mic"></div>
+      <div class="notch-cam"></div>
+    </div>
+
+    <!-- status bar -->
+    <div class="status-bar">
+      <span class="time">9:41</span>
+      <div class="status-icons">
+        <span>●●●</span>
+        <span>WiFi</span>
+        <span>▮▮▯</span>
+      </div>
+    </div>
+
+    <!-- ── SCROLLABLE CONTENT ── -->
+    <div class="phone-content" id="phoneContent">
+
+      <!-- ════ SCREEN 1: HOME ════ -->
+      <div class="screen active" id="screen-home">
+
+        <!-- Hero -->
+        <div class="home-hero">
+          <div class="greeting-row">
+            <div class="greeting-text">
+              <h2>Ola, Miguel! 👋</h2>
+              <p>Nivel Broto · Continue aprendendo</p>
+            </div>
+            <div class="avatar-wrap">🌿</div>
+          </div>
+
+          <div class="xp-streak-row">
+            <div class="xp-stat">
+              <div class="stat-icon">⭐</div>
+              <div class="stat-val">1.250</div>
+              <div class="stat-label">XP Points</div>
+            </div>
+            <div class="xp-stat">
+              <div class="stat-icon">🔥</div>
+              <div class="stat-val">7 dias</div>
+              <div class="stat-label">Sequencia</div>
+            </div>
+            <div class="xp-stat">
+              <div class="stat-icon">🏅</div>
+              <div class="stat-val">5</div>
+              <div class="stat-label">Badges</div>
+            </div>
+          </div>
+
+          <div class="trilha-progress">
+            <div class="trilha-progress-row">
+              <span>Trilha Broto</span>
+              <span>65% completa</span>
+            </div>
+            <div class="progress-bar-wrap white">
+              <div class="progress-bar-fill" style="width:65%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="home-body">
+
+          <!-- Streak banner -->
+          <div class="streak-badge">
+            <div class="fire-big">🔥</div>
+            <div class="streak-text">
+              <h4>7 dias seguidos aprendendo!</h4>
+              <p>Mantenha a sequencia para ganhar bonus</p>
+            </div>
+          </div>
+
+          <!-- Daily lesson -->
+          <div>
+            <div class="section-title">Licao do Dia</div>
+            <div class="daily-lesson-card" onclick="goTo('licao')">
+              <div class="daily-lesson-illus">
+                <div class="daily-tag">HOJE</div>
+                <div class="illus-coin">💰</div>
+              </div>
+              <div class="daily-lesson-info">
+                <h3>Poupanca Inteligente</h3>
+                <p>Aprenda como guardar dinheiro de forma inteligente e ver ele crescer com o tempo.</p>
+              </div>
+              <div class="daily-lesson-footer">
+                <span class="badge-pill orange">Trilha Broto · Licao 3</span>
+                <span class="xp-chip">⭐ +50 XP</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tracks -->
+          <div>
+            <div class="section-title">Suas Trilhas</div>
+            <div class="tracks-scroll">
+
+              <div class="track-mini" onclick="goTo('trilhas')">
+                <div class="track-mini-icon">🌱</div>
+                <h4>Semente</h4>
+                <p>6–8 anos</p>
+                <div class="mini-prog">
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width:100%"></div>
+                  </div>
+                </div>
+                <div style="margin-top:4px; font-size:10px; color:var(--green); font-weight:700;">✓ Concluida</div>
+              </div>
+
+              <div class="track-mini active" onclick="goTo('trilhas')">
+                <div class="track-mini-icon">🌿</div>
+                <h4>Broto</h4>
+                <p>9–11 anos</p>
+                <div class="mini-prog">
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width:65%"></div>
+                  </div>
+                </div>
+                <div style="margin-top:4px; font-size:10px; color:var(--orange); font-weight:700;">Em andamento</div>
+              </div>
+
+              <div class="track-mini locked">
+                <div class="lock-overlay">🔒</div>
+                <div class="track-mini-icon">🌳</div>
+                <h4>Arvore</h4>
+                <p>12–14 anos</p>
+                <div class="mini-prog">
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width:0%"></div>
+                  </div>
+                </div>
+                <div style="margin-top:4px; font-size:10px; color:var(--text-3); font-weight:700;">Bloqueada</div>
+              </div>
+
+              <div class="track-mini locked">
+                <div class="lock-overlay">🔒</div>
+                <div class="track-mini-icon">🌲</div>
+                <h4>Floresta</h4>
+                <p>15–17 anos</p>
+                <div class="mini-prog">
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width:0%"></div>
+                  </div>
+                </div>
+                <div style="margin-top:4px; font-size:10px; color:var(--text-3); font-weight:700;">Bloqueada</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Challenge -->
+          <div class="challenge-banner">
+            <div class="challenge-icon">🎯</div>
+            <div class="challenge-text">
+              <h4>Desafio da Semana</h4>
+              <p>Guarde R$10 no bucket Guardar</p>
+            </div>
+            <div class="challenge-cta">Ver</div>
+          </div>
+
+          <div style="height: 8px;"></div>
+
+        </div>
+      </div>
+      <!-- /screen-home -->
+
+
+      <!-- ════ SCREEN 2: TRILHAS ════ -->
+      <div class="screen" id="screen-trilhas">
+
+        <div class="trilhas-header">
+          <h2>Trilhas de Aprendizado</h2>
+          <p>Conteudo alinhado com a BNCC · XP Investimentos</p>
+        </div>
+
+        <div class="trilhas-body">
+
+          <!-- SEMENTE -->
+          <div class="trilha-card">
+            <div class="trilha-card-header">
+              <div class="trilha-badge semente">🌱</div>
+              <div class="trilha-info">
+                <h3>Semente</h3>
+                <div class="age-tag">6–8 anos</div>
+                <span class="trilha-status-chip completa">✓ Concluida</span>
+              </div>
+              <div class="xp-chip">⭐ 150 XP</div>
+            </div>
+            <div class="trilha-card-lessons">
+              <div class="lesson-row">
+                <div class="lesson-dot done">✓</div>
+                <span class="done-text">O que e dinheiro?</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-dot done">✓</div>
+                <span class="done-text">Trocar e legal</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-dot done">✓</div>
+                <span class="done-text">Meu primeiro cofrinho</span>
+              </div>
+            </div>
+            <div class="trilha-card-footer">
+              <span class="prog-text">3 de 3 licoes concluidas</span>
+              <span class="prog-val">100%</span>
+            </div>
+          </div>
+
+          <!-- BROTO -->
+          <div class="trilha-card" onclick="goTo('licao')">
+            <div class="trilha-card-header">
+              <div class="trilha-badge broto">🌿</div>
+              <div class="trilha-info">
+                <h3>Broto</h3>
+                <div class="age-tag">9–11 anos · Trilha Atual</div>
+                <span class="trilha-status-chip ativa">▶ Em andamento</span>
+              </div>
+              <div class="xp-chip">⭐ 250 XP</div>
+            </div>
+            <div class="trilha-card-lessons">
+              <div class="lesson-row">
+                <div class="lesson-dot done">✓</div>
+                <span class="done-text">Objetivos financeiros</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-dot done">✓</div>
+                <span class="done-text">Comparando precos</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-dot curr">▶</div>
+                <span style="font-weight:700; color:var(--text);">Poupanca inteligente</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-dot todo">4</div>
+                <span>Quero vs Preciso</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-dot todo">5</div>
+                <span>Meu plano de poupanca</span>
+              </div>
+            </div>
+            <div class="trilha-card-footer">
+              <span class="prog-text">2 de 5 licoes concluidas</span>
+              <span class="prog-val">40%</span>
+            </div>
+          </div>
+
+          <!-- ARVORE -->
+          <div class="trilha-card locked">
+            <div class="trilha-card-header">
+              <div class="trilha-badge arvore">🌳</div>
+              <div class="trilha-info">
+                <h3>Arvore</h3>
+                <div class="age-tag">12–14 anos</div>
+                <span class="trilha-status-chip bloqueada">🔒 Bloqueada</span>
+              </div>
+            </div>
+            <div class="trilha-card-lessons">
+              <div class="lesson-row">
+                <div class="lesson-dot lock">🔒</div>
+                <span style="color:var(--text-3);">Juros compostos</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-dot lock">🔒</div>
+                <span style="color:var(--text-3);">Meu primeiro investimento</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-dot lock">🔒</div>
+                <span style="color:var(--text-3);">Orcamento pessoal</span>
+              </div>
+            </div>
+            <div class="trilha-card-footer">
+              <span class="prog-text">Conclua Broto para desbloquear</span>
+              <span class="prog-val" style="color:var(--text-3);">0%</span>
+            </div>
+          </div>
+
+          <!-- FLORESTA -->
+          <div class="trilha-card locked">
+            <div class="trilha-card-header">
+              <div class="trilha-badge floresta">🌲</div>
+              <div class="trilha-info">
+                <h3>Floresta</h3>
+                <div class="age-tag">15–17 anos</div>
+                <span class="trilha-status-chip bloqueada">🔒 Bloqueada</span>
+              </div>
+            </div>
+            <div class="trilha-card-lessons">
+              <div class="lesson-row">
+                <div class="lesson-dot lock">🔒</div>
+                <span style="color:var(--text-3);">Mercado financeiro</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-dot lock">🔒</div>
+                <span style="color:var(--text-3);">Empreendedorismo</span>
+              </div>
+              <div class="lesson-row">
+                <div class="lesson-dot lock">🔒</div>
+                <span style="color:var(--text-3);">Planejamento de vida</span>
+              </div>
+            </div>
+            <div class="trilha-card-footer">
+              <span class="prog-text">Conclua Arvore para desbloquear</span>
+              <span class="prog-val" style="color:var(--text-3);">0%</span>
+            </div>
+          </div>
+
+          <div style="height: 8px;"></div>
+
+        </div>
+      </div>
+      <!-- /screen-trilhas -->
+
+
+      <!-- ════ SCREEN 3: LICAO ════ -->
+      <div class="screen" id="screen-licao">
+
+        <div class="licao-header">
+          <div class="licao-header-top">
+            <button class="back-btn" onclick="goTo('trilhas')">←</button>
+            <span class="badge-pill green">Trilha Broto</span>
+            <span class="xp-chip">⭐ +50 XP</span>
+          </div>
+          <div class="licao-steps">
+            <div class="step-dot done"></div>
+            <div class="step-dot done"></div>
+            <div class="step-dot curr"></div>
+            <div class="step-dot"></div>
+            <div class="step-dot"></div>
+          </div>
+        </div>
+
+        <div class="licao-body">
+
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div class="section-title">Licao 3 de 5</div>
+              <h2 style="font-family:'Georgia',serif; font-size:20px; color:var(--text);">Poupanca Inteligente</h2>
+            </div>
+          </div>
+
+          <!-- Illustration -->
+          <div class="licao-illus">
+            <div class="licao-illus-inner">
+              <div class="licao-illus-main">🏦</div>
+              <div class="licao-illus-caption">Ilustracao · Cofrinho crescendo</div>
+            </div>
+          </div>
+
+          <!-- Text content -->
+          <div class="licao-text-card">
+            <h3>O segredo de guardar dinheiro</h3>
+            <p>
+              Quando voce guarda um pouquinho de dinheiro todo dia ou toda semana, esse dinheiro cresce muito com o tempo!
+              E como plantar uma semente: começa pequeno, mas vira uma arvore grande. 🌱
+              <br><br>
+              <strong>Guardar R$10 por semana</strong> pode parecer pouco, mas em 1 ano vira <strong>R$520</strong>!
+              E se esse dinheiro estiver investido, cresce ainda mais rapido.
+            </p>
+          </div>
+
+          <!-- Interactive element -->
+          <div class="licao-interactive">
+            <h4>🧮 Calcule voce mesmo!</h4>
+            <p>Quanto voce teria se guardasse R$10 por semana durante 1 ano?</p>
+
+            <div class="slider-wrap">
+              <div class="slider-label-row">
+                <span>4 semanas</span>
+                <span id="sliderVal">26 semanas (6 meses)</span>
+                <span>52 semanas</span>
+              </div>
+              <input type="range" min="4" max="52" value="26" id="weeksSlider" oninput="updateCalc(this.value)">
+            </div>
+
+            <div class="calc-result">
+              <span style="font-size:28px;">💰</span>
+              <div>
+                <div class="result-val" id="calcResult">R$ 260</div>
+                <div class="result-label" id="calcLabel">guardado em 6 meses</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="licao-footer">
+          <div class="xp-preview">
+            <span>Completar esta licao vale</span>
+            <span class="xp-chip">⭐ +50 XP</span>
+          </div>
+          <button class="btn btn-primary" onclick="goTo('quiz')">
+            Proximo ›
+          </button>
+          <button class="btn btn-ghost" onclick="goTo('trilhas')">Voltar as trilhas</button>
+        </div>
+
+      </div>
+      <!-- /screen-licao -->
+
+
+      <!-- ════ SCREEN 4: QUIZ ════ -->
+      <div class="screen" id="screen-quiz">
+
+        <div class="quiz-header">
+          <div class="quiz-timer-row">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button class="back-btn" onclick="goTo('licao')">←</button>
+              <span style="font-size:13px; font-weight:700; color:var(--text);">Quiz · Poupanca Inteligente</span>
+            </div>
+            <div class="timer-circle" id="timerCircle">
+              <span class="timer-num" id="timerNum">18</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; color:var(--text-3); font-weight:600;">Pergunta 3 de 5</span>
+            <div class="quiz-progress-dots">
+              <div class="quiz-dot done"></div>
+              <div class="quiz-dot done"></div>
+              <div class="quiz-dot curr"></div>
+              <div class="quiz-dot"></div>
+              <div class="quiz-dot"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quiz-body">
+
+          <div class="quiz-question-card">
+            <div class="quiz-label">Pergunta</div>
+            <h3>Se voce guardar R$10 por semana, quanto tera em 6 meses?</h3>
+          </div>
+
+          <div class="quiz-options" id="quizOptions">
+            <div class="quiz-option" onclick="selectAnswer(this, false)">
+              <div class="option-letter">A</div>
+              <span class="option-text">R$ 60</span>
+            </div>
+            <div class="quiz-option" onclick="selectAnswer(this, false)">
+              <div class="option-letter">B</div>
+              <span class="option-text">R$ 120</span>
+            </div>
+            <div class="quiz-option" onclick="selectAnswer(this, true)">
+              <div class="option-letter">C</div>
+              <span class="option-text">R$ 240</span>
+            </div>
+            <div class="quiz-option" onclick="selectAnswer(this, false)">
+              <div class="option-letter">D</div>
+              <span class="option-text">R$ 480</span>
+            </div>
+          </div>
+
+          <div class="quiz-feedback" id="quizFeedback">
+            <span class="fb-icon">✅</span>
+            <p id="feedbackText">
+              <strong>Correto!</strong> 6 meses = ~26 semanas × R$10 = R$260.
+              A opcao C (R$240) e a mais proxima. Voce esta aprendendo muito! 🎉
+            </p>
+          </div>
+
+          <button class="btn btn-primary" id="nextBtn" style="display:none;" onclick="goTo('complete')">
+            Proxima Pergunta ›
+          </button>
+
+        </div>
+      </div>
+      <!-- /screen-quiz -->
+
+
+      <!-- ════ SCREEN 5: LESSON COMPLETE ════ -->
+      <div class="screen complete-screen" id="screen-complete">
+
+        <div class="confetti-area">
+
+          <!-- Confetti dots (CSS animated) -->
+          <div class="confetti-dot" style="left:15%; width:8px; height:8px; background:#FFD600; animation-delay:0s; animation-duration:2.5s;"></div>
+          <div class="confetti-dot" style="left:25%; width:6px; height:10px; background:#00C853; animation-delay:.3s; animation-duration:3s;"></div>
+          <div class="confetti-dot" style="left:40%; width:10px; height:6px; background:#FF6D00; animation-delay:.6s; animation-duration:2.8s;"></div>
+          <div class="confetti-dot" style="left:60%; width:7px; height:7px; background:#3949AB; animation-delay:.2s; animation-duration:3.2s;"></div>
+          <div class="confetti-dot" style="left:75%; width:9px; height:5px; background:#FFD600; animation-delay:.8s; animation-duration:2.6s;"></div>
+          <div class="confetti-dot" style="left:85%; width:6px; height:8px; background:#00C853; animation-delay:.4s; animation-duration:3.1s;"></div>
+          <div class="confetti-dot" style="left:10%; width:5px; height:9px; background:#FF6D00; animation-delay:1s; animation-duration:2.9s;"></div>
+          <div class="confetti-dot" style="left:50%; width:8px; height:6px; background:#E91E63; animation-delay:.5s; animation-duration:2.7s;"></div>
+          <div class="confetti-dot" style="left:68%; width:6px; height:6px; background:#FFD600; animation-delay:1.2s; animation-duration:3.3s;"></div>
+          <div class="confetti-dot" style="left:33%; width:10px; height:4px; background:#00C853; animation-delay:.7s; animation-duration:2.4s;"></div>
+
+          <div class="trophy-wrap">
+            <div class="trophy-circle">🏆</div>
+          </div>
+          <h2>Parabens, Miguel!</h2>
+          <p>Licao concluida com sucesso</p>
+        </div>
+
+        <div class="complete-body">
+
+          <!-- Rewards card -->
+          <div class="reward-card">
+            <div class="reward-row">
+              <div class="reward-icon xp-icon">⭐</div>
+              <div class="reward-text">
+                <h4>XP Points ganhos</h4>
+                <p>Poupanca Inteligente · Perfeito!</p>
+              </div>
+              <div class="reward-val">+50 XP</div>
+            </div>
+            <div class="reward-row">
+              <div class="reward-icon badge-icon">🥇</div>
+              <div class="reward-text">
+                <h4>Novo Badge desbloqueado</h4>
+                <p>Poupador Iniciante</p>
+              </div>
+              <div style="margin-left:auto; font-size:11px; color:var(--green); font-weight:700;">NOVO!</div>
+            </div>
+          </div>
+
+          <!-- Practical challenge -->
+          <div class="challenge-card">
+            <div class="c-icon">💡</div>
+            <div>
+              <h4>Desafio Pratico</h4>
+              <p>Guarde <strong>R$10 esta semana</strong> no bucket <strong>Guardar</strong> do seu app Granix e ganhe 20 XP extras!</p>
+            </div>
+          </div>
+
+          <!-- Share button -->
+          <button class="share-btn">
+            <span>👨‍👩‍👦</span>
+            Compartilhar com a familia
+          </button>
+
+          <!-- Next lesson -->
+          <button class="btn btn-primary" onclick="goTo('trilhas')">
+            Proxima Licao ›
+          </button>
+
+          <button class="btn btn-secondary" onclick="goTo('home')">
+            Voltar ao Inicio
+          </button>
+
+        </div>
+      </div>
+      <!-- /screen-complete -->
+
+
+      <!-- ════ SCREEN 6: SIMULADOR ════ -->
+      <div class="screen" id="screen-simulador">
+
+        <div class="sim-header">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+            <button class="back-btn" style="background:rgba(255,255,255,.15); color:#fff;" onclick="goTo('home')">←</button>
+            <span style="font-size:11px; color:rgba(255,255,255,.5); font-weight:700; text-transform:uppercase; letter-spacing:.5px;">Ferramenta</span>
+          </div>
+          <h2>Simulador de Juros Compostos</h2>
+          <p>Veja como seu dinheiro cresce no Tesouro Educa+</p>
+        </div>
+
+        <div class="sim-body">
+
+          <!-- Inputs -->
+          <div class="sim-inputs">
+
+            <div class="sim-field">
+              <label>Valor inicial</label>
+              <div class="sim-input-wrap">
+                <span class="sim-currency">R$</span>
+                <input type="number" id="simInicial" value="100" oninput="updateSim()">
+              </div>
+            </div>
+
+            <div class="sim-field">
+              <label>Aporte mensal</label>
+              <div class="sim-input-wrap">
+                <span class="sim-currency">R$</span>
+                <input type="number" id="simAporte" value="50" oninput="updateSim()">
+              </div>
+            </div>
+
+            <div class="sim-field">
+              <label>Taxa de juros</label>
+              <div class="sim-input-wrap" style="background:var(--green-light); border-color:var(--green);">
+                <span class="sim-currency" style="color:var(--green-dark);">%</span>
+                <input type="number" id="simTaxa" value="10" style="color:var(--green-dark);" oninput="updateSim()">
+                <span style="font-size:11px; color:var(--green-dark); white-space:nowrap;">a.a. · Tesouro Educa+</span>
+              </div>
+            </div>
+
+            <div class="sim-field">
+              <label>Periodo: <strong id="simPeriodoLabel">10 anos</strong></label>
+              <div class="slider-wrap" style="margin-top:4px;">
+                <div class="slider-label-row">
+                  <span>1 ano</span>
+                  <span>18 anos</span>
+                </div>
+                <input type="range" min="1" max="18" value="10" id="simPeriodo" oninput="updateSim()">
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Chart -->
+          <div class="sim-chart">
+            <div class="chart-title">Crescimento ao longo do tempo</div>
+            <div class="bar-chart" id="barChart">
+              <!-- bars injected by JS -->
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background:var(--blue-pale); border:1px solid #C5CAE9;"></div>
+                <span>Principal investido</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:var(--green);"></div>
+                <span>Rendimentos</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result -->
+          <div class="sim-result" id="simResult">
+            <div class="result-label">Valor total acumulado</div>
+            <div class="result-amount" id="simTotal">R$ 12.450</div>
+            <div class="result-breakdown" id="simBreakdown">
+              R$100 inicial + R$50/mes durante 10 anos
+            </div>
+            <div class="result-period" id="simPeriodLabel">rendimento de 10 anos</div>
+          </div>
+
+          <!-- CTA XP -->
+          <div class="sim-cta">
+            <div class="xp-logo-small">XP</div>
+            <div class="sim-cta-text">
+              <h4>Comece a investir no Tesouro Educa+</h4>
+              <p>Disponivel direto no app Granix via XP</p>
+            </div>
+            <div class="sim-cta-arrow">→</div>
+          </div>
+
+          <div style="height:8px;"></div>
+
+        </div>
+      </div>
+      <!-- /screen-simulador -->
+
+    </div>
+    <!-- /phone-content -->
+
+    <!-- ── BOTTOM NAV ── -->
+    <nav class="bottom-nav">
+      <div class="nav-item" onclick="goTo('home')">
+        <span class="nav-icon">✅</span>
+        <span class="nav-label">Tarefas</span>
+      </div>
+      <div class="nav-item" onclick="goTo('home')">
+        <span class="nav-icon">🪣</span>
+        <span class="nav-label">Buckets</span>
+      </div>
+      <div class="nav-item active" id="navAcademy" onclick="goTo('home')">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-label" style="color:var(--green);">Academy</span>
+        <div class="nav-dot"></div>
+      </div>
+      <div class="nav-item" onclick="goTo('home')">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Perfil</span>
+      </div>
+    </nav>
+
+  </div><!-- /phone-frame -->
+</div><!-- /phone-wrap -->
+
+<div class="page-footer">GRANIX · Modulo Academy · Prototipo Interativo · v1.0</div>
+
+<!-- ─── JAVASCRIPT ─────────────────────────────────────────── -->
+<script>
+  /* ── Navigation ── */
+  const screens = ['home','trilhas','licao','quiz','complete','simulador'];
+
+  function goTo(id) {
+    // hide all
+    screens.forEach(s => {
+      const el = document.getElementById('screen-' + s);
+      if (el) el.classList.remove('active');
+    });
+    // show target
+    const target = document.getElementById('screen-' + id);
+    if (target) {
+      target.classList.add('active');
+      // scroll to top
+      document.getElementById('phoneContent').scrollTop = 0;
+    }
+    // update tabs
+    document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+      btn.classList.toggle('active', screens[i] === id);
+    });
+    // special inits
+    if (id === 'quiz') initTimer();
+    if (id === 'simulador') updateSim();
+  }
+
+  /* ── Lesson calculator ── */
+  function updateCalc(weeks) {
+    const w = parseInt(weeks);
+    const total = w * 10;
+    document.getElementById('calcResult').textContent = 'R$ ' + total.toLocaleString('pt-BR');
+    const label = w >= 52 ? '1 ano completo' : w >= 26 ? '6 meses' : w + ' semanas';
+    document.getElementById('calcLabel').textContent = 'guardado em ' + label;
+    document.getElementById('sliderVal').textContent = w + ' semanas' + (w===26?' (6 meses)': w===52?' (1 ano)':'');
+    // update slider gradient
+    const pct = ((w - 4) / (52 - 4)) * 100;
+    document.getElementById('weeksSlider').style.background =
+      `linear-gradient(90deg, var(--green) ${pct}%, var(--border) ${pct}%)`;
+  }
+
+  /* ── Quiz ── */
+  let timerInterval = null;
+  let answered = false;
+
+  function initTimer() {
+    answered = false;
+    clearInterval(timerInterval);
+    let t = 18;
+    document.getElementById('timerNum').textContent = t;
+    // reset options
+    document.querySelectorAll('.quiz-option').forEach(o => {
+      o.classList.remove('correct','wrong','selected-wrong');
+    });
+    document.getElementById('quizFeedback').classList.remove('show','wrong-fb');
+    document.getElementById('nextBtn').style.display = 'none';
+
+    const circle = document.getElementById('timerCircle');
+    timerInterval = setInterval(() => {
+      t--;
+      document.getElementById('timerNum').textContent = t;
+      const deg = (t / 18) * 360;
+      circle.style.background =
+        `conic-gradient(var(--orange) 0deg, var(--orange) ${deg}deg, var(--border) ${deg}deg)`;
+      if (t <= 0) {
+        clearInterval(timerInterval);
+        if (!answered) showFeedback(false, '⏱️', 'Tempo esgotado! A resposta certa era <strong>C) R$240</strong>. 26 semanas × R$10 = R$260.');
+      }
+    }, 1000);
+  }
+
+  function selectAnswer(el, isCorrect) {
+    if (answered) return;
+    answered = true;
+    clearInterval(timerInterval);
+
+    const options = document.querySelectorAll('.quiz-option');
+    options.forEach(o => {
+      o.style.pointerEvents = 'none';
+    });
+
+    if (isCorrect) {
+      el.classList.add('correct');
+      showFeedback(true, '✅', '<strong>Correto!</strong> 26 semanas × R$10 = R$260. A opcao C (R$240) e a mais proxima. Voce esta arrasando! 🎉');
+    } else {
+      el.classList.add('selected-wrong');
+      // highlight correct (C = third option)
+      options[2].classList.add('correct');
+      showFeedback(false, '❌', '<strong>Quase la!</strong> A resposta certa era <strong>C) R$240</strong>. 6 meses = ~26 semanas × R$10 = R$260. Continue tentando!');
+    }
+    document.getElementById('nextBtn').style.display = 'flex';
+  }
+
+  function showFeedback(correct, icon, text) {
+    const fb = document.getElementById('quizFeedback');
+    fb.classList.toggle('wrong-fb', !correct);
+    fb.querySelector('.fb-icon').textContent = icon;
+    document.getElementById('feedbackText').innerHTML = text;
+    fb.classList.add('show');
+  }
+
+  /* ── Simulator ── */
+  function updateSim() {
+    const inicial = parseFloat(document.getElementById('simInicial').value) || 100;
+    const aporte  = parseFloat(document.getElementById('simAporte').value)  || 50;
+    const taxa    = (parseFloat(document.getElementById('simTaxa').value)    || 10) / 100;
+    const anos    = parseInt(document.getElementById('simPeriodo').value)    || 10;
+
+    document.getElementById('simPeriodoLabel').textContent = anos + ' ano' + (anos > 1 ? 's' : '');
+
+    // Compound interest: FV = PV*(1+r)^n + PMT*[((1+r)^n - 1)/r]
+    // Monthly rate
+    const rm = Math.pow(1 + taxa, 1/12) - 1;
+    const n  = anos * 12;
+    const fv = inicial * Math.pow(1 + rm, n) + aporte * (Math.pow(1 + rm, n) - 1) / rm;
+    const principal = inicial + aporte * n;
+
+    document.getElementById('simTotal').textContent = 'R$ ' + formatNum(fv);
+    document.getElementById('simBreakdown').textContent =
+      'R$' + formatNum(inicial) + ' inicial + R$' + formatNum(aporte) + '/mes durante ' + anos + ' ano' + (anos>1?'s':'');
+    document.getElementById('simPeriodLabel').textContent = 'rendimento de ' + anos + ' ano' + (anos>1?'s':'');
+
+    // update slider gradient
+    const pct = ((anos - 1) / 17) * 100;
+    document.getElementById('simPeriodo').style.background =
+      `linear-gradient(90deg, var(--green) ${pct}%, var(--border) ${pct}%)`;
+
+    // Build bar chart — show checkpoints
+    renderBarChart(inicial, aporte, rm, anos);
+  }
+
+  function formatNum(n) {
+    return n.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+  }
+
+  function renderBarChart(inicial, aporte, rm, totalAnos) {
+    const chart = document.getElementById('barChart');
+    chart.innerHTML = '';
+
+    // Choose checkpoints
+    const checkpoints = [];
+    if (totalAnos <= 5) {
+      for (let i = 1; i <= totalAnos; i++) checkpoints.push(i);
+    } else if (totalAnos <= 10) {
+      checkpoints.push(1);
+      for (let i = 2; i <= totalAnos; i += 2) checkpoints.push(i);
+    } else {
+      checkpoints.push(1, 3, 5, 8, 12, 15, 18).filter(x => x <= totalAnos);
+    }
+
+    // Calculate max for scaling
+    const values = checkpoints.map(a => {
+      const n = a * 12;
+      return inicial * Math.pow(1+rm,n) + aporte*(Math.pow(1+rm,n)-1)/rm;
+    });
+    const maxVal = Math.max(...values);
+
+    checkpoints.forEach((a, i) => {
+      const n = a * 12;
+      const fv = inicial * Math.pow(1+rm,n) + aporte*(Math.pow(1+rm,n)-1)/rm;
+      const principalHere = inicial + aporte * n;
+      const rendimento = fv - principalHere;
+
+      const totalH = 100; // px chart height (bar area only, not label)
+      const fvH    = Math.round((fv / maxVal) * totalH);
+      const priH   = Math.round((principalHere / maxVal) * totalH);
+      const renH   = Math.max(fvH - priH, 0);
+
+      const col = document.createElement('div');
+      col.className = 'bar-col';
+      col.style.position = 'relative';
+
+      col.innerHTML = `
+        <div class="bar-fill rendimento" style="height:${renH}px; min-height:${renH>0?2:0}px;"></div>
+        <div class="bar-fill principal" style="height:${priH}px; position:relative;">
+          <span class="bar-label">${a}a</span>
+        </div>
+      `;
+      chart.appendChild(col);
+    });
+  }
+
+  /* ── Init ── */
+  updateCalc(26);
+  updateSim();
+</script>
+
+</body>
+</html>

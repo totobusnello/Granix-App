@@ -1,0 +1,2950 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRANIX — Jornada Trilha Broto</title>
+<style>
+/* ===== RESET & VARIABLES ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green: #2D7A3A;
+  --green-dark: #1A4D2E;
+  --green-light: #4CAF50;
+  --green-pale: #E8F5E9;
+  --gold: #F5A623;
+  --gold-light: #FFF3D6;
+  --gold-dark: #D4911E;
+  --white: #FFFFFF;
+  --offwhite: #F8F9FA;
+  --gray-100: #F1F3F5;
+  --gray-200: #DEE2E6;
+  --gray-300: #CED4DA;
+  --gray-400: #ADB5BD;
+  --gray-500: #868E96;
+  --gray-600: #666666;
+  --gray-700: #495057;
+  --gray-800: #343A40;
+  --gray-900: #1A1A1A;
+  --blue: #1976D2;
+  --blue-light: #E3F2FD;
+  --red: #E53935;
+  --red-light: #FFEBEE;
+  --purple: #7B1FA2;
+  --purple-light: #F3E5F5;
+  --pink: #EC407A;
+  --teal: #00897B;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.15);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--white);
+  color: var(--gray-900);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--green), var(--gold));
+  z-index: 1000;
+  transition: width 0.3s ease;
+}
+
+/* ===== SCENE NAV DOTS ===== */
+.scene-nav {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.scene-nav .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--gray-300);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+.scene-nav .dot.active {
+  background: var(--green);
+  transform: scale(1.4);
+}
+.scene-nav .dot::after {
+  content: attr(data-label);
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-size: 0.7rem;
+  color: var(--gray-600);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.scene-nav .dot:hover::after {
+  opacity: 1;
+}
+
+/* ===== SCENE BASE ===== */
+.scene {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.scene-inner {
+  max-width: 1200px;
+  width: 100%;
+  padding: 60px 40px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ===== ANIMATIONS ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.15s; }
+.reveal-delay-2 { transition-delay: 0.3s; }
+.reveal-delay-3 { transition-delay: 0.45s; }
+.reveal-delay-4 { transition-delay: 0.6s; }
+.reveal-delay-5 { transition-delay: 0.75s; }
+.reveal-delay-6 { transition-delay: 0.9s; }
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(-60px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-left.visible { opacity: 1; transform: translateX(0); }
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(60px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+/* ===== TYPOGRAPHY ===== */
+.scene-label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 16px;
+  padding: 4px 12px;
+  background: var(--green-pale);
+  border-radius: 20px;
+}
+.scene-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--green-dark);
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+}
+.scene-subtitle {
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  color: var(--gray-600);
+  line-height: 1.6;
+  max-width: 680px;
+}
+
+/* ===== STAT CALLOUT ===== */
+.stat-callout {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 28px;
+  background: var(--gold-light);
+  border-left: 4px solid var(--gold);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin: 24px 0;
+}
+.stat-callout .stat-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--gold-dark);
+  line-height: 1;
+}
+.stat-callout .stat-text {
+  font-size: 1rem;
+  color: var(--gray-700);
+  line-height: 1.4;
+  max-width: 360px;
+}
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-100);
+}
+.card-accent {
+  border-top: 3px solid var(--green);
+}
+
+/* ===== PHONE MOCKUP ===== */
+.phone {
+  width: 260px;
+  height: 520px;
+  background: var(--gray-900);
+  border-radius: 36px;
+  padding: 12px;
+  position: relative;
+  box-shadow: var(--shadow-xl), inset 0 0 0 2px var(--gray-700);
+  flex-shrink: 0;
+}
+.phone::before {
+  content: '';
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 24px;
+  background: var(--gray-900);
+  border-radius: 0 0 16px 16px;
+  z-index: 3;
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--white);
+  border-radius: 26px;
+  overflow: hidden;
+  position: relative;
+}
+.phone.phone-sm {
+  width: 180px;
+  height: 360px;
+  border-radius: 26px;
+  padding: 8px;
+}
+.phone.phone-sm .phone-screen { border-radius: 22px; }
+.phone.phone-sm::before { width: 64px; height: 20px; top: 10px; border-radius: 0 0 12px 12px; }
+
+/* Phone screen components */
+.phone-header {
+  padding: 32px 16px 12px;
+  background: var(--green);
+  color: var(--white);
+}
+.phone-header-dark {
+  background: var(--green-dark);
+}
+.phone-header h4 {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.phone-header p {
+  font-size: 0.65rem;
+  opacity: 0.8;
+}
+.phone-body {
+  padding: 12px 14px;
+}
+
+/* ===== BADGE ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.badge-green { background: var(--green-pale); color: var(--green-dark); }
+.badge-gold { background: var(--gold-light); color: var(--gold-dark); }
+.badge-blue { background: var(--blue-light); color: var(--blue); }
+
+/* ===== TRAIL MAP ===== */
+.trail-map {
+  display: flex;
+  gap: 0;
+  align-items: stretch;
+  position: relative;
+}
+.trail-item {
+  flex: 1;
+  padding: 24px 20px;
+  text-align: center;
+  position: relative;
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+}
+.trail-item::after {
+  content: '→';
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: var(--gray-400);
+  z-index: 2;
+}
+.trail-item:last-child::after { display: none; }
+.trail-item .trail-age {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gray-500);
+  margin-bottom: 4px;
+}
+.trail-item .trail-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.trail-item .trail-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+.trail-item.trail-highlight {
+  background: var(--green-pale);
+  border: 2px solid var(--green);
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== PIPELINE ===== */
+.pipeline {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.pipeline-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px;
+  text-align: center;
+  width: 150px;
+}
+.pipeline-node .node-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow-sm);
+}
+.pipeline-node .node-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: 4px;
+}
+.pipeline-node .node-desc {
+  font-size: 0.65rem;
+  color: var(--gray-500);
+  line-height: 1.3;
+}
+.pipeline-arrow {
+  width: 32px;
+  height: 2px;
+  background: var(--gray-300);
+  position: relative;
+  flex-shrink: 0;
+}
+.pipeline-arrow::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -4px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid var(--gray-300);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+/* ===== POTES (JARS) ===== */
+.potes-container {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 32px 0;
+}
+.pote {
+  width: 120px;
+  text-align: center;
+}
+.pote-jar {
+  width: 80px;
+  height: 100px;
+  margin: 0 auto 8px;
+  border-radius: 8px 8px 16px 16px;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid;
+  background: var(--white);
+}
+.pote-jar::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  transition: height 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.pote-jar.filled::before {
+  height: var(--fill, 40%);
+}
+.pote-jar .pote-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  font-size: 1.5rem;
+}
+.pote-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.pote-amount {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.pote-gastar .pote-jar { border-color: var(--blue); }
+.pote-gastar .pote-jar::before { background: var(--blue-light); }
+.pote-gastar .pote-label { color: var(--blue); }
+.pote-gastar .pote-amount { color: var(--blue); }
+
+.pote-guardar .pote-jar { border-color: var(--green); }
+.pote-guardar .pote-jar::before { background: var(--green-pale); }
+.pote-guardar .pote-label { color: var(--green); }
+.pote-guardar .pote-amount { color: var(--green); }
+
+.pote-investir .pote-jar { border-color: var(--gold-dark); }
+.pote-investir .pote-jar::before { background: var(--gold-light); }
+.pote-investir .pote-label { color: var(--gold-dark); }
+.pote-investir .pote-amount { color: var(--gold-dark); }
+
+.pote-doar .pote-jar { border-color: var(--pink); }
+.pote-doar .pote-jar::before { background: #FCE4EC; }
+.pote-doar .pote-label { color: var(--pink); }
+.pote-doar .pote-amount { color: var(--pink); }
+
+/* ===== MONEY FLOW ANIMATION ===== */
+.money-flow-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin: 40px 0;
+}
+.flow-coin {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--white);
+  box-shadow: 0 2px 8px rgba(245, 166, 35, 0.4);
+  opacity: 0;
+  z-index: 10;
+}
+.flow-coin.animate-flow {
+  animation: coinFlow 1.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes coinFlow {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+  20% { opacity: 1; transform: translate(0, -20px) scale(1); }
+  50% { opacity: 1; transform: translate(var(--flow-x, 100px), var(--flow-y, -40px)) scale(1.1); }
+  80% { opacity: 1; transform: translate(var(--end-x, 200px), var(--end-y, 0)) scale(1); }
+  100% { opacity: 0; transform: translate(var(--end-x, 200px), var(--end-y, 0)) scale(0.5); }
+}
+
+.flow-coin.animate-split {
+  animation: coinSplit 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes coinSplit {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.5); }
+  30% { opacity: 1; transform: translate(0, -10px) scale(1.2); }
+  100% { opacity: 1; transform: translate(var(--split-x, 0), var(--split-y, 60px)) scale(1); }
+}
+
+/* ===== SCENE BACKGROUNDS ===== */
+/* Scene 1: Hero - Tudo começa com um grão */
+.scene-1 {
+  background: linear-gradient(180deg, var(--white) 0%, var(--green-pale) 100%);
+}
+/* Scene 2: Curriculum - Trilha Broto */
+.scene-2 { background: var(--white); }
+/* Scene 3: Metodologia Espiral (NEW) */
+.scene-11 {
+  background: linear-gradient(180deg, var(--white) 0%, #F3E5F5 50%, var(--white) 100%);
+}
+/* Scene 4: AI Pipeline */
+.scene-4 { background: var(--offwhite); }
+/* Scene 5: Validação (NEW) */
+.scene-5 { background: var(--white); }
+/* Scene 6: Compliance (NEW) */
+.scene-6 {
+  background: linear-gradient(180deg, var(--white) 0%, var(--blue-light) 50%, var(--white) 100%);
+}
+/* Scene 7: Personalização */
+.scene-7 { background: var(--white); }
+/* Scene 8: João abre o app */
+.scene-8 {
+  background: linear-gradient(180deg, var(--offwhite) 0%, var(--white) 100%);
+}
+/* Scene 9: Ciclo Virtuoso */
+.scene-9 { background: var(--white); }
+/* Scene 10: Tarefa Completa */
+.scene-10 {
+  background: linear-gradient(180deg, var(--white) 0%, var(--gold-light) 50%, var(--white) 100%);
+}
+/* Scene 11: Aprender Fazendo */
+.scene-11-b { background: var(--offwhite); }
+/* Scene 12: Semana do João (NEW) */
+.scene-12 {
+  background: linear-gradient(180deg, var(--offwhite) 0%, var(--green-pale) 100%);
+}
+/* Scene 13: Momento Família (NEW) */
+.scene-13 { background: var(--white); }
+/* Scene 14: Transformação (NEW) */
+.scene-14 {
+  background: linear-gradient(180deg, var(--white) 0%, #FFF3E0 50%, var(--white) 100%);
+}
+/* Scene 15: Dashboard do Pai */
+.scene-15 { background: var(--offwhite); }
+/* Scene 16: Para a sua instituição */
+.scene-16 {
+  background: linear-gradient(180deg, var(--green-dark) 0%, #0D2B18 100%);
+  color: var(--white);
+}
+.scene-16 .scene-title { color: var(--white); }
+.scene-16 .scene-subtitle { color: rgba(255,255,255,0.8); }
+
+/* ===== SPIRAL CARDS ===== */
+.spiral-container {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.spiral-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: var(--white);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-100);
+  position: relative;
+  z-index: 2;
+}
+.spiral-card .spiral-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.spiral-card .spiral-info {
+  flex: 1;
+}
+.spiral-card .spiral-trail {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 2px;
+}
+.spiral-card .spiral-lesson {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: 2px;
+}
+.spiral-card .spiral-desc {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  line-height: 1.35;
+}
+.spiral-connector {
+  display: none;
+}
+
+/* ===== WEEKLY CALENDAR ===== */
+.week-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.week-day {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-100);
+  transition: all 0.3s ease;
+}
+.week-day:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+}
+.week-day .day-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.week-day .day-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray-500);
+  min-width: 100px;
+}
+.week-day .day-desc {
+  font-size: 0.85rem;
+  color: var(--gray-700);
+  line-height: 1.4;
+}
+
+/* ===== FAMILY MOMENT ===== */
+.family-dashboard {
+  background: linear-gradient(135deg, #FFF8E1 0%, #FFF3E0 50%, #FFECB3 100%);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  border: 2px solid var(--gold);
+  box-shadow: var(--shadow-lg);
+  max-width: 500px;
+}
+.family-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(212, 145, 30, 0.15);
+}
+.family-item:last-child { border-bottom: none; }
+.family-item .fam-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-sm);
+}
+.family-item .fam-text {
+  font-size: 0.85rem;
+  color: var(--gray-700);
+  line-height: 1.5;
+}
+
+/* ===== EVOLUTION COLUMNS ===== */
+.evolution-grid {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.evo-col {
+  flex: 1;
+  min-width: 240px;
+  max-width: 320px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-100);
+  position: relative;
+  overflow: hidden;
+}
+.evo-col::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+.evo-col.evo-month1::before { background: var(--gray-400); }
+.evo-col.evo-month3::before { background: var(--gold); }
+.evo-col.evo-month6::before { background: var(--green); }
+.evo-header {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+.evo-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.evo-stat .evo-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: var(--gray-100);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.evo-stat .evo-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.evo-stat .evo-label {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  min-width: 80px;
+}
+.evo-stat .evo-value {
+  font-size: 0.75rem;
+  font-weight: 700;
+  min-width: 40px;
+  text-align: right;
+}
+
+/* ===== SHIELD / COMPLIANCE ===== */
+.shield-grid {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.shield-card {
+  flex: 1;
+  min-width: 260px;
+  max-width: 340px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-100);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.shield-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--blue);
+}
+.shield-card .shield-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--blue-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 1.5rem;
+}
+.shield-card h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: 8px;
+}
+.shield-card p {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  line-height: 1.5;
+}
+
+/* ===== TESTIMONIAL ===== */
+.testimonial-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-100);
+  position: relative;
+  max-width: 600px;
+}
+.testimonial-card::before {
+  content: '\201C';
+  position: absolute;
+  top: 12px;
+  left: 20px;
+  font-size: 4rem;
+  line-height: 1;
+  color: var(--green-pale);
+  font-family: Georgia, serif;
+}
+.testimonial-card .quote-text {
+  font-size: 1.05rem;
+  font-style: italic;
+  color: var(--gray-700);
+  line-height: 1.6;
+  padding-left: 24px;
+}
+.testimonial-card .quote-author {
+  margin-top: 16px;
+  padding-left: 24px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--gray-500);
+}
+
+/* ===== VALIDATION METRICS ===== */
+.validation-metrics {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.val-metric {
+  text-align: center;
+  padding: 24px 20px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-100);
+  min-width: 160px;
+}
+.val-metric .val-number {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.val-metric .val-label {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+  line-height: 1.3;
+}
+
+@media (max-width: 768px) {
+  .spiral-card { flex-direction: column; text-align: center; gap: 12px; }
+  .spiral-connector { margin-left: auto; margin-right: auto; }
+  .week-day { flex-direction: column; text-align: center; gap: 8px; }
+  .week-day .day-name { min-width: auto; }
+  .shield-grid { flex-direction: column; align-items: center; }
+  .evolution-grid { flex-direction: column; align-items: center; }
+  .family-dashboard { margin: 0 auto; }
+}
+
+/* ===== DECORATIVE ELEMENTS ===== */
+.bg-dots {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: radial-gradient(circle, var(--gray-200) 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.5;
+  z-index: 0;
+}
+.bg-grain {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  opacity: 0.03;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ===== PART DIVIDER ===== */
+.part-divider {
+  text-align: center;
+  padding: 80px 40px;
+  background: var(--green-dark);
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+.part-divider h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 8px;
+}
+.part-divider h3 {
+  font-size: 2.2rem;
+  font-weight: 800;
+}
+
+/* ===== QUIZ MOCKUP ===== */
+.quiz-option {
+  padding: 10px 14px;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  margin-bottom: 6px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: var(--white);
+}
+.quiz-option.correct {
+  border-color: var(--green);
+  background: var(--green-pale);
+}
+.quiz-option.wrong {
+  border-color: var(--red);
+  background: var(--red-light);
+  opacity: 0.5;
+}
+
+/* ===== COUNTER ANIMATION ===== */
+.counter {
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--green-light), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== METRIC CARDS ===== */
+.metric-card {
+  text-align: center;
+  padding: 40px 24px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(8px);
+}
+.metric-card .metric-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.metric-card .metric-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.metric-card .metric-label {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.9);
+  line-height: 1.4;
+}
+
+/* ===== FLEX UTILITIES ===== */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.gap-16 { gap: 16px; }
+.gap-20 { gap: 20px; }
+.gap-24 { gap: 24px; }
+.gap-32 { gap: 32px; }
+.gap-40 { gap: 40px; }
+.gap-48 { gap: 48px; }
+.text-center { text-align: center; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mt-32 { margin-top: 32px; }
+.mt-40 { margin-top: 40px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.mb-32 { margin-bottom: 32px; }
+.w-full { width: 100%; }
+
+/* ===== MINI CHART ===== */
+.mini-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 80px;
+  padding: 0 4px;
+}
+.mini-chart .bar {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+  transition: height 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-width: 20px;
+}
+
+/* ===== SEGMENT PILLS ===== */
+.segment-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 24px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 2px solid;
+  background: var(--white);
+}
+
+/* ===== BNCC BADGE ===== */
+.bncc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--blue-light);
+  border: 1px solid var(--blue);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--blue);
+}
+
+/* ===== ONBOARDING CAROUSEL ===== */
+.onboarding-screens {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: nowrap;
+  padding: 12px 0;
+}
+.onboarding-step {
+  flex-shrink: 1;
+  min-width: 0;
+}
+.step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--green);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin: 0 auto 8px;
+}
+
+/* ===== SPLIT PHONES ===== */
+.split-phones {
+  display: flex;
+  gap: 60px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.phone-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.phone-column .phone-owner {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gray-700);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== NOTIFICATION ===== */
+.notification {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  border-left: 3px solid var(--green);
+  font-size: 0.7rem;
+  margin: 8px 14px;
+  animation: notifSlide 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes notifSlide {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* ===== TASK ITEM ===== */
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--offwhite);
+  border-radius: var(--radius-sm);
+  font-size: 0.7rem;
+  margin-bottom: 4px;
+}
+.task-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.task-check.checked {
+  background: var(--green);
+}
+
+/* ===== INSIGHT CARD ===== */
+.insight-card {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, var(--green-pale), var(--gold-light));
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--green);
+}
+.insight-card .insight-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+.insight-card .insight-text {
+  font-size: 0.85rem;
+  color: var(--gray-800);
+  line-height: 1.5;
+}
+
+/* ===== GRANIX LOGO ===== */
+.granix-logo {
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, var(--green-light), var(--green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.granix-logo-white {
+  background: linear-gradient(135deg, #fff, var(--green-pale));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== PHONE APP ELEMENTS ===== */
+.app-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.app-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--gold-light), #FFF8E1);
+  border: 1px solid var(--gold);
+  color: var(--gold-dark);
+}
+.app-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--gray-100);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.app-progress-bar .fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--green), var(--green-light));
+  transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ===== SCENE-SPECIFIC HERO ===== */
+.hero-seed {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 200px;
+  opacity: 0.08;
+  z-index: 0;
+}
+
+/* ===== CLOSING CTA ===== */
+.cta-box {
+  padding: 32px 40px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius-xl);
+  text-align: center;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(8px);
+}
+.cta-box .cta-main {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.cta-box .cta-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.7);
+}
+
+/* ===== PERSONALIZATION CARDS ===== */
+.persona-card {
+  flex: 1;
+  min-width: 280px;
+  max-width: 340px;
+}
+.persona-card .persona-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* ===== CELEBRATION ===== */
+@keyframes celebrate {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.celebrate { animation: celebrate 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.pulse { animation: pulse 2s ease-in-out infinite; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.float { animation: float 3s ease-in-out infinite; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .scene-inner { padding: 40px 20px; }
+  .split-phones { gap: 24px; }
+  .phone { width: 200px; height: 400px; border-radius: 28px; }
+  .phone-screen { border-radius: 20px; }
+  .phone.phone-sm { width: 180px; height: 360px; }
+  .trail-map { flex-direction: column; gap: 12px; }
+  .trail-item::after { display: none; }
+  .pipeline { flex-direction: column; }
+  .pipeline-arrow { width: 2px; height: 24px; }
+  .pipeline-arrow::after { right: -4px; top: auto; bottom: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 8px solid var(--gray-300); }
+  .metric-card { padding: 24px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- SCENE NAV -->
+<nav class="scene-nav" id="sceneNav">
+  <div class="dot" data-scene="0" data-label="O grão"></div>
+  <div class="dot" data-scene="1" data-label="Trilha Broto"></div>
+  <div class="dot" data-scene="2" data-label="Metodologia Espiral"></div>
+  <div class="dot" data-scene="3" data-label="6 Agentes AI"></div>
+  <div class="dot" data-scene="4" data-label="Validação"></div>
+  <div class="dot" data-scene="5" data-label="Compliance"></div>
+  <div class="dot" data-scene="6" data-label="Personalização"></div>
+  <div class="dot" data-scene="7" data-label="João, 10 anos"></div>
+  <div class="dot" data-scene="8" data-label="Ciclo Virtuoso"></div>
+  <div class="dot" data-scene="9" data-label="Tarefa completa"></div>
+  <div class="dot" data-scene="10" data-label="Aprender fazendo"></div>
+  <div class="dot" data-scene="11" data-label="Semana do João"></div>
+  <div class="dot" data-scene="12" data-label="Momento Família"></div>
+  <div class="dot" data-scene="13" data-label="Transformação"></div>
+  <div class="dot" data-scene="14" data-label="Dashboard"></div>
+  <div class="dot" data-scene="15" data-label="Sua instituição"></div>
+</nav>
+
+<!-- ========================================= -->
+<!-- SCENE 1: TUDO COMEÇA COM UM GRÃO          -->
+<!-- ========================================= -->
+<section class="scene scene-1" id="scene-0">
+  <div class="bg-grain"></div>
+  <div class="scene-inner">
+    <div class="flex gap-48 items-center" style="flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 320px;">
+        <div class="reveal">
+          <span class="scene-label">Cena 1 — A Semente</span>
+        </div>
+        <h1 class="scene-title reveal reveal-delay-1">
+          Tudo começa<br>com um grão.
+        </h1>
+        <p class="scene-subtitle reveal reveal-delay-2">
+          Toda semana, milhões de famílias brasileiras transferem mesada para seus filhos.
+          O dinheiro chega — mas a educação, não.
+        </p>
+        <div class="stat-callout reveal reveal-delay-3">
+          <span class="stat-number">72%</span>
+          <span class="stat-text">dos pais brasileiros não sabem como ensinar educação financeira aos filhos</span>
+        </div>
+        <p class="scene-subtitle reveal reveal-delay-4" style="margin-top: 16px;">
+          E se existisse uma forma de transformar cada real da mesada em uma lição?<br>
+          <strong style="color: var(--green-dark);">É exatamente isso que a GRANIX faz.</strong>
+        </p>
+      </div>
+      <div style="flex: 0 0 auto;" class="reveal-scale reveal-delay-3">
+        <!-- Seed SVG illustration -->
+        <svg width="280" height="320" viewBox="0 0 280 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Ground -->
+          <ellipse cx="140" cy="290" rx="120" ry="20" fill="#E8F5E9"/>
+          <!-- Stem -->
+          <path d="M140 280 C140 220, 135 180, 140 140" stroke="#2D7A3A" stroke-width="4" stroke-linecap="round" fill="none">
+            <animate attributeName="d" dur="3s" repeatCount="1" fill="freeze"
+              from="M140 280 C140 275, 140 270, 140 270"
+              to="M140 280 C140 220, 135 180, 140 140"/>
+          </path>
+          <!-- Left leaf -->
+          <path d="M140 200 C120 180, 80 180, 90 210 C95 225, 125 215, 140 200Z" fill="#4CAF50" opacity="0.8">
+            <animate attributeName="opacity" dur="3s" values="0;0;0.8" fill="freeze"/>
+          </path>
+          <!-- Right leaf -->
+          <path d="M140 170 C160 150, 200 150, 190 180 C185 195, 155 185, 140 170Z" fill="#2D7A3A" opacity="0.7">
+            <animate attributeName="opacity" dur="3s" values="0;0;0;0.7" fill="freeze"/>
+          </path>
+          <!-- Seed -->
+          <ellipse cx="140" cy="285" rx="16" ry="10" fill="#D4911E" opacity="0.6"/>
+          <!-- Small coin -->
+          <circle cx="140" cy="105" r="24" fill="none" stroke="#F5A623" stroke-width="2" opacity="0.4">
+            <animate attributeName="opacity" dur="3s" values="0;0;0;0;0.4" fill="freeze"/>
+          </circle>
+          <text x="140" y="111" text-anchor="middle" font-size="16" font-weight="800" fill="#F5A623" opacity="0.6">R$</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 2: DESENHANDO A TRILHA BROTO        -->
+<!-- ========================================= -->
+<section class="scene scene-2" id="scene-1">
+  <div class="bg-dots"></div>
+  <div class="scene-inner">
+    <div class="text-center mb-32">
+      <span class="scene-label reveal">Cena 2 — O Currículo</span>
+      <h2 class="scene-title reveal reveal-delay-1">Desenhando a Trilha Broto<br><span style="color: var(--gold-dark); font-size: 0.7em;">(9–11 anos)</span></h2>
+      <p class="scene-subtitle mx-auto reveal reveal-delay-2">
+        Quatro trilhas, um currículo espiral: os mesmos conceitos financeiros revisitados com profundidade crescente conforme a criança amadurece.
+      </p>
+    </div>
+
+    <!-- Trail Map -->
+    <div class="trail-map mb-32 reveal reveal-delay-2">
+      <div class="trail-item card">
+        <div class="trail-icon">🌱</div>
+        <div class="trail-name" style="color: #66BB6A;">Semente</div>
+        <div class="trail-age">6 – 8 anos</div>
+        <p style="font-size: 0.75rem; color: var(--gray-500); margin-top: 6px;">Conceitos básicos: trocar, guardar, escolher</p>
+      </div>
+      <div class="trail-item card trail-highlight">
+        <div class="trail-icon">🌿</div>
+        <div class="trail-name" style="color: var(--green);">Broto</div>
+        <div class="trail-age">9 – 11 anos</div>
+        <p style="font-size: 0.75rem; color: var(--gray-700); margin-top: 6px; font-weight: 600;">Mesada, 4 Potes, tarefas, metas</p>
+        <div class="badge badge-gold mt-16" style="font-size: 0.65rem;">Minha Primeira Mesada</div>
+      </div>
+      <div class="trail-item card">
+        <div class="trail-icon">🌳</div>
+        <div class="trail-name" style="color: #388E3C;">Árvore</div>
+        <div class="trail-age">12 – 14 anos</div>
+        <p style="font-size: 0.75rem; color: var(--gray-500); margin-top: 6px;">Investir, juros compostos, planejamento</p>
+      </div>
+      <div class="trail-item card">
+        <div class="trail-icon">🌲</div>
+        <div class="trail-name" style="color: #1B5E20;">Floresta</div>
+        <div class="trail-age">15 – 17 anos</div>
+        <p style="font-size: 0.75rem; color: var(--gray-500); margin-top: 6px;">Renda, imposto, crédito, empreender</p>
+      </div>
+    </div>
+
+    <div class="flex gap-24 justify-center flex-wrap reveal reveal-delay-3">
+      <div class="bncc-badge">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1976D2" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        Alinhado à BNCC
+      </div>
+      <div class="bncc-badge" style="background: var(--purple-light); border-color: var(--purple); color: var(--purple);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        Currículo espiral
+      </div>
+      <div class="bncc-badge" style="background: var(--green-pale); border-color: var(--green); color: var(--green);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2D7A3A" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Validado por pedagogos
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 3: METODOLOGIA ESPIRAL              -->
+<!-- ========================================= -->
+<section class="scene scene-11" id="scene-2">
+  <div class="bg-grain"></div>
+  <div class="scene-inner">
+    <div class="text-center mb-32">
+      <span class="scene-label reveal" style="background: var(--purple-light); color: var(--purple);">Cena 3 — Profundidade</span>
+      <h2 class="scene-title reveal reveal-delay-1">Metodologia Espiral:<br>Aprender, Praticar, Dominar</h2>
+      <p class="scene-subtitle mx-auto reveal reveal-delay-2">
+        O mesmo conceito financeiro é ensinado de formas completamente diferentes em cada trilha. Veja como "poupança" evolui conforme a criança cresce.
+      </p>
+    </div>
+
+    <div class="spiral-container">
+      <!-- Semente -->
+      <div class="spiral-card reveal reveal-delay-1">
+        <div class="spiral-icon" style="background: #E8F5E9;">🌱</div>
+        <div class="spiral-info">
+          <div class="spiral-trail" style="color: #66BB6A;">Semente — 6 a 8 anos</div>
+          <div class="spiral-lesson">"O Cofrinho Mágico"</div>
+          <div class="spiral-desc">História do Grão que aprende a guardar moedas. Atividade: contar moedas e colocar no cofrinho. Aprender brincando.</div>
+        </div>
+        <div class="badge badge-green" style="font-size: 0.65rem; flex-shrink: 0;">Histórias + Contagem</div>
+      </div>
+      <div class="spiral-connector reveal reveal-delay-1" style="background: linear-gradient(180deg, #66BB6A, var(--green));"></div>
+
+      <!-- Broto -->
+      <div class="spiral-card reveal reveal-delay-2" style="border: 2px solid var(--green); box-shadow: var(--shadow-lg);">
+        <div class="spiral-icon" style="background: var(--green-pale);">🌿</div>
+        <div class="spiral-info">
+          <div class="spiral-trail" style="color: var(--green);">Broto — 9 a 11 anos</div>
+          <div class="spiral-lesson">"Minha Meta de Poupança"</div>
+          <div class="spiral-desc">Definir uma meta real (videogame, brinquedo), calcular quanto guardar por semana, acompanhar no app. Poupança com propósito.</div>
+        </div>
+        <div class="badge badge-gold" style="font-size: 0.65rem; flex-shrink: 0;">Metas + Calculadora</div>
+      </div>
+      <div class="spiral-connector reveal reveal-delay-2" style="background: linear-gradient(180deg, var(--green), #388E3C);"></div>
+
+      <!-- Árvore -->
+      <div class="spiral-card reveal reveal-delay-3">
+        <div class="spiral-icon" style="background: #E8F5E9;">🌳</div>
+        <div class="spiral-info">
+          <div class="spiral-trail" style="color: #388E3C;">Árvore — 12 a 14 anos</div>
+          <div class="spiral-lesson">"Juros Compostos na Prática"</div>
+          <div class="spiral-desc">Simulador interativo: "Se você guardar R$20/mês com juros de 1% ao mês, quanto terá em 1 ano?" Matemática real, resultado visual.</div>
+        </div>
+        <div class="badge badge-blue" style="font-size: 0.65rem; flex-shrink: 0;">Simuladores + Matemática</div>
+      </div>
+      <div class="spiral-connector reveal reveal-delay-3" style="background: linear-gradient(180deg, #388E3C, #1B5E20);"></div>
+
+      <!-- Floresta -->
+      <div class="spiral-card reveal reveal-delay-4">
+        <div class="spiral-icon" style="background: #E8F5E9;">🌲</div>
+        <div class="spiral-info">
+          <div class="spiral-trail" style="color: #1B5E20;">Floresta — 15 a 17 anos</div>
+          <div class="spiral-lesson">"Meu Primeiro Investimento"</div>
+          <div class="spiral-desc">CDB, Tesouro Direto, renda fixa vs variável. Simulação de investimento com dinheiro fictício. Preparação para a vida adulta.</div>
+        </div>
+        <div class="badge" style="background: #E8F5E9; color: #1B5E20; font-size: 0.65rem; flex-shrink: 0;">Investimentos Reais</div>
+      </div>
+    </div>
+
+    <div class="flex gap-16 justify-center flex-wrap mt-16 reveal reveal-delay-5">
+      <div class="card card-accent" style="text-align: center; min-width: 200px; padding: 12px 16px;">
+        <div style="font-size: 1.8rem; font-weight: 800; color: var(--purple);">1 conceito</div>
+        <div style="font-size: 0.8rem; color: var(--gray-600);"><strong>4 formas</strong> de ensinar</div>
+      </div>
+      <div class="card card-accent" style="text-align: center; min-width: 200px; padding: 12px 16px;">
+        <div style="font-size: 1.8rem; font-weight: 800; color: var(--green);">11 anos</div>
+        <div style="font-size: 0.8rem; color: var(--gray-600);">de jornada educacional (6→17)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 4: FÁBRICA DE CONTEÚDO              -->
+<!-- ========================================= -->
+<section class="scene scene-4" id="scene-3">
+  <div class="bg-grain"></div>
+  <div class="scene-inner">
+    <div class="text-center mb-32">
+      <span class="scene-label reveal">Cena 4 — Bastidores</span>
+      <h2 class="scene-title reveal reveal-delay-1">A Fábrica de Conteúdo:<br>6 Agentes de IA</h2>
+      <p class="scene-subtitle mx-auto reveal reveal-delay-2">
+        Cada lição percorre uma esteira inteligente — da detecção de lacunas até a otimização contínua.
+      </p>
+    </div>
+
+    <div class="pipeline reveal reveal-delay-2">
+      <div class="pipeline-node">
+        <div class="node-icon" style="background: #E3F2FD;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1976D2" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        </div>
+        <div class="node-title">Gap Detector</div>
+        <div class="node-desc">Identifica lacunas no currículo</div>
+      </div>
+      <div class="pipeline-arrow"></div>
+      <div class="pipeline-node">
+        <div class="node-icon" style="background: var(--green-pale);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2D7A3A" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <div class="node-title">Generator</div>
+        <div class="node-desc">Cria rascunho da lição com IA</div>
+      </div>
+      <div class="pipeline-arrow"></div>
+      <div class="pipeline-node">
+        <div class="node-icon" style="background: var(--purple-light);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        </div>
+        <div class="node-title">Pedagogo Digital</div>
+        <div class="node-desc">Valida adequação por faixa etária</div>
+      </div>
+      <div class="pipeline-arrow"></div>
+      <div class="pipeline-node">
+        <div class="node-icon" style="background: var(--gold-light);">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4911E" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/></svg>
+        </div>
+        <div class="node-title">Revisão Humana</div>
+        <div class="node-desc">Pedagogo real aprova o conteúdo</div>
+      </div>
+      <div class="pipeline-arrow"></div>
+      <div class="pipeline-node">
+        <div class="node-icon" style="background: #FFF3E0;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E65100" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+        </div>
+        <div class="node-title">A/B Tester</div>
+        <div class="node-desc">Testa variantes com usuários reais</div>
+      </div>
+      <div class="pipeline-arrow"></div>
+      <div class="pipeline-node">
+        <div class="node-icon" style="background: #E8F5E9;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <div class="node-title">Optimizer</div>
+        <div class="node-desc">Melhora continuamente com dados</div>
+      </div>
+    </div>
+
+    <div class="flex gap-24 justify-center flex-wrap mt-40 reveal reveal-delay-3">
+      <div class="card card-accent" style="text-align: center; min-width: 240px;">
+        <div style="font-size: 2.5rem; font-weight: 800; color: var(--green);">90%</div>
+        <div style="font-size: 0.9rem; color: var(--gray-600);">redução de custo por lição</div>
+      </div>
+      <div class="card card-accent" style="text-align: center; min-width: 240px;">
+        <div style="font-size: 2.5rem; font-weight: 800; color: var(--green);">50+</div>
+        <div style="font-size: 0.9rem; color: var(--gray-600);">novas lições por mês<br><small style="color: var(--gray-400);">com equipe de 3–5 pessoas</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 5: VALIDAÇÃO COM FAMÍLIAS REAIS     -->
+<!-- ========================================= -->
+<section class="scene scene-5" id="scene-4">
+  <div class="bg-dots"></div>
+  <div class="scene-inner">
+    <div class="text-center mb-32">
+      <span class="scene-label reveal">Cena 5 — Validação</span>
+      <h2 class="scene-title reveal reveal-delay-1">Validação com<br>Famílias Reais</h2>
+      <p class="scene-subtitle mx-auto reveal reveal-delay-2">
+        Não lançamos nada sem testar. Cada lição passa por um ciclo rigoroso: criar → testar com famílias reais → medir → iterar.
+      </p>
+    </div>
+
+    <!-- Cycle diagram -->
+    <div class="flex gap-24 justify-center flex-wrap mb-32 reveal reveal-delay-2">
+      <div class="pipeline">
+        <div class="pipeline-node">
+          <div class="node-icon" style="background: var(--green-pale);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2D7A3A" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <div class="node-title">Criar</div>
+          <div class="node-desc">IA + pedagogo geram a lição</div>
+        </div>
+        <div class="pipeline-arrow"></div>
+        <div class="pipeline-node">
+          <div class="node-icon" style="background: var(--gold-light);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4911E" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <div class="node-title">Testar</div>
+          <div class="node-desc">50 famílias do programa beta</div>
+        </div>
+        <div class="pipeline-arrow"></div>
+        <div class="pipeline-node">
+          <div class="node-icon" style="background: var(--blue-light);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1976D2" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+          </div>
+          <div class="node-title">Medir</div>
+          <div class="node-desc">Conclusão, tempo, avaliação</div>
+        </div>
+        <div class="pipeline-arrow"></div>
+        <div class="pipeline-node">
+          <div class="node-icon" style="background: var(--purple-light);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          </div>
+          <div class="node-title">Iterar</div>
+          <div class="node-desc">Ajustar e relançar melhor</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="validation-metrics mb-32 reveal reveal-delay-3">
+      <div class="val-metric">
+        <div class="val-number" style="color: var(--green);">87%</div>
+        <div class="val-label">taxa de conclusão<br>das lições</div>
+      </div>
+      <div class="val-metric">
+        <div class="val-number" style="color: var(--gold-dark);">4.8<span style="font-size: 1rem; color: var(--gray-400);">/5</span></div>
+        <div class="val-label">avaliação média<br>dos pais</div>
+      </div>
+      <div class="val-metric">
+        <div class="val-number" style="color: var(--blue);">5.2<span style="font-size: 1rem; color: var(--gray-400);">min</span></div>
+        <div class="val-label">tempo médio por lição<br><small style="color: var(--green);">meta: 5–7 min ✓</small></div>
+      </div>
+      <div class="val-metric">
+        <div class="val-number" style="color: var(--purple);">92%</div>
+        <div class="val-label">dos pais recomendam<br>para amigos</div>
+      </div>
+    </div>
+
+    <!-- Testimonial -->
+    <div class="testimonial-card mx-auto reveal reveal-delay-4">
+      <div class="quote-text">
+        Meu filho de 10 anos me explicou o que é investimento. Eu fiquei sem palavras. Nunca imaginei que um app pudesse ensinar isso de um jeito tão natural.
+      </div>
+      <div class="quote-author">— Mãe do Pedro, 10 anos, programa beta GRANIX</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 6: COMPLIANCE BY DESIGN             -->
+<!-- ========================================= -->
+<section class="scene scene-6" id="scene-5">
+  <div class="bg-grain"></div>
+  <div class="scene-inner">
+    <div class="text-center mb-32">
+      <span class="scene-label reveal" style="background: var(--blue-light); color: var(--blue);">Cena 6 — Proteção</span>
+      <h2 class="scene-title reveal reveal-delay-1">Compliance by Design:<br>Proteção que Ninguém Vê</h2>
+      <p class="scene-subtitle mx-auto reveal reveal-delay-2">
+        Privacidade e proteção não são features — são a fundação. Cada linha de código é escrita com compliance em mente.
+      </p>
+    </div>
+
+    <div class="shield-grid mb-32">
+      <div class="shield-card reveal reveal-delay-2">
+        <div class="shield-icon" style="background: #E8F5E9;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2D7A3A" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h4>ECA Digital</h4>
+        <p style="margin-bottom: 8px;">Lei 15.211/2025 — em vigor desde 17/mar/2026</p>
+        <div class="badge badge-green" style="font-size: 0.7rem;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          GRANIX 100% compliance
+        </div>
+      </div>
+      <div class="shield-card reveal reveal-delay-3" style="border-top: none;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--purple);"></div>
+        <div class="shield-icon" style="background: var(--purple-light);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7B1FA2" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <h4>LGPD Art. 14</h4>
+        <p style="margin-bottom: 8px;">Consentimento parental obrigatório. Interesse superior do menor em todas as decisões de dados.</p>
+        <div class="badge" style="background: var(--purple-light); color: var(--purple); font-size: 0.7rem;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          Consentimento explícito
+        </div>
+      </div>
+      <div class="shield-card reveal reveal-delay-4" style="border-top: none;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--gold);"></div>
+        <div class="shield-icon" style="background: var(--gold-light);">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D4911E" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><line x1="1" y1="1" x2="23" y2="23" stroke="#D4911E" stroke-width="2"/></svg>
+        </div>
+        <h4>Zero PII Financeiro</h4>
+        <p style="margin-bottom: 8px;">Nenhum dado financeiro do banco. Apenas comportamento educacional anônimo e agregado.</p>
+        <div class="badge badge-gold" style="font-size: 0.7rem;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          Zero dados sensíveis
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-callout reveal reveal-delay-5 mx-auto" style="max-width: 640px; background: var(--red-light); border-left-color: var(--red);">
+      <span class="stat-number" style="color: var(--red);">R$50M</span>
+      <span class="stat-text">Multa máxima LGPD para tratamento inadequado de dados de menores. <strong>Nossos concorrentes ainda estão se adaptando. Nós já nascemos compliance.</strong></span>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 7: PERSONALIZAÇÃO INVISÍVEL         -->
+<!-- ========================================= -->
+<section class="scene scene-7" id="scene-6">
+  <div class="scene-inner">
+    <div class="text-center mb-32">
+      <span class="scene-label reveal">Cena 7 — Inteligência</span>
+      <h2 class="scene-title reveal reveal-delay-1">Personalização invisível</h2>
+      <p class="scene-subtitle mx-auto reveal reveal-delay-2">
+        A IA identifica o perfil de cada criança e adapta o conteúdo automaticamente.
+        Mesma lição, experiências diferentes.
+      </p>
+    </div>
+
+    <!-- Micro-segments -->
+    <div class="flex gap-12 justify-center flex-wrap mb-32 reveal reveal-delay-2">
+      <span class="segment-pill" style="border-color: #1976D2; color: #1976D2;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        Explorer
+      </span>
+      <span class="segment-pill" style="border-color: var(--green); color: var(--green);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
+        Focused
+      </span>
+      <span class="segment-pill" style="border-color: var(--purple); color: var(--purple);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        Social
+      </span>
+      <span class="segment-pill" style="border-color: var(--gold-dark); color: var(--gold-dark);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+        Practical
+      </span>
+      <span class="segment-pill" style="border-color: var(--teal); color: var(--teal);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Cautious
+      </span>
+      <span class="segment-pill" style="border-color: var(--pink); color: var(--pink);">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg>
+        Intermittent
+      </span>
+    </div>
+
+    <!-- 3 phone mockups -->
+    <div class="flex gap-24 justify-center flex-wrap reveal reveal-delay-3">
+      <!-- Version A: Football -->
+      <div class="persona-card flex-col items-center">
+        <div class="persona-tag" style="background: #E3F2FD; color: #1565C0;">Perfil: Explorer</div>
+        <div class="phone phone-sm">
+          <div class="phone-screen">
+            <div class="phone-header" style="background: linear-gradient(135deg, #1565C0, #1976D2);">
+              <h4>Minha Primeira Mesada</h4>
+              <p>Trilha Broto — Lição 3</p>
+            </div>
+            <div class="phone-body">
+              <div style="padding: 12px 0;">
+                <div style="font-size: 0.7rem; color: var(--gray-500); margin-bottom: 6px;">IMAGINE QUE...</div>
+                <p style="font-size: 0.8rem; line-height: 1.5; color: var(--gray-800);">
+                  Você quer comprar a <strong>camisa do seu time</strong> que custa R$120.
+                  Com sua mesada de R$10 por semana, como fazer?
+                </p>
+                <div style="margin-top: 12px; padding: 10px; background: var(--blue-light); border-radius: 8px; text-align: center;">
+                  <div style="font-size: 2rem;">⚽</div>
+                  <div style="font-size: 0.7rem; color: #1565C0; font-weight: 600; margin-top: 4px;">12 semanas guardando</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Version B: Gaming -->
+      <div class="persona-card flex-col items-center">
+        <div class="persona-tag" style="background: var(--green-pale); color: var(--green-dark);">Perfil: Focused</div>
+        <div class="phone phone-sm">
+          <div class="phone-screen">
+            <div class="phone-header" style="background: linear-gradient(135deg, var(--green-dark), var(--green));">
+              <h4>Minha Primeira Mesada</h4>
+              <p>Trilha Broto — Lição 3</p>
+            </div>
+            <div class="phone-body">
+              <div style="padding: 12px 0;">
+                <div style="font-size: 0.7rem; color: var(--gray-500); margin-bottom: 6px;">IMAGINE QUE...</div>
+                <p style="font-size: 0.8rem; line-height: 1.5; color: var(--gray-800);">
+                  Você quer comprar um <strong>jogo novo</strong> que custa R$200.
+                  Com sua mesada de R$10 por semana, como planejar?
+                </p>
+                <div style="margin-top: 12px; padding: 10px; background: var(--green-pale); border-radius: 8px; text-align: center;">
+                  <div style="font-size: 2rem;">🎮</div>
+                  <div style="font-size: 0.7rem; color: var(--green-dark); font-weight: 600; margin-top: 4px;">20 semanas guardando</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Version C: Music -->
+      <div class="persona-card flex-col items-center">
+        <div class="persona-tag" style="background: var(--purple-light); color: var(--purple);">Perfil: Social</div>
+        <div class="phone phone-sm">
+          <div class="phone-screen">
+            <div class="phone-header" style="background: linear-gradient(135deg, #6A1B9A, #7B1FA2);">
+              <h4>Minha Primeira Mesada</h4>
+              <p>Trilha Broto — Lição 3</p>
+            </div>
+            <div class="phone-body">
+              <div style="padding: 12px 0;">
+                <div style="font-size: 0.7rem; color: var(--gray-500); margin-bottom: 6px;">IMAGINE QUE...</div>
+                <p style="font-size: 0.8rem; line-height: 1.5; color: var(--gray-800);">
+                  Você quer ir ao <strong>show da sua banda favorita</strong> e o ingresso custa R$80.
+                  Como organizar a sua mesada?
+                </p>
+                <div style="margin-top: 12px; padding: 10px; background: var(--purple-light); border-radius: 8px; text-align: center;">
+                  <div style="font-size: 2rem;">🎵</div>
+                  <div style="font-size: 0.7rem; color: var(--purple); font-weight: 600; margin-top: 4px;">8 semanas guardando</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- PART 2 DIVIDER                            -->
+<!-- ========================================= -->
+<div class="part-divider">
+  <h2 class="reveal">Parte 2</h2>
+  <h3 class="reveal reveal-delay-1">Experiência do Usuário</h3>
+  <p style="color: rgba(255,255,255,0.5); margin-top: 8px; font-size: 0.9rem;" class="reveal reveal-delay-2">
+    Como uma família real vive o GRANIX no dia a dia
+  </p>
+</div>
+
+<!-- ========================================= -->
+<!-- SCENE 5: JOÃO ABRE O APP                  -->
+<!-- ========================================= -->
+<section class="scene scene-8" id="scene-7">
+  <div class="bg-dots"></div>
+  <div class="scene-inner">
+    <div class="text-center mb-32">
+      <span class="scene-label reveal">Cena 8 — Primeiro Contato</span>
+      <h2 class="scene-title reveal reveal-delay-1">João, 10 anos, abre o app<br>pela primeira vez</h2>
+      <p class="scene-subtitle mx-auto reveal reveal-delay-2">
+        3 minutos. 5 telas. 1 momento "aha".
+      </p>
+    </div>
+
+    <div class="onboarding-screens reveal reveal-delay-2">
+      <!-- Screen 1: Welcome -->
+      <div class="onboarding-step">
+        <div class="step-number">1</div>
+        <div class="phone phone-sm">
+          <div class="phone-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(180deg, var(--green-pale) 0%, var(--white) 100%);">
+            <div style="font-size: 3rem; margin-bottom: 16px;">👋</div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--green-dark); text-align: center;">Olá! Eu sou o Grão.</div>
+            <div style="font-size: 0.75rem; color: var(--gray-600); text-align: center; margin: 12px 0;">Vou te ajudar a aprender sobre dinheiro de um jeito divertido!</div>
+            <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+              <div class="app-avatar" style="background: #FFECB3; font-size: 1.8rem;">🦁</div>
+              <div class="app-avatar" style="background: #E1F5FE; font-size: 1.8rem;">🐬</div>
+              <div class="app-avatar" style="background: #F3E5F5; font-size: 1.8rem;">🦄</div>
+              <div class="app-avatar" style="background: #E8F5E9; font-size: 1.8rem;">🐢</div>
+            </div>
+            <div style="font-size: 0.65rem; color: var(--gray-400); margin-top: 8px;">Escolha seu avatar</div>
+          </div>
+        </div>
+        <div style="text-align: center; font-size: 0.75rem; color: var(--gray-500); margin-top: 8px;">Boas-vindas</div>
+      </div>
+
+      <!-- Screen 2: Quiz -->
+      <div class="onboarding-step">
+        <div class="step-number">2</div>
+        <div class="phone phone-sm">
+          <div class="phone-screen">
+            <div class="phone-header">
+              <h4>Quiz Rápido</h4>
+              <p>Pergunta 1 de 3</p>
+            </div>
+            <div class="phone-body" style="padding: 16px;">
+              <p style="font-size: 0.8rem; font-weight: 600; color: var(--gray-800); margin-bottom: 12px;">Quando você ganha dinheiro, o que faz primeiro?</p>
+              <div class="quiz-option" style="border-color: var(--green); background: var(--green-pale);">
+                <span style="font-weight: 600;">A)</span> Guardo um pouco
+              </div>
+              <div class="quiz-option">
+                <span style="font-weight: 600;">B)</span> Compro o que quero
+              </div>
+              <div class="quiz-option">
+                <span style="font-weight: 600;">C)</span> Não sei o que fazer
+              </div>
+              <div class="app-progress-bar mt-16">
+                <div class="fill" style="width: 33%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align: center; font-size: 0.75rem; color: var(--gray-500); margin-top: 8px;">Quiz diagnóstico</div>
+      </div>
+
+      <!-- Screen 3: Trail assigned -->
+      <div class="onboarding-step">
+        <div class="step-number">3</div>
+        <div class="phone phone-sm">
+          <div class="phone-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(180deg, #E8F5E9 0%, var(--white) 100%);">
+            <div style="font-size: 3rem; margin-bottom: 8px;">🌿</div>
+            <div style="font-size: 0.9rem; font-weight: 800; color: var(--green-dark);">Sua trilha é a</div>
+            <div style="font-size: 1.4rem; font-weight: 900; color: var(--green); margin: 4px 0;">Trilha Broto</div>
+            <div style="font-size: 0.7rem; color: var(--gray-500);">Para exploradores de 9 a 11 anos</div>
+            <div style="margin-top: 16px; padding: 8px 16px; background: var(--gold-light); border-radius: 8px;">
+              <div style="font-size: 0.65rem; color: var(--gold-dark); font-weight: 600;">PRIMEIRA MISSÃO</div>
+              <div style="font-size: 0.8rem; font-weight: 700; color: var(--gray-800);">Minha Primeira Mesada</div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align: center; font-size: 0.75rem; color: var(--gray-500); margin-top: 8px;">Trilha personalizada</div>
+      </div>
+
+      <!-- Screen 4: First badge -->
+      <div class="onboarding-step">
+        <div class="step-number">4</div>
+        <div class="phone phone-sm">
+          <div class="phone-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(180deg, var(--gold-light) 0%, var(--white) 100%);">
+            <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 4px 20px rgba(245,166,35,0.3);">🏅</div>
+            <div style="font-size: 0.65rem; font-weight: 700; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 12px;">Badge conquistado!</div>
+            <div style="font-size: 1rem; font-weight: 800; color: var(--gray-800); margin-top: 4px;">Explorador Financeiro</div>
+            <div style="font-size: 0.7rem; color: var(--gray-500); margin-top: 4px;">Você deu o primeiro passo!</div>
+            <div style="display: flex; gap: 4px; margin-top: 16px;">
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--gold);"></div>
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--gray-200);"></div>
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--gray-200);"></div>
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--gray-200);"></div>
+              <div style="width: 6px; height: 6px; border-radius: 50%; background: var(--gray-200);"></div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align: center; font-size: 0.75rem; color: var(--gray-500); margin-top: 8px;">Primeiro badge</div>
+      </div>
+
+      <!-- Screen 5: Dashboard -->
+      <div class="onboarding-step">
+        <div class="step-number">5</div>
+        <div class="phone phone-sm">
+          <div class="phone-screen">
+            <div class="phone-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="app-avatar" style="background: #FFECB3; font-size: 1rem; width: 28px; height: 28px;">🦁</div>
+                <div>
+                  <h4 style="font-size: 0.75rem;">Olá, João!</h4>
+                  <p style="font-size: 0.6rem;">Trilha Broto — Nível 1</p>
+                </div>
+              </div>
+            </div>
+            <div class="phone-body">
+              <div style="padding: 8px 0;">
+                <div style="font-size: 0.65rem; color: var(--gray-500); font-weight: 600; margin-bottom: 6px;">PRÓXIMA LIÇÃO</div>
+                <div style="padding: 10px; background: var(--green-pale); border-radius: 8px; border-left: 3px solid var(--green);">
+                  <div style="font-size: 0.75rem; font-weight: 700; color: var(--green-dark);">Minha Primeira Mesada</div>
+                  <div style="font-size: 0.6rem; color: var(--gray-500);">5 min — Começar agora</div>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.65rem; color: var(--gray-500); font-weight: 600;">SEUS POTES</div>
+                <div style="display: flex; gap: 6px; margin-top: 4px;">
+                  <div style="flex: 1; text-align: center; padding: 6px; background: var(--blue-light); border-radius: 6px; font-size: 0.6rem; color: var(--blue);">Gastar<br><strong>R$0</strong></div>
+                  <div style="flex: 1; text-align: center; padding: 6px; background: var(--green-pale); border-radius: 6px; font-size: 0.6rem; color: var(--green);">Guardar<br><strong>R$0</strong></div>
+                  <div style="flex: 1; text-align: center; padding: 6px; background: var(--gold-light); border-radius: 6px; font-size: 0.6rem; color: var(--gold-dark);">Investir<br><strong>R$0</strong></div>
+                  <div style="flex: 1; text-align: center; padding: 6px; background: #FCE4EC; border-radius: 6px; font-size: 0.6rem; color: var(--pink);">Doar<br><strong>R$0</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align: center; font-size: 0.75rem; color: var(--gray-500); margin-top: 8px;">Dashboard pronto</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 6: O CICLO VIRTUOSO COMEÇA          -->
+<!-- ========================================= -->
+<section class="scene scene-9" id="scene-8">
+  <div class="scene-inner">
+    <div class="text-center mb-32">
+      <span class="scene-label reveal">Cena 9 — O Ciclo</span>
+      <h2 class="scene-title reveal reveal-delay-1">O Ciclo Virtuoso começa</h2>
+      <p class="scene-subtitle mx-auto reveal reveal-delay-2">
+        O pai cria uma tarefa. O filho recebe. O app conecta os dois.
+      </p>
+    </div>
+
+    <div class="split-phones reveal reveal-delay-2">
+      <!-- Parent's phone -->
+      <div class="phone-column">
+        <div class="phone-owner">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray-600)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Tela do Pai
+        </div>
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-header phone-header-dark">
+              <h4>Criar Nova Tarefa</h4>
+              <p>Para: João</p>
+            </div>
+            <div class="phone-body">
+              <div style="padding: 8px 0;">
+                <div style="font-size: 0.65rem; color: var(--gray-500); font-weight: 600; margin-bottom: 4px;">TAREFA</div>
+                <div style="padding: 10px; background: var(--offwhite); border-radius: 8px; border: 1px solid var(--gray-200); font-size: 0.8rem; color: var(--gray-800);">
+                  Arrumar o quarto toda manhã esta semana
+                </div>
+
+                <div style="font-size: 0.65rem; color: var(--gray-500); font-weight: 600; margin: 12px 0 4px;">FREQUÊNCIA</div>
+                <div style="display: flex; gap: 4px;">
+                  <span style="padding: 4px 8px; background: var(--green); color: white; border-radius: 12px; font-size: 0.6rem; font-weight: 600;">Diária</span>
+                  <span style="padding: 4px 8px; background: var(--gray-100); border-radius: 12px; font-size: 0.6rem;">Semanal</span>
+                  <span style="padding: 4px 8px; background: var(--gray-100); border-radius: 12px; font-size: 0.6rem;">Única</span>
+                </div>
+
+                <div style="font-size: 0.65rem; color: var(--gray-500); font-weight: 600; margin: 12px 0 4px;">RECOMPENSA</div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <div style="padding: 10px 16px; background: var(--gold-light); border-radius: 8px; border: 2px solid var(--gold); font-size: 1.2rem; font-weight: 800; color: var(--gold-dark);">R$10</div>
+                  <span style="font-size: 0.65rem; color: var(--gray-500);">/semana</span>
+                </div>
+
+                <div style="margin-top: 16px; padding: 12px; background: var(--green); border-radius: 10px; text-align: center; color: white; font-weight: 700; font-size: 0.8rem;">
+                  Criar Tarefa
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="reveal-scale reveal-delay-3" style="align-self: center;">
+        <svg width="60" height="40" viewBox="0 0 60 40" fill="none">
+          <path d="M5 20h45" stroke="var(--green)" stroke-width="2" stroke-dasharray="4 4">
+            <animate attributeName="stroke-dashoffset" from="40" to="0" dur="2s" repeatCount="indefinite"/>
+          </path>
+          <path d="M45 12l8 8-8 8" stroke="var(--green)" stroke-width="2" fill="none"/>
+        </svg>
+      </div>
+
+      <!-- Child's phone -->
+      <div class="phone-column">
+        <div class="phone-owner">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray-600)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Tela do João
+        </div>
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="app-avatar" style="background: #FFECB3; font-size: 1rem; width: 28px; height: 28px;">🦁</div>
+                <div>
+                  <h4 style="font-size: 0.75rem;">Minhas Tarefas</h4>
+                  <p style="font-size: 0.6rem;">2 tarefas ativas</p>
+                </div>
+              </div>
+            </div>
+            <div class="phone-body" style="padding-top: 4px;">
+              <!-- Notification -->
+              <div class="notification" style="margin: 8px 0; animation-delay: 1.5s;">
+                <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--green-pale); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">🔔</div>
+                <div>
+                  <div style="font-size: 0.7rem; font-weight: 700; color: var(--gray-800);">Nova tarefa do papai!</div>
+                  <div style="font-size: 0.6rem; color: var(--gray-500);">Arrumar o quarto — R$10/semana</div>
+                </div>
+              </div>
+
+              <div style="font-size: 0.65rem; color: var(--gray-500); font-weight: 600; margin: 8px 0 4px;">ESTA SEMANA</div>
+
+              <div class="task-item">
+                <div class="task-check checked">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <div style="font-size: 0.7rem; font-weight: 600; text-decoration: line-through; opacity: 0.5;">Segunda — Quarto arrumado</div>
+                </div>
+              </div>
+              <div class="task-item">
+                <div class="task-check checked">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                  <div style="font-size: 0.7rem; font-weight: 600; text-decoration: line-through; opacity: 0.5;">Terça — Quarto arrumado</div>
+                </div>
+              </div>
+              <div class="task-item" style="border: 1px solid var(--green); background: var(--green-pale);">
+                <div class="task-check">
+                </div>
+                <div>
+                  <div style="font-size: 0.7rem; font-weight: 600; color: var(--green-dark);">Quarta — Quarto arrumado</div>
+                </div>
+              </div>
+              <div class="task-item" style="opacity: 0.4;">
+                <div class="task-check"></div>
+                <div style="font-size: 0.7rem;">Quinta</div>
+              </div>
+              <div class="task-item" style="opacity: 0.4;">
+                <div class="task-check"></div>
+                <div style="font-size: 0.7rem;">Sexta</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 7: JOAO COMPLETA A TAREFA           -->
+<!-- ========================================= -->
+<section class="scene scene-10" id="scene-9">
+  <div class="bg-grain"></div>
+  <div class="scene-inner">
+    <div class="text-center mb-24">
+      <span class="scene-label reveal">Cena 10 — O Momento Mágico</span>
+      <h2 class="scene-title reveal reveal-delay-1">João completa a tarefa.<br>A mesada chega.</h2>
+    </div>
+
+    <!-- Two phones side by side -->
+    <div class="split-phones mb-24 reveal reveal-delay-2">
+      <!-- Child completes -->
+      <div class="phone-column">
+        <div class="phone-owner">🦁 João completa</div>
+        <div class="phone phone-sm">
+          <div class="phone-screen">
+            <div class="phone-header" style="padding: 28px 12px 8px;">
+              <h4 style="font-size: 0.75rem;">Tarefa completa!</h4>
+            </div>
+            <div class="phone-body">
+              <div style="text-align: center; padding: 8px 0;">
+                <div style="width: 48px; height: 48px; margin: 0 auto; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--green-dark); margin-top: 8px;">Semana completa!</div>
+                <div style="font-size: 0.6rem; color: var(--gray-500);">5/5 dias arrumados</div>
+                <div style="margin-top: 8px; padding: 6px; background: var(--gray-100); border-radius: 6px; font-size: 0.55rem; color: var(--gray-500);">📷 Foto enviada como prova</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flow arrow -->
+      <div class="reveal-scale reveal-delay-3" style="align-self: center;" id="flowArrow">
+        <svg width="80" height="60" viewBox="0 0 80 60" fill="none">
+          <circle cx="40" cy="30" r="20" fill="var(--gold-light)" stroke="var(--gold)" stroke-width="2"/>
+          <text x="40" y="35" text-anchor="middle" font-size="14" font-weight="800" fill="var(--gold-dark)">R$10</text>
+          <path d="M62 30h12" stroke="var(--gold)" stroke-width="2"/>
+          <path d="M70 24l6 6-6 6" stroke="var(--gold)" stroke-width="2" fill="none"/>
+          <path d="M6 30h12" stroke="var(--gold)" stroke-width="2"/>
+          <path d="M6 24l-6 6 6 6" stroke="var(--gold)" stroke-width="2" fill="none" transform="rotate(180, 6, 30)"/>
+        </svg>
+      </div>
+
+      <!-- Parent approves -->
+      <div class="phone-column">
+        <div class="phone-owner">👨 Pai aprova</div>
+        <div class="phone phone-sm">
+          <div class="phone-screen">
+            <div class="phone-header phone-header-dark" style="padding: 28px 12px 8px;">
+              <h4 style="font-size: 0.75rem;">Aprovar tarefa</h4>
+            </div>
+            <div class="phone-body">
+              <div style="padding: 8px 0;">
+                <div class="notification" style="animation: none; margin: 0 0 8px 0; padding: 8px 10px; border-left-color: var(--gold);">
+                  <div>
+                    <div style="font-size: 0.65rem; font-weight: 700;">João completou a semana!</div>
+                    <div style="font-size: 0.55rem; color: var(--gray-500);">Arrumar o quarto — 5/5 dias</div>
+                  </div>
+                </div>
+                <div style="padding: 10px; background: var(--green); border-radius: 8px; text-align: center; color: white; font-weight: 700; font-size: 0.75rem; cursor: pointer;">
+                  ✓ Aprovar — Liberar R$10
+                </div>
+                <div style="font-size: 0.55rem; color: var(--gray-400); text-align: center; margin-top: 6px;">1 toque para aprovar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MONEY SPLITS INTO 4 POTES -->
+    <div class="text-center mb-16 reveal reveal-delay-3">
+      <div style="font-size: 0.75rem; font-weight: 700; color: var(--gold-dark); letter-spacing: 0.1em; text-transform: uppercase;">A mesada chega e se divide nos</div>
+      <div style="font-size: 2rem; font-weight: 900; color: var(--green-dark); margin-top: 4px;">4 Potes</div>
+    </div>
+
+    <div class="potes-container reveal reveal-delay-4" id="potesContainer">
+      <div class="pote pote-gastar">
+        <div class="pote-jar" style="--fill: 40%;" id="poteGastar">
+          <div class="pote-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1976D2" stroke-width="2"><path d="M20 12V8H6a2 2 0 01-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12a2 2 0 002 2h14v-4"/><path d="M18 12a2 2 0 000 4h4v-4h-4z"/></svg>
+          </div>
+        </div>
+        <div class="pote-label">Gastar</div>
+        <div class="pote-amount">R$4</div>
+      </div>
+      <div class="pote pote-guardar">
+        <div class="pote-jar" style="--fill: 30%;" id="poteGuardar">
+          <div class="pote-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2D7A3A" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </div>
+        </div>
+        <div class="pote-label">Guardar</div>
+        <div class="pote-amount">R$3</div>
+      </div>
+      <div class="pote pote-investir">
+        <div class="pote-jar" style="--fill: 20%;" id="poteInvestir">
+          <div class="pote-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4911E" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          </div>
+        </div>
+        <div class="pote-label">Investir</div>
+        <div class="pote-amount">R$2</div>
+      </div>
+      <div class="pote pote-doar">
+        <div class="pote-jar" style="--fill: 10%;" id="poteDoar">
+          <div class="pote-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EC407A" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          </div>
+        </div>
+        <div class="pote-label">Doar</div>
+        <div class="pote-amount">R$1</div>
+      </div>
+    </div>
+
+    <!-- Animated coins will be injected by JS -->
+    <div id="coinAnimation" style="position: relative; height: 0; overflow: visible;"></div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 8: APRENDER FAZENDO                 -->
+<!-- ========================================= -->
+<section class="scene scene-11-b" id="scene-10">
+  <div class="bg-dots"></div>
+  <div class="scene-inner">
+    <div class="flex gap-48 items-center" style="flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 320px;">
+        <span class="scene-label reveal">Cena 11 — Aprendizado Contextual</span>
+        <h2 class="scene-title reveal reveal-delay-1">A mágica:<br>aprender fazendo</h2>
+        <p class="scene-subtitle reveal reveal-delay-2">
+          Depois de dividir a mesada nos 4 Potes, o app aproveita o momento para ensinar.
+          O aprendizado acontece quando faz sentido.
+        </p>
+        <div class="insight-card reveal reveal-delay-3" style="margin-top: 20px; max-width: 440px;">
+          <div class="insight-label">Insight do app</div>
+          <div class="insight-text">
+            "Você sabia que guardar R$3 por semana vira <strong>R$156 no final do ano</strong>?
+            Quer aprender mais sobre como seu dinheiro cresce?"
+          </div>
+        </div>
+        <div class="reveal reveal-delay-4 mt-24">
+          <div class="app-badge" style="font-size: 0.8rem; padding: 10px 16px;">
+            🏅 Badge conquistado: <strong style="margin-left: 4px;">Mestre dos Potes</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex: 0 0 auto;" class="reveal-right reveal-delay-2">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-header" style="background: linear-gradient(135deg, var(--green-dark), var(--green));">
+              <h4>Quiz: Guardando Dinheiro</h4>
+              <p>Trilha Broto — Lição Bônus</p>
+            </div>
+            <div class="phone-body">
+              <div style="padding: 10px 0;">
+                <p style="font-size: 0.8rem; font-weight: 600; color: var(--gray-800); margin-bottom: 12px;">
+                  Se você guardar R$3 toda semana, quanto terá em 1 mês?
+                </p>
+                <div class="quiz-option wrong" id="quizA">
+                  <span style="font-weight: 600;">A)</span> R$3
+                </div>
+                <div class="quiz-option correct" id="quizB">
+                  <span style="font-weight: 600;">B)</span> R$12 ✓
+                </div>
+                <div class="quiz-option wrong" id="quizC">
+                  <span style="font-weight: 600;">C)</span> R$30
+                </div>
+
+                <div style="margin-top: 12px; padding: 10px; background: var(--green-pale); border-radius: 8px; border: 1px solid var(--green); text-align: center;">
+                  <div style="font-size: 0.7rem; font-weight: 700; color: var(--green-dark);">Isso mesmo! 🎉</div>
+                  <div style="font-size: 0.6rem; color: var(--gray-600); margin-top: 2px;">R$3 x 4 semanas = R$12</div>
+                </div>
+
+                <div style="margin-top: 10px; display: flex; justify-content: center;">
+                  <div class="app-badge">
+                    🏅 Mestre dos Potes
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 12: UMA SEMANA NA VIDA DO JOÃO      -->
+<!-- ========================================= -->
+<section class="scene scene-12" id="scene-11">
+  <div class="bg-grain"></div>
+  <div class="scene-inner">
+    <div class="text-center mb-32">
+      <span class="scene-label reveal">Cena 12 — O Ritmo</span>
+      <h2 class="scene-title reveal reveal-delay-1">Uma semana na vida<br>do João</h2>
+      <p class="scene-subtitle mx-auto reveal reveal-delay-2">
+        Não é um app que se usa uma vez por mês. O GRANIX cria touchpoints diários que formam hábitos financeiros para a vida toda.
+      </p>
+    </div>
+
+    <div class="week-calendar">
+      <div class="week-day reveal reveal-delay-1">
+        <div class="day-icon" style="background: var(--green-pale);">📋</div>
+        <div class="day-name" style="color: var(--green-dark);">Segunda</div>
+        <div class="day-desc">
+          <strong>Nova tarefa da semana</strong> + desafio GRANIX desbloqueado. O pai define a tarefa, o app sugere a lição contextual.
+        </div>
+      </div>
+      <div class="week-day reveal reveal-delay-2">
+        <div class="day-icon" style="background: var(--blue-light);">📚</div>
+        <div class="day-name" style="color: var(--blue);">Terça a Quinta</div>
+        <div class="day-desc">
+          <strong>Lições de 5 minutos</strong> — personalizadas pelo perfil do João. Cada dia uma micro-lição contextual sobre o tema da semana.
+        </div>
+      </div>
+      <div class="week-day reveal reveal-delay-3">
+        <div class="day-icon" style="background: var(--purple-light);">🧠</div>
+        <div class="day-name" style="color: var(--purple);">Sexta</div>
+        <div class="day-desc">
+          <strong>Quiz semanal:</strong> "Quanto você aprendeu?" — 5 perguntas rápidas com feedback instantâneo e badge de conclusão.
+        </div>
+      </div>
+      <div class="week-day reveal reveal-delay-4">
+        <div class="day-icon" style="background: var(--gold-light);">🌍</div>
+        <div class="day-name" style="color: var(--gold-dark);">Sábado</div>
+        <div class="day-desc">
+          <strong>Desafio do mundo real:</strong> "Vá ao mercado e compare preços de 3 marcas de leite" — aprender na prática, no mundo real.
+        </div>
+      </div>
+      <div class="week-day reveal reveal-delay-5">
+        <div class="day-icon" style="background: #FFF3E0;">👨‍👩‍👦</div>
+        <div class="day-name" style="color: #E65100;">Domingo</div>
+        <div class="day-desc">
+          <strong>Tempo Família:</strong> pai e filho revisam a semana juntos, planejam a próxima. O momento mais importante do ciclo.
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-callout reveal reveal-delay-6 mx-auto mt-32" style="max-width: 600px;">
+      <span class="stat-number">7x</span>
+      <span class="stat-text">touchpoints por semana — o app que os pais abrem <strong>todo dia</strong>, não uma vez por mês</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 13: O MOMENTO FAMÍLIA               -->
+<!-- ========================================= -->
+<section class="scene scene-13" id="scene-12">
+  <div class="bg-dots"></div>
+  <div class="scene-inner">
+    <div class="flex gap-48 items-center" style="flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 320px;">
+        <span class="scene-label reveal">Cena 13 — Conexão</span>
+        <h2 class="scene-title reveal reveal-delay-1">O Momento Família</h2>
+        <p class="scene-subtitle reveal reveal-delay-2">
+          Todo domingo, pai e filho sentam juntos para revisar a semana. Não é só um app — é tempo de qualidade sobre dinheiro, valores e sonhos.
+        </p>
+        <div class="reveal reveal-delay-3" style="margin-top: 24px;">
+          <div class="insight-card" style="border-left-color: var(--gold); max-width: 440px;">
+            <div class="insight-label" style="color: var(--gold-dark);">Por que isso importa</div>
+            <div class="insight-text">
+              Pesquisas mostram que crianças que conversam sobre dinheiro com os pais têm <strong>3x mais chance</strong> de desenvolver hábitos financeiros saudáveis na vida adulta.
+            </div>
+          </div>
+        </div>
+        <div class="reveal reveal-delay-4 mt-24">
+          <div class="app-badge" style="font-size: 0.8rem; padding: 10px 16px;">
+            ❤️ Diferencial GRANIX: <strong style="margin-left: 4px;">Família no centro</strong>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex: 0 0 auto;" class="reveal-right reveal-delay-2">
+        <div class="family-dashboard">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <div style="font-size: 1.5rem;">👨‍👦</div>
+            <div>
+              <div style="font-size: 1rem; font-weight: 800; color: var(--gold-dark);">Revisão Semanal</div>
+              <div style="font-size: 0.7rem; color: var(--gray-500);">Domingo, 10h — Semana 4</div>
+            </div>
+          </div>
+
+          <div class="family-item">
+            <div class="fam-icon">✅</div>
+            <div class="fam-text">
+              João completou <strong>4 de 5 tarefas</strong> esta semana!
+            </div>
+          </div>
+          <div class="family-item">
+            <div class="fam-icon">🏦</div>
+            <div class="fam-text">
+              Pote Guardar cresceu <strong>R$12</strong> — faltam R$88 para o videogame
+            </div>
+          </div>
+          <div class="family-item">
+            <div class="fam-icon">🏅</div>
+            <div class="fam-text">
+              Badge novo: <strong>"Poupador Iniciante"</strong> — 4 semanas guardando!
+            </div>
+          </div>
+          <div class="family-item">
+            <div class="fam-icon">💡</div>
+            <div class="fam-text">
+              Sugestão: criar uma <strong>tarefa bônus</strong> para acelerar a meta?
+            </div>
+          </div>
+
+          <div style="margin-top: 16px; padding: 12px; background: var(--white); border-radius: var(--radius-md); text-align: center; border: 1px dashed var(--gold);">
+            <div style="font-size: 0.7rem; font-weight: 700; color: var(--gold-dark);">Próxima semana</div>
+            <div style="font-size: 0.85rem; color: var(--gray-700); margin-top: 4px;">Tema: <strong>"Minha primeira meta de poupança"</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 14: MÊS 1 → MÊS 6: TRANSFORMAÇÃO  -->
+<!-- ========================================= -->
+<section class="scene scene-14" id="scene-13">
+  <div class="bg-grain"></div>
+  <div class="scene-inner">
+    <div class="text-center mb-32">
+      <span class="scene-label reveal">Cena 14 — Evolução</span>
+      <h2 class="scene-title reveal reveal-delay-1">Mês 1 → Mês 6:<br>A Transformação</h2>
+      <p class="scene-subtitle mx-auto reveal reveal-delay-2">
+        A IA acompanha a evolução de João e adapta o conteúdo em tempo real. Veja como 6 meses transformam hábitos financeiros.
+      </p>
+    </div>
+
+    <div class="evolution-grid reveal reveal-delay-2">
+      <!-- Month 1 -->
+      <div class="evo-col evo-month1">
+        <div class="evo-header" style="color: var(--gray-500);">Mês 1 — Início</div>
+        <div style="font-size: 2.5rem; text-align: center; margin-bottom: 16px;">🌱</div>
+        <div class="evo-stat">
+          <div class="evo-label">Pote Gastar</div>
+          <div class="evo-bar-bg">
+            <div class="evo-bar-fill" style="width: 70%; background: var(--blue);"></div>
+          </div>
+          <div class="evo-value" style="color: var(--blue);">70%</div>
+        </div>
+        <div class="evo-stat">
+          <div class="evo-label">Tarefas</div>
+          <div class="evo-bar-bg">
+            <div class="evo-bar-fill" style="width: 60%; background: var(--gray-400);"></div>
+          </div>
+          <div class="evo-value" style="color: var(--gray-500);">60%</div>
+        </div>
+        <div style="font-size: 0.7rem; color: var(--gray-500); margin-top: 12px; padding: 8px; background: var(--gray-100); border-radius: 6px;">
+          📱 Precisa de lembretes diários<br>
+          💰 Distribui quase tudo no Gastar<br>
+          📖 GRANIX sugere lições básicas
+        </div>
+      </div>
+
+      <!-- Month 3 -->
+      <div class="evo-col evo-month3">
+        <div class="evo-header" style="color: var(--gold-dark);">Mês 3 — Crescimento</div>
+        <div style="font-size: 2.5rem; text-align: center; margin-bottom: 16px;">🌿</div>
+        <div class="evo-stat">
+          <div class="evo-label">Pote Gastar</div>
+          <div class="evo-bar-bg">
+            <div class="evo-bar-fill" style="width: 45%; background: var(--blue);"></div>
+          </div>
+          <div class="evo-value" style="color: var(--blue);">45%</div>
+        </div>
+        <div class="evo-stat">
+          <div class="evo-label">Tarefas</div>
+          <div class="evo-bar-bg">
+            <div class="evo-bar-fill" style="width: 80%; background: var(--gold);"></div>
+          </div>
+          <div class="evo-value" style="color: var(--gold-dark);">80%</div>
+        </div>
+        <div style="font-size: 0.7rem; color: var(--gray-600); margin-top: 12px; padding: 8px; background: var(--gold-light); border-radius: 6px;">
+          🎯 Define metas de poupança sozinho<br>
+          💪 Cria suas próprias tarefas<br>
+          📖 GRANIX introduz simuladores
+        </div>
+      </div>
+
+      <!-- Month 6 -->
+      <div class="evo-col evo-month6">
+        <div class="evo-header" style="color: var(--green);">Mês 6 — Domínio</div>
+        <div style="font-size: 2.5rem; text-align: center; margin-bottom: 16px;">🌳</div>
+        <div class="evo-stat">
+          <div class="evo-label">Pote Gastar</div>
+          <div class="evo-bar-bg">
+            <div class="evo-bar-fill" style="width: 30%; background: var(--blue);"></div>
+          </div>
+          <div class="evo-value" style="color: var(--blue);">30%</div>
+        </div>
+        <div class="evo-stat">
+          <div class="evo-label">Tarefas</div>
+          <div class="evo-bar-bg">
+            <div class="evo-bar-fill" style="width: 95%; background: var(--green);"></div>
+          </div>
+          <div class="evo-value" style="color: var(--green);">95%</div>
+        </div>
+        <div style="font-size: 0.7rem; color: var(--gray-700); margin-top: 12px; padding: 8px; background: var(--green-pale); border-radius: 6px;">
+          🏆 Meta de poupança atingida!<br>
+          👧 Ensina a irmã mais nova<br>
+          📖 GRANIX já ensina investimentos
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-card reveal reveal-delay-3 mx-auto mt-32" style="max-width: 600px; border-left-color: var(--green);">
+      <div class="insight-label">🤖 IA Adaptativa em ação</div>
+      <div class="insight-text">
+        No mês 1, GRANIX sugeria "O que é mesada?". No mês 6, João já estuda "Como funciona um CDB". A IA <strong>nunca para de evoluir</strong> com a criança.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 15: UMA SEMANA DEPOIS               -->
+<!-- ========================================= -->
+<section class="scene scene-15" id="scene-14">
+  <div class="scene-inner">
+    <div class="text-center mb-32">
+      <span class="scene-label reveal">Cena 15 — Resultado</span>
+      <h2 class="scene-title reveal reveal-delay-1">Uma semana depois</h2>
+      <p class="scene-subtitle mx-auto reveal reveal-delay-2">
+        O pai acompanha tudo no dashboard — e a IA entrega insights acionáveis.
+      </p>
+    </div>
+
+    <div class="flex gap-32" style="flex-wrap: wrap;">
+      <!-- Dashboard mockup -->
+      <div style="flex: 1; min-width: 340px;" class="reveal-left reveal-delay-2">
+        <div class="card" style="padding: 32px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--green-pale); display: flex; align-items: center; justify-content: center;">👨</div>
+            <div>
+              <div style="font-size: 1rem; font-weight: 700; color: var(--gray-800);">Dashboard do Pai</div>
+              <div style="font-size: 0.75rem; color: var(--gray-500);">Semana 4 — João</div>
+            </div>
+          </div>
+
+          <!-- Progress bars -->
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 0.75rem; font-weight: 600; color: var(--gray-600); margin-bottom: 8px;">Tarefas completas esta semana</div>
+            <div class="app-progress-bar" style="height: 10px;">
+              <div class="fill" style="width: 100%; background: linear-gradient(90deg, var(--green), var(--gold));" id="progressFill1"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--gray-400); margin-top: 4px;">
+              <span>0/5</span>
+              <span style="color: var(--green); font-weight: 700;">5/5 — 100%</span>
+            </div>
+          </div>
+
+          <!-- Chart -->
+          <div style="margin-bottom: 20px;">
+            <div style="font-size: 0.75rem; font-weight: 600; color: var(--gray-600); margin-bottom: 8px;">Engajamento — 4 semanas</div>
+            <div class="mini-chart" id="engagementChart">
+              <div style="text-align: center;">
+                <div class="bar" style="height: 30%; background: var(--gray-300); border-radius: 4px 4px 0 0;"></div>
+                <div style="font-size: 0.55rem; color: var(--gray-400); margin-top: 4px;">S1</div>
+              </div>
+              <div style="text-align: center;">
+                <div class="bar" style="height: 55%; background: var(--green-pale); border-color: var(--green); border-radius: 4px 4px 0 0;"></div>
+                <div style="font-size: 0.55rem; color: var(--gray-400); margin-top: 4px;">S2</div>
+              </div>
+              <div style="text-align: center;">
+                <div class="bar" style="height: 75%; background: var(--green-light); border-radius: 4px 4px 0 0; opacity: 0.7;"></div>
+                <div style="font-size: 0.55rem; color: var(--gray-400); margin-top: 4px;">S3</div>
+              </div>
+              <div style="text-align: center;">
+                <div class="bar" style="height: 95%; background: linear-gradient(180deg, var(--gold), var(--green)); border-radius: 4px 4px 0 0;"></div>
+                <div style="font-size: 0.55rem; color: var(--gray-400); margin-top: 4px;">S4</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Potes evolution -->
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 600; color: var(--gray-600); margin-bottom: 8px;">Distribuição dos Potes — evolução</div>
+            <div style="display: flex; gap: 8px;">
+              <div style="flex: 1;">
+                <div style="font-size: 0.6rem; color: var(--gray-500); margin-bottom: 4px;">Semana 1</div>
+                <div style="display: flex; height: 8px; border-radius: 4px; overflow: hidden;">
+                  <div style="width: 50%; background: var(--blue);"></div>
+                  <div style="width: 20%; background: var(--green);"></div>
+                  <div style="width: 20%; background: var(--gold);"></div>
+                  <div style="width: 10%; background: var(--pink);"></div>
+                </div>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-size: 0.6rem; color: var(--gray-500); margin-bottom: 4px;">Semana 4</div>
+                <div style="display: flex; height: 8px; border-radius: 4px; overflow: hidden;">
+                  <div style="width: 35%; background: var(--blue);"></div>
+                  <div style="width: 30%; background: var(--green);"></div>
+                  <div style="width: 25%; background: var(--gold);"></div>
+                  <div style="width: 10%; background: var(--pink);"></div>
+                </div>
+              </div>
+            </div>
+            <div style="font-size: 0.6rem; color: var(--green); font-weight: 600; margin-top: 6px;">↑ João está aprendendo a guardar e investir mais</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Insights -->
+      <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 16px;" class="reveal-right reveal-delay-3">
+        <div class="insight-card">
+          <div class="insight-label">💡 Insight da IA</div>
+          <div class="insight-text">
+            "João completa tarefas <strong>40% mais rápido</strong> quando você aprova em menos de 1 hora.
+            Tente aprovar assim que receber a notificação!"
+          </div>
+        </div>
+        <div class="insight-card" style="border-left-color: var(--gold);">
+          <div class="insight-label" style="color: var(--gold-dark);">📊 Progresso</div>
+          <div class="insight-text">
+            Em 4 semanas, João completou <strong>18 de 20 tarefas</strong> (90%).
+            Ele já subiu do nível 1 para o nível 3 na Trilha Broto.
+          </div>
+        </div>
+        <div class="insight-card" style="border-left-color: var(--blue);">
+          <div class="insight-label" style="color: var(--blue);">🎯 Recomendação</div>
+          <div class="insight-text">
+            "João demonstra interesse em investir. Que tal apresentar a lição
+            <strong>'Meu Primeiro Cofrinho de Investimento'</strong>?"
+          </div>
+        </div>
+        <div class="card" style="text-align: center; background: var(--green-pale); border: 1px solid var(--green);">
+          <div style="font-size: 0.75rem; font-weight: 700; color: var(--green-dark);">Próxima lição desbloqueada</div>
+          <div style="font-size: 1.1rem; font-weight: 800; color: var(--green); margin-top: 4px;">Planejando Minha Meta</div>
+          <div style="font-size: 0.7rem; color: var(--gray-500);">Trilha Broto — Nível 3</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================= -->
+<!-- SCENE 10: PARA A SUA INSTITUIÇÃO          -->
+<!-- ========================================= -->
+<section class="scene scene-16" id="scene-15">
+  <div class="bg-grain" style="opacity: 0.05;"></div>
+  <div class="scene-inner">
+    <div class="text-center mb-40">
+      <span class="scene-label reveal" style="background: rgba(255,255,255,0.1); color: var(--gold);">Cena 16 — Para Você</span>
+      <h2 class="scene-title reveal reveal-delay-1" style="font-size: clamp(2.2rem, 5vw, 3.2rem);">
+        E para a sua instituição?
+      </h2>
+      <p class="scene-subtitle mx-auto reveal reveal-delay-2" style="color: rgba(255,255,255,0.7);">
+        Toda essa experiência gera valor direto para o seu negócio.
+      </p>
+    </div>
+
+    <!-- 3 metrics -->
+    <div class="flex gap-24 justify-center flex-wrap mb-40">
+      <div class="metric-card reveal reveal-delay-2" style="flex: 1; min-width: 260px; max-width: 340px;">
+        <div class="metric-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <div class="metric-value" id="metric1">DAU orgânico</div>
+        <div class="metric-label">Pai abrindo o app <strong>diariamente</strong> para aprovar tarefas e acompanhar o filho</div>
+      </div>
+      <div class="metric-card reveal reveal-delay-3" style="flex: 1; min-width: 260px; max-width: 340px;">
+        <div class="metric-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        </div>
+        <div class="metric-value" id="metric2">LTV 10+ anos</div>
+        <div class="metric-label">Família retida desde os <strong>6 anos</strong> do filho até a vida adulta — ciclo completo</div>
+      </div>
+      <div class="metric-card reveal reveal-delay-4" style="flex: 1; min-width: 260px; max-width: 340px;">
+        <div class="metric-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 010 4H8"/><path d="M12 18v2M12 4v2"/></svg>
+        </div>
+        <div class="metric-value" id="metric3">Cross-sell natural</div>
+        <div class="metric-label">Quando o pai já está no app, a oportunidade de venda acontece <strong>organicamente</strong></div>
+      </div>
+    </div>
+
+    <!-- CTA Box -->
+    <div class="cta-box reveal reveal-delay-5 mx-auto" style="max-width: 700px;">
+      <div class="cta-main">
+        Tudo isso roda <span style="color: var(--gold);">DENTRO</span> do seu app.
+      </div>
+      <div class="cta-sub" style="margin-bottom: 20px;">
+        Sua marca. Sua experiência. Nosso motor.
+      </div>
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 16px;">
+        <div class="badge" style="background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.2); font-size: 0.75rem; padding: 6px 14px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          Componentes embeddáveis
+        </div>
+        <div class="badge" style="background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.2); font-size: 0.75rem; padding: 6px 14px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M12 16v-4M12 8h.01"/></svg>
+          IA adaptativa
+        </div>
+        <div class="badge" style="background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.2); font-size: 0.75rem; padding: 6px 14px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Zero acesso a dados financeiros
+        </div>
+      </div>
+    </div>
+
+    <!-- Logo -->
+    <div class="text-center mt-40 reveal reveal-delay-6">
+      <div class="granix-logo granix-logo-white" style="font-size: 2.8rem;">GRANIX</div>
+      <div style="font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-top: 8px; letter-spacing: 0.05em;">
+        Educação financeira para a nova geração brasileira
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ===== INTERSECTION OBSERVER FOR REVEALS =====
+const observerOptions = {
+  root: null,
+  rootMargin: '0px 0px -80px 0px',
+  threshold: 0.1
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // Special: trigger pote fill animation
+      if (entry.target.id === 'potesContainer') {
+        setTimeout(triggerPoteFill, 600);
+      }
+    }
+  });
+}, observerOptions);
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+  observer.observe(el);
+});
+
+// ===== PROGRESS BAR =====
+const progressBar = document.getElementById('progressBar');
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
+  progressBar.style.width = progress + '%';
+});
+
+// ===== SCENE NAV DOTS =====
+const scenes = document.querySelectorAll('.scene');
+const dots = document.querySelectorAll('.scene-nav .dot');
+
+const sceneObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const index = Array.from(scenes).indexOf(entry.target);
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+      });
+    }
+  });
+}, { threshold: 0.4 });
+
+scenes.forEach(scene => sceneObserver.observe(scene));
+
+dots.forEach(dot => {
+  dot.addEventListener('click', () => {
+    const index = parseInt(dot.dataset.scene);
+    scenes[index].scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// ===== POTE FILL ANIMATION =====
+function triggerPoteFill() {
+  document.querySelectorAll('.pote-jar').forEach(jar => {
+    jar.classList.add('filled');
+  });
+}
+
+// ===== ANIMATED COUNTERS (Scene 10) =====
+let countersAnimated = false;
+const scene10Observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !countersAnimated) {
+      countersAnimated = true;
+      // The metrics are text-based, so we just add a pulse effect
+      document.querySelectorAll('.metric-card').forEach((card, i) => {
+        setTimeout(() => {
+          card.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          card.style.transform = 'scale(1.03)';
+          setTimeout(() => { card.style.transform = 'scale(1)'; }, 300);
+        }, i * 200);
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+const scene10 = document.getElementById('scene-15');
+if (scene10) scene10Observer.observe(scene10);
+
+// ===== CHART BARS ANIMATION =====
+const chartObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const bars = entry.target.querySelectorAll('.bar');
+      bars.forEach((bar, i) => {
+        const height = bar.style.height;
+        bar.style.height = '0%';
+        setTimeout(() => {
+          bar.style.transition = 'height 1s cubic-bezier(0.34, 1.56, 0.64, 1)';
+          bar.style.height = height;
+        }, i * 150 + 200);
+      });
+    }
+  });
+}, { threshold: 0.5 });
+
+const chart = document.getElementById('engagementChart');
+if (chart) chartObserver.observe(chart);
+
+// ===== PROGRESS BAR FILL ANIMATIONS =====
+const progressObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const fill = entry.target;
+      const targetWidth = fill.style.width;
+      fill.style.width = '0%';
+      setTimeout(() => {
+        fill.style.transition = 'width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+        fill.style.width = targetWidth;
+      }, 300);
+    }
+  });
+}, { threshold: 0.5 });
+
+const fill1 = document.getElementById('progressFill1');
+if (fill1) progressObserver.observe(fill1);
+
+// ===== KEYBOARD NAVIGATION =====
+let currentScene = 0;
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+    e.preventDefault();
+    currentScene = Math.min(currentScene + 1, scenes.length - 1);
+    scenes[currentScene].scrollIntoView({ behavior: 'smooth' });
+  } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault();
+    currentScene = Math.max(currentScene - 1, 0);
+    scenes[currentScene].scrollIntoView({ behavior: 'smooth' });
+  }
+});
+
+// Track current scene from scroll for keyboard nav
+const sceneTracker = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      currentScene = Array.from(scenes).indexOf(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+scenes.forEach(s => sceneTracker.observe(s));
+</script>
+
+</body>
+</html>

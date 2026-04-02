@@ -1,0 +1,2545 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRANIX — Módulo Gamificação & Perfil</title>
+<style>
+/* ===================================================
+   RESET & TOKENS
+=================================================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --green:        #00C853;
+  --green-dark:   #00A844;
+  --green-glow:   rgba(0,200,83,.35);
+  --blue-deep:    #1A237E;
+  --blue-mid:     #283593;
+  --orange:       #FF6D00;
+  --pink:         #E91E63;
+  --purple:       #7C4DFF;
+  --gold:         #FFD700;
+  --gold-dark:    #F9A825;
+  --bg:           #F5F7FA;
+  --text:         #1A1A2E;
+  --text-muted:   #6B7280;
+  --card:         #FFFFFF;
+  --border:       rgba(26,35,126,.08);
+  --shadow-sm:    0 2px 8px rgba(26,35,126,.08);
+  --shadow-md:    0 6px 24px rgba(26,35,126,.12);
+  --shadow-lg:    0 16px 48px rgba(26,35,126,.18);
+  --radius:       16px;
+  --radius-sm:    10px;
+  --nav-h:        68px;
+  --header-h:     56px;
+}
+
+html, body {
+  height: 100%;
+  background: #0D0D1A;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* ===================================================
+   DESKTOP WRAPPER — phone mockup
+=================================================== */
+.stage {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(0,200,83,.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(124,77,255,.12) 0%, transparent 60%),
+    #0D0D1A;
+  overflow-y: auto;
+}
+
+.phone {
+  width: 375px;
+  height: 812px;
+  background: var(--bg);
+  border-radius: 44px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 0 10px #1A1A2E,
+    0 0 0 12px #2A2A3E,
+    0 40px 80px rgba(0,0,0,.6),
+    inset 0 0 0 1px rgba(255,255,255,.06);
+  flex-shrink: 0;
+}
+
+/* notch */
+.phone::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 28px;
+  background: #1A1A2E;
+  border-radius: 0 0 20px 20px;
+  z-index: 999;
+}
+
+/* ===================================================
+   SCREEN SYSTEM
+=================================================== */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+  overflow: hidden;
+}
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.screen-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 0 var(--nav-h);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.screen-body::-webkit-scrollbar { display: none; }
+
+/* ===================================================
+   BOTTOM NAV
+=================================================== */
+.nav {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 8px 8px;
+  z-index: 100;
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background .15s;
+  border: none;
+  background: none;
+  min-width: 60px;
+}
+.nav-item:active { background: rgba(0,200,83,.08); }
+.nav-icon {
+  font-size: 22px;
+  line-height: 1;
+  filter: grayscale(1) opacity(.45);
+  transition: filter .2s, transform .2s;
+}
+.nav-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: .3px;
+  transition: color .2s;
+}
+.nav-item.active .nav-icon { filter: none; transform: scale(1.12); }
+.nav-item.active .nav-label { color: var(--green); }
+
+/* ===================================================
+   SHARED HEADER
+=================================================== */
+.screen-header {
+  height: var(--header-h);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  margin-top: 28px; /* below notch */
+}
+.screen-header h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--blue-deep);
+  letter-spacing: -.4px;
+}
+.icon-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--card);
+  box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* ===================================================
+   UTILITIES
+=================================================== */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.pill {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+.progress-track {
+  height: 8px;
+  background: var(--bg);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--green), #69F0AE);
+  transition: width .6s cubic-bezier(.34,1.56,.64,1);
+}
+.section-title {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  padding: 0 20px;
+  margin-bottom: 10px;
+}
+.px20 { padding-left: 20px; padding-right: 20px; }
+
+/* ===================================================
+   ANIMATIONS
+=================================================== */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 var(--green-glow), var(--shadow-sm); }
+  50%       { box-shadow: 0 0 0 10px transparent, var(--shadow-md); }
+}
+@keyframes badge-pop {
+  0%   { transform: scale(.8); opacity: 0; }
+  70%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes shine {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes bounce-in {
+  0%   { transform: scale(0) rotate(-10deg); }
+  60%  { transform: scale(1.15) rotate(2deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0); }
+  50%       { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+@keyframes xp-fill {
+  from { width: 0; }
+}
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===================================================
+   SCREEN 1: PERFIL
+=================================================== */
+#screen-perfil .hero {
+  background: linear-gradient(160deg, var(--blue-deep) 0%, #3949AB 60%, var(--purple) 100%);
+  padding: 24px 20px 80px;
+  position: relative;
+  overflow: hidden;
+}
+#screen-perfil .hero::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.05);
+}
+#screen-perfil .hero::after {
+  content: '';
+  position: absolute;
+  bottom: 20px; left: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(0,200,83,.1);
+}
+
+.hero-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+.hero-top h2 { color: rgba(255,255,255,.7); font-size: 14px; font-weight: 500; }
+
+.xp-badge-mini {
+  background: rgba(255,215,0,.2);
+  border: 1px solid rgba(255,215,0,.5);
+  color: var(--gold);
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+.avatar-ring {
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  padding: 3px;
+  background: conic-gradient(
+    var(--gold) 0deg 225deg,
+    rgba(255,255,255,.2) 225deg 360deg
+  );
+  animation: pulse-glow 3s ease-in-out infinite;
+  cursor: pointer;
+}
+.avatar-inner {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #F97316, #EC4899, #8B5CF6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 44px;
+  border: 3px solid var(--blue-deep);
+  overflow: hidden;
+  position: relative;
+}
+.avatar-edit-btn {
+  position: absolute;
+  bottom: -2px; right: -2px;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--green);
+  border: 2px solid white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+}
+.hero-name {
+  margin-top: 10px;
+  font-size: 22px;
+  font-weight: 900;
+  color: white;
+  letter-spacing: -.4px;
+}
+.hero-title {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 4px;
+}
+.hero-title .pill {
+  background: rgba(255,215,0,.2);
+  border: 1px solid rgba(255,215,0,.4);
+  color: var(--gold);
+}
+
+/* XP / Level card */
+.level-card {
+  margin: -52px 20px 0;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  z-index: 10;
+  animation: slide-up .4s ease both;
+}
+.level-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.level-label {
+  display: flex; align-items: center; gap: 8px;
+}
+.level-badge {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(255,215,0,.35);
+}
+.level-text strong {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  display: block;
+}
+.level-text span {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.level-xp {
+  text-align: right;
+}
+.level-xp strong {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--blue-deep);
+  display: block;
+}
+.level-xp span {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+.xp-bar {
+  height: 10px;
+  background: var(--bg);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.xp-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--gold-dark), var(--gold), #FFF176);
+  width: 62.5%;
+  animation: xp-fill .8s .3s cubic-bezier(.34,1.56,.64,1) both;
+  box-shadow: 0 0 10px rgba(255,215,0,.5);
+}
+
+/* Stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 16px 20px 0;
+}
+.stat-box {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 10px 6px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  animation: slide-up .4s ease both;
+}
+.stat-box:nth-child(1) { animation-delay: .05s; }
+.stat-box:nth-child(2) { animation-delay: .1s; }
+.stat-box:nth-child(3) { animation-delay: .15s; }
+.stat-box:nth-child(4) { animation-delay: .2s; }
+.stat-icon { font-size: 20px; }
+.stat-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--blue-deep);
+  line-height: 1.1;
+  margin-top: 2px;
+}
+.stat-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+/* Streak flame */
+.streak-box { background: linear-gradient(135deg, #FF6D00, #FF8F00) !important; }
+.streak-box .stat-value, .streak-box .stat-label { color: white !important; }
+.streak-box .stat-icon { animation: float 2s ease-in-out infinite; }
+
+/* Journey timeline */
+.journey {
+  margin: 20px 20px 0;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.journey h3 {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+.timeline { position: relative; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 14px; top: 8px; bottom: 8px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--green), var(--purple));
+  opacity: .3;
+}
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 6px 0;
+  animation: slide-up .4s ease both;
+}
+.t-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.t-dot.done { background: var(--green); }
+.t-dot.gold { background: linear-gradient(135deg, var(--gold-dark), var(--gold)); }
+.t-dot.purple { background: var(--purple); }
+.t-dot.pink { background: var(--pink); }
+.t-content strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.t-content span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.member-since {
+  text-align: center;
+  padding: 12px 20px 24px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.member-since strong { color: var(--blue-deep); }
+
+/* ===================================================
+   SCREEN 2: CONQUISTAS
+=================================================== */
+#screen-conquistas .screen-header {
+  background: transparent;
+}
+
+.achievements-hero {
+  background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, #FFF176 100%);
+  margin: 0 20px 16px;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 6px 20px rgba(255,215,0,.35);
+  animation: slide-up .3s ease;
+}
+.ach-hero-icon { font-size: 36px; animation: float 3s ease-in-out infinite; }
+.ach-hero-text strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 900;
+  color: #5D3A00;
+}
+.ach-hero-text span { font-size: 12px; color: #8B6914; }
+.ach-count-pill {
+  margin-left: auto;
+  background: rgba(255,255,255,.6);
+  border-radius: 99px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #5D3A00;
+  flex-shrink: 0;
+}
+
+.badges-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 0 20px;
+  margin-bottom: 20px;
+}
+.badge-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+  animation: badge-pop .4s ease both;
+  position: relative;
+  overflow: hidden;
+}
+.badge-card:active { transform: scale(.97); }
+.badge-card.earned { border: 1.5px solid rgba(0,200,83,.2); }
+.badge-card.locked {
+  opacity: .65;
+  filter: saturate(.3);
+}
+.badge-card.locked .badge-icon::after {
+  content: '🔒';
+  position: absolute;
+  bottom: -4px; right: -4px;
+  font-size: 14px;
+  filter: saturate(1);
+}
+.badge-icon {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  position: relative;
+}
+.badge-icon.green  { background: linear-gradient(135deg, #00C853, #69F0AE); box-shadow: 0 4px 12px rgba(0,200,83,.35); }
+.badge-icon.gold   { background: linear-gradient(135deg, #F9A825, #FFD700); box-shadow: 0 4px 12px rgba(255,215,0,.35); }
+.badge-icon.blue   { background: linear-gradient(135deg, #1565C0, #42A5F5); box-shadow: 0 4px 12px rgba(21,101,192,.35); }
+.badge-icon.orange { background: linear-gradient(135deg, #E65100, #FF6D00); box-shadow: 0 4px 12px rgba(255,109,0,.35); }
+.badge-icon.purple { background: linear-gradient(135deg, #6A1B9A, #BA68C8); box-shadow: 0 4px 12px rgba(106,27,154,.35); }
+.badge-icon.pink   { background: linear-gradient(135deg, #AD1457, #F48FB1); box-shadow: 0 4px 12px rgba(173,20,87,.35); }
+.badge-icon.teal   { background: linear-gradient(135deg, #00695C, #4DB6AC); box-shadow: 0 4px 12px rgba(0,105,92,.35); }
+.badge-icon.gray   { background: linear-gradient(135deg, #546E7A, #B0BEC5); }
+.badge-name {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+.badge-desc {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.badge-progress {
+  height: 4px;
+  background: var(--bg);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.badge-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--green), #69F0AE);
+}
+.badge-xp {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: rgba(0,200,83,.12);
+  color: var(--green-dark);
+  border-radius: 99px;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+}
+.badge-card.earned .badge-xp {
+  background: rgba(0,200,83,.15);
+}
+
+/* Badge detail overlay */
+.badge-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+.badge-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.badge-detail {
+  background: var(--card);
+  border-radius: 24px 24px 0 0;
+  padding: 24px 24px 48px;
+  width: 100%;
+  text-align: center;
+  transform: translateY(40px);
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.badge-overlay.open .badge-detail { transform: translateY(0); }
+.badge-detail .big-icon {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 42px;
+  animation: bounce-in .5s ease;
+}
+.badge-detail h3 { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+.badge-detail p { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
+.badge-detail .earned-tag {
+  background: linear-gradient(90deg, var(--green), #69F0AE);
+  color: white;
+  padding: 8px 24px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-block;
+}
+.badge-detail .locked-tag {
+  background: var(--bg);
+  color: var(--text-muted);
+  padding: 8px 24px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-block;
+}
+
+/* ===================================================
+   SCREEN 3: RANKING
+=================================================== */
+.toggle-row {
+  display: flex;
+  gap: 6px;
+  padding: 0 20px;
+  margin-bottom: 16px;
+}
+.toggle-btn {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .2s;
+}
+.toggle-btn.active {
+  background: var(--blue-deep);
+  color: white;
+  border-color: var(--blue-deep);
+  box-shadow: 0 4px 12px rgba(26,35,126,.3);
+}
+
+.rank-podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 24px 16px;
+  height: 160px;
+}
+.podium-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.podium-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  position: relative;
+}
+.podium-avatar .crown {
+  position: absolute;
+  top: -14px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+}
+.podium-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+}
+.podium-xp {
+  font-size: 9px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.podium-bar {
+  border-radius: 8px 8px 0 0;
+  width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.podium-bar.first  { height: 80px; background: linear-gradient(180deg, #FFD700, #F9A825); }
+.podium-bar.second { height: 60px; background: linear-gradient(180deg, #B0BEC5, #78909C); }
+.podium-bar.third  { height: 44px; background: linear-gradient(180deg, #FF8F00, #E65100); }
+.podium-pos {
+  color: white;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.rank-list {
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.rank-row {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+  animation: slide-up .3s ease both;
+}
+.rank-row.me {
+  border: 2px solid var(--green);
+  background: linear-gradient(135deg, rgba(0,200,83,.05), var(--card));
+}
+.rank-pos {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--text-muted);
+  width: 20px;
+  text-align: center;
+}
+.rank-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.rank-info { flex: 1; }
+.rank-info strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.rank-info span {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.rank-right { text-align: right; }
+.rank-right strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--blue-deep);
+}
+.rank-right span { font-size: 10px; color: var(--text-muted); }
+
+.weekly-chart {
+  margin: 0 20px 16px;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.weekly-chart h3 {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.chart-bars {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  height: 60px;
+}
+.chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  justify-content: flex-end;
+}
+.chart-bar-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 50px;
+}
+.chart-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  transition: height .8s cubic-bezier(.34,1.56,.64,1);
+}
+.chart-bar.miguel  { background: linear-gradient(180deg, var(--green), var(--green-dark)); }
+.chart-bar.sofia   { background: linear-gradient(180deg, var(--pink), #AD1457); }
+.chart-bar.pai     { background: linear-gradient(180deg, var(--purple), #6200EA); }
+.chart-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: center;
+}
+.chart-days {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+.day-label { flex: 1; text-align: center; font-size: 9px; color: var(--text-muted); }
+
+.challenge-banner {
+  margin: 0 20px 16px;
+  background: linear-gradient(135deg, var(--orange), #FF8F00);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.challenge-banner .icon { font-size: 28px; }
+.challenge-banner .text strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  color: white;
+}
+.challenge-banner .text span { font-size: 11px; color: rgba(255,255,255,.8); }
+
+.national-position {
+  margin: 0 20px 20px;
+  background: linear-gradient(135deg, var(--blue-deep), var(--blue-mid));
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.national-position .pos-info strong {
+  display: block;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--gold);
+}
+.national-position .pos-info span {
+  font-size: 11px;
+  color: rgba(255,255,255,.7);
+}
+.national-position .pos-flag { font-size: 36px; }
+
+/* ===================================================
+   SCREEN 4: DESAFIOS
+=================================================== */
+.challenges-hero {
+  background: linear-gradient(135deg, var(--orange) 0%, var(--pink) 100%);
+  margin: 0 20px 16px;
+  border-radius: var(--radius);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 6px 20px rgba(255,109,0,.3);
+}
+.challenges-hero .icon { font-size: 40px; animation: float 2.5s ease-in-out infinite; }
+.challenges-hero .info strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 900;
+  color: white;
+}
+.challenges-hero .info span { font-size: 12px; color: rgba(255,255,255,.8); }
+.timer-pill {
+  margin-left: auto;
+  background: rgba(255,255,255,.2);
+  border: 1px solid rgba(255,255,255,.3);
+  border-radius: 99px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.challenge-card {
+  margin: 0 20px 10px;
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  animation: slide-up .3s ease both;
+}
+.challenge-card.completed {
+  border: 1.5px solid var(--green);
+  opacity: .8;
+}
+.challenge-card.special {
+  background: linear-gradient(135deg, rgba(124,77,255,.08), rgba(26,35,126,.05));
+  border: 1.5px solid rgba(124,77,255,.3);
+}
+.ch-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.ch-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.ch-icon.green  { background: rgba(0,200,83,.12); }
+.ch-icon.blue   { background: rgba(26,35,126,.08); }
+.ch-icon.orange { background: rgba(255,109,0,.1); }
+.ch-icon.purple { background: rgba(124,77,255,.12); }
+.ch-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  flex: 1;
+}
+.ch-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.ch-reward {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.ch-xp-pill {
+  background: rgba(255,215,0,.15);
+  color: var(--gold-dark);
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border: 1px solid rgba(255,215,0,.3);
+}
+.ch-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ch-progress-bar { flex: 1; height: 6px; background: var(--bg); border-radius: 99px; overflow: hidden; }
+.ch-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+}
+.ch-progress-fill.green  { background: linear-gradient(90deg, var(--green), #69F0AE); }
+.ch-progress-fill.orange { background: linear-gradient(90deg, var(--orange), #FFD600); }
+.ch-progress-fill.pink   { background: linear-gradient(90deg, var(--pink), #FF80AB); }
+.ch-progress-fill.purple { background: linear-gradient(90deg, var(--purple), #B39DDB); }
+.ch-progress-text {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.ch-done-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ch-done-row .check { font-size: 16px; }
+.ch-done-row span { font-size: 12px; color: var(--green); font-weight: 700; }
+
+.special-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(124,77,255,.1);
+  border: 1px solid rgba(124,77,255,.2);
+  color: var(--purple);
+  padding: 3px 8px;
+  border-radius: 99px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 4px;
+}
+
+/* ===================================================
+   SCREEN 5: AVATAR
+=================================================== */
+.avatar-preview-zone {
+  background: linear-gradient(160deg, #1A237E 0%, #311B92 60%, #4A148C 100%);
+  padding: 24px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-preview-zone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 80%, rgba(0,200,83,.2), transparent 60%);
+}
+.avatar-big {
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #F97316, #EC4899, #8B5CF6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 64px;
+  border: 4px solid rgba(255,255,255,.3);
+  box-shadow: 0 0 40px rgba(124,77,255,.4);
+  animation: float 4s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+  transition: transform .2s;
+}
+.avatar-big:active { transform: scale(.96); }
+.avatar-frame-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  background: conic-gradient(var(--gold), var(--orange), var(--pink), var(--purple), var(--gold)) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: spin 4s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.avatar-name-preview {
+  font-size: 18px;
+  font-weight: 900;
+  color: white;
+  position: relative;
+  z-index: 1;
+}
+.avatar-level-preview {
+  font-size: 12px;
+  color: rgba(255,255,255,.7);
+  position: relative;
+  z-index: 1;
+}
+
+.cat-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.cat-tabs::-webkit-scrollbar { display: none; }
+.cat-tab {
+  white-space: nowrap;
+  padding: 7px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1.5px solid var(--border);
+  background: var(--card);
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all .2s;
+}
+.cat-tab.active {
+  background: var(--blue-deep);
+  color: white;
+  border-color: var(--blue-deep);
+}
+
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 0 20px 16px;
+}
+.item-card {
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  padding: 8px 4px;
+  text-align: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all .2s;
+  position: relative;
+  overflow: hidden;
+}
+.item-card.selected {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(0,200,83,.15);
+}
+.item-card.locked-level, .item-card.locked-premium {
+  opacity: .55;
+}
+.item-icon { font-size: 28px; line-height: 1; margin-bottom: 4px; }
+.item-name { font-size: 9px; font-weight: 700; color: var(--text-muted); }
+.item-lock-badge {
+  position: absolute;
+  top: 4px; right: 4px;
+  background: rgba(0,0,0,.55);
+  border-radius: 4px;
+  font-size: 9px;
+  padding: 1px 4px;
+  color: white;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.item-lock-badge.crown {
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+  color: #5D3A00;
+}
+
+.save-btn {
+  margin: 0 20px 20px;
+  width: calc(100% - 40px);
+  padding: 14px;
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,200,83,.35);
+  letter-spacing: .3px;
+  transition: transform .15s;
+}
+.save-btn:active { transform: scale(.98); }
+
+/* ===================================================
+   SCREEN 6: NOTIFICAÇÕES
+=================================================== */
+.notif-header-banner {
+  background: linear-gradient(135deg, var(--blue-deep), var(--purple));
+  margin: 0 20px 16px;
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.notif-header-banner .icon { font-size: 32px; }
+.notif-header-banner strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+  color: white;
+}
+.notif-header-banner span { font-size: 11px; color: rgba(255,255,255,.7); }
+.notif-unread-pill {
+  margin-left: auto;
+  background: var(--pink);
+  color: white;
+  border-radius: 99px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.notif-list {
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.notif-item {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+  animation: slide-up .3s ease both;
+  cursor: pointer;
+  transition: transform .15s;
+}
+.notif-item:active { transform: scale(.99); }
+.notif-item.unread {
+  border-left: 3px solid var(--green);
+}
+.notif-icon-wrap {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.notif-icon-wrap.green  { background: rgba(0,200,83,.1); }
+.notif-icon-wrap.gold   { background: rgba(255,215,0,.12); }
+.notif-icon-wrap.pink   { background: rgba(233,30,99,.1); }
+.notif-icon-wrap.orange { background: rgba(255,109,0,.1); }
+.notif-icon-wrap.blue   { background: rgba(26,35,126,.08); }
+.notif-icon-wrap.purple { background: rgba(124,77,255,.1); }
+.notif-content { flex: 1; }
+.notif-content strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+  line-height: 1.4;
+}
+.notif-content span { font-size: 11px; color: var(--text-muted); }
+.notif-time { font-size: 10px; color: var(--text-muted); flex-shrink: 0; }
+.notif-action-btn {
+  display: inline-block;
+  margin-top: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--blue-deep);
+  cursor: pointer;
+}
+.notif-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+/* ===================================================
+   SPARKLES / PARTICLES (CSS-only)
+=================================================== */
+.sparkle {
+  position: absolute;
+  pointer-events: none;
+  font-size: 12px;
+  animation: sparkle 2s ease-in-out infinite;
+}
+.sparkle:nth-child(1) { top: 15%; left: 10%; animation-delay: 0s; }
+.sparkle:nth-child(2) { top: 25%; right: 15%; animation-delay: .4s; }
+.sparkle:nth-child(3) { top: 60%; left: 5%; animation-delay: .8s; }
+.sparkle:nth-child(4) { top: 70%; right: 8%; animation-delay: 1.2s; }
+.sparkle:nth-child(5) { top: 45%; left: 20%; animation-delay: 1.6s; }
+
+/* ===================================================
+   SCROLLBAR CUSTOM
+=================================================== */
+.screen-body { scroll-behavior: smooth; }
+
+/* ===================================================
+   RESPONSIVE
+=================================================== */
+@media (max-width: 460px) {
+  .stage { padding: 0; background: var(--bg); }
+  .phone {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .phone::before { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="phone" id="phone">
+
+    <!-- ================================================
+         BOTTOM NAV (shared across all screens)
+    ================================================ -->
+    <nav class="nav" id="bottomNav">
+      <button class="nav-item" onclick="goTo('tarefas')">
+        <span class="nav-icon">✅</span>
+        <span class="nav-label">Tarefas</span>
+      </button>
+      <button class="nav-item" onclick="goTo('buckets')">
+        <span class="nav-icon">🪣</span>
+        <span class="nav-label">Buckets</span>
+      </button>
+      <button class="nav-item" onclick="goTo('academy')">
+        <span class="nav-icon">🎓</span>
+        <span class="nav-label">Academy</span>
+      </button>
+      <button class="nav-item active" onclick="goTo('perfil')">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Perfil</span>
+      </button>
+    </nav>
+
+    <!-- ================================================
+         SCREEN 1: PERFIL
+    ================================================ -->
+    <div class="screen active" id="screen-perfil">
+      <div class="screen-body">
+
+        <!-- Hero -->
+        <div class="hero" style="margin-top:28px;">
+          <div class="sparkle">✨</div>
+          <div class="sparkle">⭐</div>
+          <div class="sparkle">✨</div>
+          <div class="sparkle">💫</div>
+          <div class="sparkle">⭐</div>
+
+          <div class="hero-top">
+            <h2>Meu Perfil</h2>
+            <span class="xp-badge-mini">⭐ 1.250 XP</span>
+          </div>
+          <div class="avatar-wrap">
+            <div class="avatar-ring" onclick="goTo('avatar')">
+              <div class="avatar-inner">🧑‍💻</div>
+              <div class="avatar-edit-btn" onclick="event.stopPropagation(); goTo('avatar')">✏️</div>
+            </div>
+            <div class="hero-name">Miguel Busnello</div>
+            <div class="hero-title">
+              <span class="pill">🥇 Poupador Expert</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Level card -->
+        <div class="level-card">
+          <div class="level-row">
+            <div class="level-label">
+              <div class="level-badge">🌱</div>
+              <div class="level-text">
+                <strong>Broto — Nível 7</strong>
+                <span>Nível 8 em breve!</span>
+              </div>
+            </div>
+            <div class="level-xp">
+              <strong>1.250 / 2.000 XP</strong>
+              <span>62.5% concluído</span>
+            </div>
+          </div>
+          <div class="xp-bar">
+            <div class="xp-fill"></div>
+          </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-icon">⚡</div>
+            <span class="stat-value">45</span>
+            <span class="stat-label">Tarefas</span>
+          </div>
+          <div class="stat-box">
+            <div class="stat-icon">📚</div>
+            <span class="stat-value">23</span>
+            <span class="stat-label">Lições</span>
+          </div>
+          <div class="stat-box">
+            <div class="stat-icon">🏅</div>
+            <span class="stat-value">12</span>
+            <span class="stat-label">Badges</span>
+          </div>
+          <div class="stat-box streak-box">
+            <div class="stat-icon">🔥</div>
+            <span class="stat-value">15</span>
+            <span class="stat-label">Dias streak</span>
+          </div>
+        </div>
+
+        <!-- Quick links -->
+        <div style="display:flex;gap:8px;padding:14px 20px 0;">
+          <button onclick="goTo('conquistas')" style="flex:1;padding:10px;background:linear-gradient(135deg,#FFD700,#F9A825);border:none;border-radius:12px;font-size:12px;font-weight:800;color:#5D3A00;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 12px rgba(255,215,0,.35);">
+            🏆 Conquistas
+          </button>
+          <button onclick="goTo('ranking')" style="flex:1;padding:10px;background:linear-gradient(135deg,var(--blue-deep),#3949AB);border:none;border-radius:12px;font-size:12px;font-weight:800;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 12px rgba(26,35,126,.3);">
+            📊 Ranking
+          </button>
+          <button onclick="goTo('desafios')" style="flex:1;padding:10px;background:linear-gradient(135deg,var(--orange),#FF8F00);border:none;border-radius:12px;font-size:12px;font-weight:800;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 12px rgba(255,109,0,.3);">
+            🎯 Desafios
+          </button>
+        </div>
+
+        <!-- Journey timeline -->
+        <div class="journey" style="margin-top:14px;">
+          <h3>⚡ Minha Jornada</h3>
+          <div class="timeline">
+            <div class="timeline-item" style="animation-delay:.05s;">
+              <div class="t-dot done">✓</div>
+              <div class="t-content">
+                <strong>Criou conta na GRANIX</strong>
+                <span>Janeiro 2026 · Início da jornada!</span>
+              </div>
+            </div>
+            <div class="timeline-item" style="animation-delay:.1s;">
+              <div class="t-dot done">✓</div>
+              <div class="t-content">
+                <strong>Primeiro investimento no XP</strong>
+                <span>Fevereiro 2026 · R$50 no Tesouro Selic</span>
+              </div>
+            </div>
+            <div class="timeline-item" style="animation-delay:.15s;">
+              <div class="t-dot gold">⭐</div>
+              <div class="t-content">
+                <strong>Atingiu Nível 7 — Broto!</strong>
+                <span>Março 2026 · 1.250 XP acumulados</span>
+              </div>
+            </div>
+            <div class="timeline-item" style="animation-delay:.2s;">
+              <div class="t-dot purple">🎯</div>
+              <div class="t-content">
+                <strong>Streak de 15 dias consecutivos</strong>
+                <span>Março 2026 · Em andamento 🔥</span>
+              </div>
+            </div>
+            <div class="timeline-item" style="animation-delay:.25s; opacity:.5;">
+              <div class="t-dot pink" style="opacity:.4;">🔒</div>
+              <div class="t-content">
+                <strong style="color:var(--text-muted);">Próximo: Nível 8 — Broto+</strong>
+                <span>Faltam 750 XP para desbloquear</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="member-since">
+          Membro desde <strong>Janeiro 2026</strong> · Saldo XP total: <strong>4.820 XP</strong>
+        </div>
+      </div>
+    </div><!-- /screen-perfil -->
+
+    <!-- ================================================
+         SCREEN 2: CONQUISTAS
+    ================================================ -->
+    <div class="screen" id="screen-conquistas">
+      <div class="screen-header">
+        <h2>Conquistas</h2>
+        <button class="icon-btn" onclick="goTo('perfil')">←</button>
+      </div>
+      <div class="screen-body" style="padding-top:8px;">
+
+        <div class="achievements-hero">
+          <div class="ach-hero-icon">🏆</div>
+          <div class="ach-hero-text">
+            <strong>7 badges conquistados!</strong>
+            <span>5 ainda por desbloquear</span>
+          </div>
+          <div class="ach-count-pill">7/12</div>
+        </div>
+
+        <div class="section-title" style="margin-bottom:12px;">Conquistados</div>
+        <div class="badges-grid">
+
+          <div class="badge-card earned" onclick="openBadge('primeiro-passo')" style="animation-delay:.05s;">
+            <div class="badge-xp">+50 XP</div>
+            <div class="badge-icon green">⭐</div>
+            <div class="badge-name">Primeiro Passo</div>
+            <div class="badge-desc">Completou a primeira tarefa</div>
+            <div class="badge-progress"><div class="badge-progress-fill" style="width:100%;background:var(--green);"></div></div>
+          </div>
+
+          <div class="badge-card earned" onclick="openBadge('poupador-iniciante')" style="animation-delay:.1s;">
+            <div class="badge-xp">+80 XP</div>
+            <div class="badge-icon blue">🐷</div>
+            <div class="badge-name">Poupador Iniciante</div>
+            <div class="badge-desc">Guardou R$100</div>
+            <div class="badge-progress"><div class="badge-progress-fill" style="width:100%;background:#42A5F5;"></div></div>
+          </div>
+
+          <div class="badge-card earned" onclick="openBadge('estudante')" style="animation-delay:.15s;">
+            <div class="badge-xp">+100 XP</div>
+            <div class="badge-icon purple">📖</div>
+            <div class="badge-name">Estudante Dedicado</div>
+            <div class="badge-desc">10 lições concluídas</div>
+            <div class="badge-progress"><div class="badge-progress-fill" style="width:100%;background:var(--purple);"></div></div>
+          </div>
+
+          <div class="badge-card earned" onclick="openBadge('semana-perfeita')" style="animation-delay:.2s;">
+            <div class="badge-xp">+150 XP</div>
+            <div class="badge-icon orange">🔥</div>
+            <div class="badge-name">Semana Perfeita</div>
+            <div class="badge-desc">7 dias seguidos</div>
+            <div class="badge-progress"><div class="badge-progress-fill" style="width:100%;background:var(--orange);"></div></div>
+          </div>
+
+          <div class="badge-card earned" onclick="openBadge('primeiro-invest')" style="animation-delay:.25s;">
+            <div class="badge-xp">+200 XP</div>
+            <div class="badge-icon teal">📈</div>
+            <div class="badge-name">Primeiro Invest.</div>
+            <div class="badge-desc">1º investimento no XP</div>
+            <div class="badge-progress"><div class="badge-progress-fill" style="width:100%;background:#4DB6AC;"></div></div>
+          </div>
+
+          <div class="badge-card earned" onclick="openBadge('generoso')" style="animation-delay:.3s;">
+            <div class="badge-xp">+75 XP</div>
+            <div class="badge-icon pink">❤️</div>
+            <div class="badge-name">Generoso</div>
+            <div class="badge-desc">Primeira doação</div>
+            <div class="badge-progress"><div class="badge-progress-fill" style="width:100%;background:var(--pink);"></div></div>
+          </div>
+
+          <div class="badge-card earned" onclick="openBadge('mes-ouro')" style="animation-delay:.35s;">
+            <div class="badge-xp">+300 XP</div>
+            <div class="badge-icon gold">🏆</div>
+            <div class="badge-name">Mês de Ouro</div>
+            <div class="badge-desc">30 dias seguidos</div>
+            <div class="badge-progress"><div class="badge-progress-fill" style="width:100%;background:var(--gold-dark);"></div></div>
+          </div>
+
+          <!-- spacer -->
+          <div></div>
+        </div>
+
+        <div class="section-title" style="margin-bottom:12px;">Bloqueados</div>
+        <div class="badges-grid">
+
+          <div class="badge-card locked" onclick="openBadge('mestre-poupador')" style="animation-delay:.4s;">
+            <div class="badge-xp">+250 XP</div>
+            <div class="badge-icon gray">🏦</div>
+            <div class="badge-name">Mestre Poupador</div>
+            <div class="badge-desc">Guarde R$1.000</div>
+            <div class="badge-progress"><div class="badge-progress-fill" style="width:34%;background:var(--text-muted);opacity:.5;"></div></div>
+          </div>
+
+          <div class="badge-card locked" onclick="openBadge('financista')" style="animation-delay:.45s;">
+            <div class="badge-xp">+400 XP</div>
+            <div class="badge-icon gray">🎓</div>
+            <div class="badge-name">Financista Mirim</div>
+            <div class="badge-desc">Todas lições Broto</div>
+            <div class="badge-progress"><div class="badge-progress-fill" style="width:70%;background:var(--text-muted);opacity:.5;"></div></div>
+          </div>
+
+          <div class="badge-card locked" onclick="openBadge('investidor-jr')" style="animation-delay:.5s;">
+            <div class="badge-xp">+500 XP</div>
+            <div class="badge-icon gray">💼</div>
+            <div class="badge-name">Investidor Junior</div>
+            <div class="badge-desc">R$500 investidos</div>
+            <div class="badge-progress"><div class="badge-progress-fill" style="width:20%;background:var(--text-muted);opacity:.5;"></div></div>
+          </div>
+
+          <div class="badge-card locked" onclick="openBadge('streak-lendario')" style="animation-delay:.55s;">
+            <div class="badge-xp">+1.000 XP</div>
+            <div class="badge-icon gray">⚡</div>
+            <div class="badge-name">Streak Lendário</div>
+            <div class="badge-desc">100 dias seguidos</div>
+            <div class="badge-progress"><div class="badge-progress-fill" style="width:15%;background:var(--text-muted);opacity:.5;"></div></div>
+          </div>
+
+          <div class="badge-card locked" onclick="openBadge('floresta')" style="animation-delay:.6s;">
+            <div class="badge-xp">+800 XP</div>
+            <div class="badge-icon gray">🌳</div>
+            <div class="badge-name">Floresta Completa</div>
+            <div class="badge-desc">Todas as trilhas</div>
+            <div class="badge-progress"><div class="badge-progress-fill" style="width:50%;background:var(--text-muted);opacity:.5;"></div></div>
+          </div>
+
+          <div></div>
+        </div>
+
+      </div>
+
+      <!-- Badge detail overlay -->
+      <div class="badge-overlay" id="badgeOverlay" onclick="closeBadge(event)">
+        <div class="badge-detail" id="badgeDetail">
+          <div class="big-icon green" id="bd-icon" style="width:90px;height:90px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:42px;"></div>
+          <h3 id="bd-name"></h3>
+          <p id="bd-desc"></p>
+          <div id="bd-status"></div>
+        </div>
+      </div>
+    </div><!-- /screen-conquistas -->
+
+    <!-- ================================================
+         SCREEN 3: RANKING
+    ================================================ -->
+    <div class="screen" id="screen-ranking">
+      <div class="screen-header">
+        <h2>Ranking</h2>
+        <button class="icon-btn" onclick="goTo('perfil')">←</button>
+      </div>
+      <div class="screen-body" style="padding-top:8px;">
+
+        <!-- Toggle -->
+        <div class="toggle-row">
+          <button class="toggle-btn active" onclick="switchRankTab(this,'familia')">Família</button>
+          <button class="toggle-btn" onclick="switchRankTab(this,'amigos')">Amigos</button>
+          <button class="toggle-btn" onclick="switchRankTab(this,'nacional')">Nacional</button>
+        </div>
+
+        <!-- Podium -->
+        <div class="rank-podium">
+          <!-- 2nd -->
+          <div class="podium-item">
+            <div class="podium-avatar" style="background:linear-gradient(135deg,#EC4899,#F472B6);">
+              👧
+            </div>
+            <div class="podium-name">Sofia</div>
+            <div class="podium-xp">980 XP</div>
+            <div class="podium-bar second"><span class="podium-pos">2</span></div>
+          </div>
+          <!-- 1st -->
+          <div class="podium-item">
+            <div class="podium-avatar" style="background:linear-gradient(135deg,#F97316,#8B5CF6);">
+              🧑‍💻
+              <div class="crown">👑</div>
+            </div>
+            <div class="podium-name">Miguel (eu)</div>
+            <div class="podium-xp" style="color:var(--gold-dark);font-weight:800;">1.250 XP</div>
+            <div class="podium-bar first"><span class="podium-pos">1</span></div>
+          </div>
+          <!-- 3rd -->
+          <div class="podium-item">
+            <div class="podium-avatar" style="background:linear-gradient(135deg,#7C4DFF,#B39DDB);">
+              👨
+            </div>
+            <div class="podium-name">Pai</div>
+            <div class="podium-xp">450 XP</div>
+            <div class="podium-bar third"><span class="podium-pos">3</span></div>
+          </div>
+        </div>
+
+        <!-- Rank list -->
+        <div class="rank-list">
+          <div class="rank-row me" style="animation-delay:.05s;">
+            <div class="rank-pos" style="color:var(--gold-dark);">1</div>
+            <div class="rank-avatar" style="background:linear-gradient(135deg,#F97316,#8B5CF6);">🧑‍💻</div>
+            <div class="rank-info">
+              <strong>Miguel Busnello <span style="font-size:10px;background:rgba(0,200,83,.12);color:var(--green-dark);padding:1px 6px;border-radius:99px;font-weight:700;">eu</span></strong>
+              <span>🌱 Broto · Nível 7</span>
+            </div>
+            <div class="rank-right">
+              <strong>1.250 XP</strong>
+              <span>esta semana: +280</span>
+            </div>
+          </div>
+          <div class="rank-row" style="animation-delay:.1s;">
+            <div class="rank-pos">2</div>
+            <div class="rank-avatar" style="background:linear-gradient(135deg,#EC4899,#F472B6);">👧</div>
+            <div class="rank-info">
+              <strong>Sofia Busnello</strong>
+              <span>🌱 Broto · Nível 5 · irmã</span>
+            </div>
+            <div class="rank-right">
+              <strong>980 XP</strong>
+              <span>esta semana: +190</span>
+            </div>
+          </div>
+          <div class="rank-row" style="animation-delay:.15s;">
+            <div class="rank-pos">3</div>
+            <div class="rank-avatar" style="background:linear-gradient(135deg,#7C4DFF,#B39DDB);">👨</div>
+            <div class="rank-info">
+              <strong>Pai</strong>
+              <span>🌿 Semente · Nível 3 · pai</span>
+            </div>
+            <div class="rank-right">
+              <strong>450 XP</strong>
+              <span>esta semana: +60</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly chart -->
+        <div class="weekly-chart">
+          <h3>📊 XP por dia esta semana</h3>
+          <div class="chart-bars">
+            <!-- Miguel -->
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar miguel" style="height:38px;"></div>
+              </div>
+              <div class="chart-label">Mig.</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar miguel" style="height:50px;"></div>
+              </div>
+              <div class="chart-label">Mig.</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar miguel" style="height:30px;"></div>
+              </div>
+              <div class="chart-label">Mig.</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar miguel" style="height:45px;"></div>
+              </div>
+              <div class="chart-label">Mig.</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar miguel" style="height:28px;"></div>
+              </div>
+              <div class="chart-label">Mig.</div>
+            </div>
+            <!-- Sofia -->
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar sofia" style="height:22px;"></div>
+              </div>
+              <div class="chart-label">Sof.</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar sofia" style="height:40px;"></div>
+              </div>
+              <div class="chart-label">Sof.</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar sofia" style="height:35px;"></div>
+              </div>
+              <div class="chart-label">Sof.</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar sofia" style="height:18px;"></div>
+              </div>
+              <div class="chart-label">Sof.</div>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar sofia" style="height:48px;"></div>
+              </div>
+              <div class="chart-label">Sof.</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:8px;">
+            <div style="display:flex;align-items:center;gap:4px;">
+              <div style="width:10px;height:10px;border-radius:2px;background:var(--green);"></div>
+              <span style="font-size:10px;color:var(--text-muted);font-weight:600;">Miguel</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;">
+              <div style="width:10px;height:10px;border-radius:2px;background:var(--pink);"></div>
+              <span style="font-size:10px;color:var(--text-muted);font-weight:600;">Sofia</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Challenge banner -->
+        <div class="challenge-banner">
+          <div class="icon">🎯</div>
+          <div class="text">
+            <strong>Desafio da semana!</strong>
+            <span>Quem completa mais tarefas esta semana?</span>
+          </div>
+        </div>
+
+        <!-- National position -->
+        <div class="national-position">
+          <div class="pos-info">
+            <strong>#1.247</strong>
+            <span>de 48.000 jogadores</span>
+            <div style="margin-top:6px;">
+              <span style="font-size:10px;color:rgba(255,255,255,.6);">Top 3% nacional 🇧🇷</span>
+            </div>
+          </div>
+          <div class="pos-flag">🏅</div>
+        </div>
+
+      </div>
+    </div><!-- /screen-ranking -->
+
+    <!-- ================================================
+         SCREEN 4: DESAFIOS
+    ================================================ -->
+    <div class="screen" id="screen-desafios">
+      <div class="screen-header">
+        <h2>Desafios</h2>
+        <button class="icon-btn" onclick="goTo('perfil')">←</button>
+      </div>
+      <div class="screen-body" style="padding-top:8px;">
+
+        <div class="challenges-hero">
+          <div class="icon">🎯</div>
+          <div class="info">
+            <strong>Desafios Semanais</strong>
+            <span>Complete para ganhar XP + badges</span>
+          </div>
+          <div class="timer-pill">⏱ 3 dias</div>
+        </div>
+
+        <div class="section-title">Em andamento</div>
+
+        <!-- Challenge 1 -->
+        <div class="challenge-card" style="animation-delay:.05s;">
+          <div class="ch-top">
+            <div class="ch-icon green">💰</div>
+            <div style="flex:1;">
+              <div class="ch-title">Economista Mirim</div>
+              <div class="ch-desc">Guarde R$20 no bucket Guardar esta semana</div>
+            </div>
+            <div class="ch-reward">
+              <span class="ch-xp-pill">+120 XP</span>
+            </div>
+          </div>
+          <div class="ch-progress-row">
+            <div class="ch-progress-bar">
+              <div class="ch-progress-fill green" style="width:60%;"></div>
+            </div>
+            <div class="ch-progress-text">R$12 / R$20</div>
+          </div>
+        </div>
+
+        <!-- Challenge 2 -->
+        <div class="challenge-card" style="animation-delay:.1s;">
+          <div class="ch-top">
+            <div class="ch-icon blue">📚</div>
+            <div style="flex:1;">
+              <div class="ch-title">Estudioso</div>
+              <div class="ch-desc">Complete 3 lições da Academy esta semana</div>
+            </div>
+            <div class="ch-reward">
+              <span class="ch-xp-pill">+100 XP</span>
+            </div>
+          </div>
+          <div class="ch-progress-row">
+            <div class="ch-progress-bar">
+              <div class="ch-progress-fill orange" style="width:33%;"></div>
+            </div>
+            <div class="ch-progress-text">1 / 3 lições</div>
+          </div>
+        </div>
+
+        <!-- Challenge 3 -->
+        <div class="challenge-card" style="animation-delay:.15s;">
+          <div class="ch-top">
+            <div class="ch-icon orange">🏠</div>
+            <div style="flex:1;">
+              <div class="ch-title">Ajudante</div>
+              <div class="ch-desc">Complete 5 tarefas domésticas esta semana</div>
+            </div>
+            <div class="ch-reward">
+              <span class="ch-xp-pill">+80 XP</span>
+            </div>
+          </div>
+          <div class="ch-progress-row">
+            <div class="ch-progress-bar">
+              <div class="ch-progress-fill pink" style="width:60%;"></div>
+            </div>
+            <div class="ch-progress-text">3 / 5 tarefas</div>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:8px;">Concluídos ✅</div>
+
+        <!-- Completed -->
+        <div class="challenge-card completed" style="animation-delay:.2s;">
+          <div class="ch-top">
+            <div class="ch-icon green" style="opacity:.7;">🎓</div>
+            <div style="flex:1;">
+              <div class="ch-title" style="opacity:.7;">Primeira Licão</div>
+              <div class="ch-desc" style="opacity:.7;">Completou a primeira lição da Academy</div>
+            </div>
+          </div>
+          <div class="ch-done-row">
+            <span class="check">✅</span>
+            <span>Concluído! +50 XP ganhos</span>
+          </div>
+        </div>
+
+        <div class="challenge-card completed" style="animation-delay:.25s;">
+          <div class="ch-top">
+            <div class="ch-icon orange" style="opacity:.7;">💸</div>
+            <div style="flex:1;">
+              <div class="ch-title" style="opacity:.7;">Primeira Tarefa</div>
+              <div class="ch-desc" style="opacity:.7;">Completou a primeira tarefa paga</div>
+            </div>
+          </div>
+          <div class="ch-done-row">
+            <span class="check">✅</span>
+            <span>Concluído! +25 XP ganhos</span>
+          </div>
+        </div>
+
+        <!-- Special Challenge -->
+        <div class="section-title" style="margin-top:8px;">🌟 Desafio Especial do Mês</div>
+        <div class="challenge-card special" style="animation-delay:.3s;margin-bottom:24px;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+            <span style="font-size:10px;font-weight:800;color:var(--purple);text-transform:uppercase;letter-spacing:.5px;">Desafio Especial</span>
+            <span class="special-badge">👑 Bônus</span>
+          </div>
+          <div class="ch-top">
+            <div class="ch-icon purple">🏦</div>
+            <div style="flex:1;">
+              <div class="ch-title">Investidor Mirim</div>
+              <div class="ch-desc">Invista R$50 no Tesouro Educa+ via XP Investimentos</div>
+            </div>
+            <div class="ch-reward">
+              <span class="ch-xp-pill" style="background:rgba(124,77,255,.12);color:var(--purple);border-color:rgba(124,77,255,.25);">+500 XP</span>
+            </div>
+          </div>
+          <div class="ch-progress-row">
+            <div class="ch-progress-bar">
+              <div class="ch-progress-fill purple" style="width:0%;"></div>
+            </div>
+            <div class="ch-progress-text">R$0 / R$50</div>
+          </div>
+          <button style="width:100%;margin-top:10px;padding:10px;background:linear-gradient(135deg,var(--purple),#9C6FFF);border:none;border-radius:10px;font-size:12px;font-weight:800;color:white;cursor:pointer;letter-spacing:.3px;">
+            Investir agora no XP →
+          </button>
+        </div>
+
+      </div>
+    </div><!-- /screen-desafios -->
+
+    <!-- ================================================
+         SCREEN 5: AVATAR
+    ================================================ -->
+    <div class="screen" id="screen-avatar">
+      <div class="avatar-preview-zone" style="margin-top:28px;">
+        <div style="width:100%;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;">
+          <button onclick="goTo('perfil')" style="background:rgba(255,255,255,.15);border:none;border-radius:99px;padding:6px 14px;color:white;font-size:12px;font-weight:700;cursor:pointer;">← Voltar</button>
+          <span style="font-size:14px;font-weight:800;color:white;">Personalizar Avatar</span>
+          <div style="width:68px;"></div>
+        </div>
+        <div style="position:relative;">
+          <div class="avatar-big" id="mainAvatar">🧑‍💻</div>
+          <div class="avatar-frame-ring"></div>
+        </div>
+        <div class="avatar-name-preview">Miguel Busnello</div>
+        <div class="avatar-level-preview">🌱 Broto · Nível 7</div>
+      </div>
+
+      <div class="screen-body" style="padding-top:0;padding-bottom:calc(var(--nav-h) + 16px);">
+        <!-- Category tabs -->
+        <div class="cat-tabs" id="catTabs">
+          <button class="cat-tab active" onclick="switchCat(this,'rosto')">😊 Rosto</button>
+          <button class="cat-tab" onclick="switchCat(this,'cabelo')">💇 Cabelo</button>
+          <button class="cat-tab" onclick="switchCat(this,'roupa')">👕 Roupa</button>
+          <button class="cat-tab" onclick="switchCat(this,'acessorios')">🎩 Acessórios</button>
+          <button class="cat-tab" onclick="switchCat(this,'fundo')">🎨 Fundo</button>
+        </div>
+
+        <!-- Items: Rosto -->
+        <div id="items-rosto" class="items-grid">
+          <div class="item-card selected" onclick="selectItem(this,'🧑‍💻')">
+            <div class="item-icon">🧑‍💻</div>
+            <div class="item-name">Padrão</div>
+          </div>
+          <div class="item-card" onclick="selectItem(this,'😎')">
+            <div class="item-icon">😎</div>
+            <div class="item-name">Estiloso</div>
+          </div>
+          <div class="item-card" onclick="selectItem(this,'🤓')">
+            <div class="item-icon">🤓</div>
+            <div class="item-name">Nerd</div>
+          </div>
+          <div class="item-card" onclick="selectItem(this,'😄')">
+            <div class="item-icon">😄</div>
+            <div class="item-name">Feliz</div>
+          </div>
+          <div class="item-card locked-level" title="Desbloqueie no Nível 10">
+            <div class="item-icon" style="filter:grayscale(.8);">🧑‍🎤</div>
+            <div class="item-name">Artista</div>
+            <div class="item-lock-badge">Nív. 10</div>
+          </div>
+          <div class="item-card locked-level" title="Desbloqueie no Nível 15">
+            <div class="item-icon" style="filter:grayscale(.8);">🧙</div>
+            <div class="item-name">Mago</div>
+            <div class="item-lock-badge">Nív. 15</div>
+          </div>
+          <div class="item-card locked-premium" title="Plano Família+">
+            <div class="item-icon" style="filter:grayscale(.7);">🦸</div>
+            <div class="item-name">Herói</div>
+            <div class="item-lock-badge crown">👑</div>
+          </div>
+          <div class="item-card locked-premium" title="Plano Família+">
+            <div class="item-icon" style="filter:grayscale(.7);">🧝</div>
+            <div class="item-name">Elfo</div>
+            <div class="item-lock-badge crown">👑</div>
+          </div>
+        </div>
+
+        <!-- Items: Cabelo -->
+        <div id="items-cabelo" class="items-grid" style="display:none;">
+          <div class="item-card selected" onclick="selectItem(this,'🧑‍💻')">
+            <div class="item-icon">🪢</div>
+            <div class="item-name">Natural</div>
+          </div>
+          <div class="item-card" onclick="selectItem(this,'🧑‍🦱')">
+            <div class="item-icon">🌀</div>
+            <div class="item-name">Cacheado</div>
+          </div>
+          <div class="item-card" onclick="selectItem(this,'🧑‍🦲')">
+            <div class="item-icon">✨</div>
+            <div class="item-name">Careca</div>
+          </div>
+          <div class="item-card locked-level">
+            <div class="item-icon" style="filter:grayscale(.8);">🌈</div>
+            <div class="item-name">Colorido</div>
+            <div class="item-lock-badge">Nív. 12</div>
+          </div>
+        </div>
+
+        <!-- Items: Roupa -->
+        <div id="items-roupa" class="items-grid" style="display:none;">
+          <div class="item-card selected">
+            <div class="item-icon">👕</div>
+            <div class="item-name">Camiseta</div>
+          </div>
+          <div class="item-card" onclick="selectItem(this,'🧑‍💻')">
+            <div class="item-icon">🧥</div>
+            <div class="item-name">Jaqueta</div>
+          </div>
+          <div class="item-card locked-premium">
+            <div class="item-icon" style="filter:grayscale(.7);">🤵</div>
+            <div class="item-name">Terno</div>
+            <div class="item-lock-badge crown">👑</div>
+          </div>
+          <div class="item-card locked-level">
+            <div class="item-icon" style="filter:grayscale(.8);">🦺</div>
+            <div class="item-name">Colete</div>
+            <div class="item-lock-badge">Nív. 20</div>
+          </div>
+        </div>
+
+        <!-- Items: Acessorios -->
+        <div id="items-acessorios" class="items-grid" style="display:none;">
+          <div class="item-card selected">
+            <div class="item-icon">😶</div>
+            <div class="item-name">Nenhum</div>
+          </div>
+          <div class="item-card" onclick="selectItem(this,'🧢')">
+            <div class="item-icon">🧢</div>
+            <div class="item-name">Boné</div>
+          </div>
+          <div class="item-card" onclick="selectItem(this,'🕶️')">
+            <div class="item-icon">🕶️</div>
+            <div class="item-name">Óculos</div>
+          </div>
+          <div class="item-card locked-level">
+            <div class="item-icon" style="filter:grayscale(.8);">👑</div>
+            <div class="item-name">Coroa</div>
+            <div class="item-lock-badge">Nív. 25</div>
+          </div>
+        </div>
+
+        <!-- Items: Fundo -->
+        <div id="items-fundo" class="items-grid" style="display:none;">
+          <div class="item-card selected">
+            <div class="item-icon" style="background:linear-gradient(135deg,#F97316,#8B5CF6);border-radius:8px;width:28px;height:28px;margin:0 auto 4px;"></div>
+            <div class="item-name">Gradiente</div>
+          </div>
+          <div class="item-card" onclick="selectBg('linear-gradient(135deg,#00C853,#1A237E)')">
+            <div class="item-icon" style="background:linear-gradient(135deg,#00C853,#1A237E);border-radius:8px;width:28px;height:28px;margin:0 auto 4px;"></div>
+            <div class="item-name">Granix</div>
+          </div>
+          <div class="item-card" onclick="selectBg('linear-gradient(135deg,#FFD700,#FF6D00)')">
+            <div class="item-icon" style="background:linear-gradient(135deg,#FFD700,#FF6D00);border-radius:8px;width:28px;height:28px;margin:0 auto 4px;"></div>
+            <div class="item-name">Sunset</div>
+          </div>
+          <div class="item-card locked-level">
+            <div class="item-icon" style="background:linear-gradient(135deg,#1A1A2E,#7C4DFF);border-radius:8px;width:28px;height:28px;margin:0 auto 4px;filter:grayscale(.5);"></div>
+            <div class="item-name">Galáxia</div>
+            <div class="item-lock-badge">Nív. 18</div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;padding:0 20px 12px;">
+          <div style="display:flex;align-items:center;gap:4px;">
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--green);"></div>
+            <span style="font-size:10px;color:var(--text-muted);">Disponível</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--text-muted);"></div>
+            <span style="font-size:10px;color:var(--text-muted);">Bloqueado por nível</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <div style="width:8px;height:8px;border-radius:2px;background:var(--gold-dark);"></div>
+            <span style="font-size:10px;color:var(--text-muted);">Família+ exclusivo</span>
+          </div>
+        </div>
+
+        <button class="save-btn" onclick="showSaveToast()">Salvar Avatar</button>
+      </div>
+
+      <!-- Save toast -->
+      <div id="saveToast" style="position:absolute;bottom:calc(var(--nav-h)+16px);left:50%;transform:translateX(-50%) translateY(80px);background:#1A1A2E;color:white;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:700;z-index:500;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s;opacity:0;white-space:nowrap;">
+        ✅ Avatar salvo com sucesso!
+      </div>
+    </div><!-- /screen-avatar -->
+
+    <!-- ================================================
+         SCREEN 6: NOTIFICAÇÕES
+    ================================================ -->
+    <div class="screen" id="screen-notificacoes">
+      <div class="screen-header">
+        <h2>Atividades</h2>
+        <button class="icon-btn" onclick="goTo('perfil')">←</button>
+      </div>
+      <div class="screen-body" style="padding-top:8px;">
+
+        <div class="notif-header-banner">
+          <div class="icon">🔔</div>
+          <div>
+            <strong>Novidades para você!</strong>
+            <span>Mantenha seu progresso em dia</span>
+          </div>
+          <div class="notif-unread-pill">4 novas</div>
+        </div>
+
+        <div class="notif-list">
+
+          <div class="notif-item unread" style="animation-delay:.05s;">
+            <div class="notif-icon-wrap green">⚡</div>
+            <div class="notif-content">
+              <strong>Você completou "Arrumar o quarto" e ganhou R$5 + 25 XP!</strong>
+              <span>Distribuído nos seus buckets automaticamente</span>
+              <div><span class="notif-action-btn">Ver buckets →</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              <span class="notif-time">agora</span>
+              <div class="notif-dot"></div>
+            </div>
+          </div>
+
+          <div class="notif-item unread" style="animation-delay:.1s;">
+            <div class="notif-icon-wrap blue">👨‍👧</div>
+            <div class="notif-content">
+              <strong>Pai aprovou sua tarefa! R$5 distribuídos nos buckets</strong>
+              <span>Guardar: R$2 · Gastar: R$1,50 · Investir: R$1 · Doar: R$0,50</span>
+              <div><span class="notif-action-btn">Ver detalhes →</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              <span class="notif-time">5 min</span>
+              <div class="notif-dot"></div>
+            </div>
+          </div>
+
+          <div class="notif-item unread" style="animation-delay:.15s;">
+            <div class="notif-icon-wrap gold">🏅</div>
+            <div class="notif-content">
+              <strong>Nova conquista: Semana Perfeita! 🔥 7 dias seguidos</strong>
+              <span>+150 XP adicionados ao seu perfil</span>
+              <div><span class="notif-action-btn">Ver conquistas →</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              <span class="notif-time">1h</span>
+              <div class="notif-dot"></div>
+            </div>
+          </div>
+
+          <div class="notif-item unread" style="animation-delay:.2s;">
+            <div class="notif-icon-wrap pink">⚔️</div>
+            <div class="notif-content">
+              <strong>Sofia te ultrapassou no ranking! Complete mais tarefas para recuperar</strong>
+              <span>Sofia: 980 XP · Você: 1.250 XP — mas ela está acelerando!</span>
+              <div><span class="notif-action-btn">Ver ranking →</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
+              <span class="notif-time">2h</span>
+              <div class="notif-dot" style="background:var(--pink);"></div>
+            </div>
+          </div>
+
+          <div class="notif-item" style="animation-delay:.25s;">
+            <div class="notif-icon-wrap orange">⚠️</div>
+            <div class="notif-content">
+              <strong>Desafio quase completo: faltam apenas R$8 para guardar!</strong>
+              <span>Economista Mirim: R$12/R$20 — termina em 3 dias</span>
+              <div><span class="notif-action-btn">Ver desafio →</span></div>
+            </div>
+            <span class="notif-time">3h</span>
+          </div>
+
+          <div class="notif-item" style="animation-delay:.3s;">
+            <div class="notif-icon-wrap purple">🎓</div>
+            <div class="notif-content">
+              <strong>Nova lição disponível: Juros Compostos - O Poder do Tempo</strong>
+              <span>Academy · Módulo Investimentos · +80 XP ao concluir</span>
+              <div><span class="notif-action-btn">Estudar agora →</span></div>
+            </div>
+            <span class="notif-time">5h</span>
+          </div>
+
+          <div class="notif-item" style="animation-delay:.35s;">
+            <div class="notif-icon-wrap green">🌱</div>
+            <div class="notif-content">
+              <strong>Você está a 750 XP do Nível 8 — Broto+!</strong>
+              <span>Continue completando tarefas e lições para subir de nível</span>
+            </div>
+            <span class="notif-time">ontem</span>
+          </div>
+
+        </div>
+      </div>
+    </div><!-- /screen-notificacoes -->
+
+  </div><!-- /phone -->
+</div><!-- /stage -->
+
+<!-- ================================================
+     NAVIGATION LEGEND (desktop only)
+================================================ -->
+<div style="
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+  display:flex; gap:8px; flex-wrap:wrap; justify-content:center;
+  pointer-events:none;
+">
+  <div style="background:rgba(255,255,255,.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:6px 16px;color:rgba(255,255,255,.6);font-size:11px;font-weight:600;">
+    Navegação: Use a barra inferior do celular para trocar telas
+  </div>
+</div>
+
+<!-- ================================================
+     SUB-NAV PILLS (shown on Perfil to navigate to sub-screens)
+================================================ -->
+
+<script>
+// =====================================================
+// SCREEN ROUTER
+// =====================================================
+const screens = ['perfil','conquistas','ranking','desafios','avatar','notificacoes'];
+const navScreens = ['tarefas','buckets','academy','perfil']; // bottom nav targets
+
+// Map nav tabs to screens
+const navMap = {
+  tarefas:      null, // not implemented, stay on perfil
+  buckets:      null,
+  academy:      null,
+  perfil:       'perfil',
+};
+
+let currentScreen = 'perfil';
+
+function goTo(name) {
+  // Graceful fallback for unimplemented nav items
+  if (['tarefas','buckets','academy'].includes(name)) {
+    // Flash a coming-soon toast
+    showToast('Este módulo está em desenvolvimento 🔨');
+    return;
+  }
+
+  const prev = document.getElementById('screen-' + currentScreen);
+  const next = document.getElementById('screen-' + name);
+  if (!next || currentScreen === name) return;
+
+  if (prev) { prev.classList.remove('active'); }
+  next.classList.add('active');
+  currentScreen = name;
+
+  // Scroll to top
+  const body = next.querySelector('.screen-body');
+  if (body) body.scrollTop = 0;
+
+  // Update bottom nav active state
+  updateNav(name);
+}
+
+function updateNav(name) {
+  const items = document.querySelectorAll('.nav-item');
+  items.forEach(item => item.classList.remove('active'));
+  const navIndex = {perfil:3, conquistas:3, ranking:3, desafios:3, avatar:3, notificacoes:3};
+  const idx = navIndex[name];
+  if (idx !== undefined) items[idx].classList.add('active');
+}
+
+// =====================================================
+// BADGE OVERLAY
+// =====================================================
+const badgeData = {
+  'primeiro-passo':   { icon:'⭐', cls:'green',  name:'Primeiro Passo',      desc:'Você completou a sua primeira tarefa no GRANIX. Uma jornada começa com um passo!', earned:true },
+  'poupador-iniciante':{ icon:'🐷', cls:'blue',  name:'Poupador Iniciante',   desc:'Você guardou R$100 no seu bucket Guardar. O hábito de poupar está crescendo!', earned:true },
+  'estudante':        { icon:'📖', cls:'purple', name:'Estudante Dedicado',   desc:'10 lições concluídas na Academy. O conhecimento é o melhor investimento!', earned:true },
+  'semana-perfeita':  { icon:'🔥', cls:'orange', name:'Semana Perfeita',      desc:'7 dias consecutivos completando atividades. A consistência é a chave!', earned:true },
+  'primeiro-invest':  { icon:'📈', cls:'teal',   name:'Primeiro Investimento', desc:'Você fez seu primeiro investimento real no XP Investimentos. O futuro começa agora!', earned:true },
+  'generoso':         { icon:'❤️', cls:'pink',   name:'Generoso',             desc:'Sua primeira doação foi feita. Dinheiro bem usado faz bem para o mundo!', earned:true },
+  'mes-ouro':         { icon:'🏆', cls:'gold',   name:'Mês de Ouro',          desc:'30 dias seguidos — incrível! Você é um exemplo de disciplina financeira!', earned:true },
+  'mestre-poupador':  { icon:'🏦', cls:'gray',   name:'Mestre Poupador',      desc:'Guarde R$1.000 no bucket Guardar. Você está a R$660 de conquistar este badge!', earned:false, progress:'34%' },
+  'financista':       { icon:'🎓', cls:'gray',   name:'Financista Mirim',     desc:'Conclua todas as lições do nível Broto. Faltam apenas 3 lições!', earned:false, progress:'70%' },
+  'investidor-jr':    { icon:'💼', cls:'gray',   name:'Investidor Junior',    desc:'Invista R$500 no XP Investimentos. Você está a R$400 de atingir a meta!', earned:false, progress:'20%' },
+  'streak-lendario':  { icon:'⚡', cls:'gray',   name:'Streak Lendário',      desc:'100 dias seguidos! Um feito extraordinário. Você chegará lá!', earned:false, progress:'15%' },
+  'floresta':         { icon:'🌳', cls:'gray',   name:'Floresta Completa',    desc:'Termine todas as trilhas disponíveis. Metade do caminho feita!', earned:false, progress:'50%' },
+};
+
+function openBadge(id) {
+  const d = badgeData[id];
+  if (!d) return;
+  const overlay = document.getElementById('badgeOverlay');
+  const iconEl  = document.getElementById('bd-icon');
+  const nameEl  = document.getElementById('bd-name');
+  const descEl  = document.getElementById('bd-desc');
+  const statEl  = document.getElementById('bd-status');
+
+  iconEl.textContent = d.icon;
+  iconEl.className = 'big-icon ' + d.cls;
+  nameEl.textContent = d.name;
+  descEl.textContent = d.desc;
+
+  if (d.earned) {
+    statEl.innerHTML = '<span class="earned-tag">✅ Conquistado!</span>';
+  } else {
+    statEl.innerHTML = `
+      <div style="background:var(--bg);border-radius:10px;padding:10px;margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--text-muted);margin-bottom:6px;">
+          <span>Progresso</span><span>${d.progress}</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" style="width:${d.progress};background:linear-gradient(90deg,var(--text-muted),#B0BEC5);"></div>
+        </div>
+      </div>
+      <span class="locked-tag">🔒 Ainda não conquistado</span>
+    `;
+  }
+
+  overlay.classList.add('open');
+}
+
+function closeBadge(e) {
+  if (e.target === document.getElementById('badgeOverlay')) {
+    document.getElementById('badgeOverlay').classList.remove('open');
+  }
+}
+
+// =====================================================
+// RANKING TOGGLE
+// =====================================================
+function switchRankTab(btn, tab) {
+  document.querySelectorAll('#screen-ranking .toggle-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // In a real app this would reload data — for wireframe, just visual
+}
+
+// =====================================================
+// AVATAR CUSTOMIZATION
+// =====================================================
+function switchCat(btn, cat) {
+  document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const allGrids = ['rosto','cabelo','roupa','acessorios','fundo'];
+  allGrids.forEach(c => {
+    const el = document.getElementById('items-'+c);
+    if (el) el.style.display = c === cat ? 'grid' : 'none';
+  });
+}
+
+function selectItem(card, emoji) {
+  // Deselect all in same grid
+  const grid = card.closest('.items-grid');
+  grid.querySelectorAll('.item-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+
+  // Update avatar preview
+  const avatar = document.getElementById('mainAvatar');
+  if (emoji && avatar) avatar.textContent = emoji;
+}
+
+function selectBg(gradient) {
+  const avatar = document.getElementById('mainAvatar');
+  if (avatar) avatar.style.background = gradient;
+}
+
+function showSaveToast() {
+  const toast = document.getElementById('saveToast');
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(80px)';
+  }, 2200);
+}
+
+// =====================================================
+// GENERIC TOAST
+// =====================================================
+function showToast(msg) {
+  let toast = document.getElementById('genericToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'genericToast';
+    toast.style.cssText = `
+      position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(80px);
+      background:#1A1A2E;color:white;padding:10px 20px;border-radius:99px;
+      font-size:13px;font-weight:700;z-index:9999;transition:transform .3s,opacity .3s;
+      opacity:0;white-space:nowrap;
+    `;
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(80px)';
+  }, 2000);
+}
+
+// =====================================================
+// NOTIFICATION ACTIONS (navigate on click)
+// =====================================================
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.notif-action-btn');
+  if (!btn) return;
+  const text = btn.textContent;
+  if (text.includes('ranking')) goTo('ranking');
+  else if (text.includes('desafio')) goTo('desafios');
+  else if (text.includes('conquistas')) goTo('conquistas');
+  else if (text.includes('buckets')) showToast('Módulo Buckets em breve!');
+});
+
+// =====================================================
+// PROFILE SUB-SCREEN BUTTONS (click handler for inline buttons)
+// =====================================================
+// Already handled via onclick attributes
+
+// =====================================================
+// INIT ANIMATION: stagger badge cards
+// =====================================================
+document.querySelectorAll('.badge-card').forEach((card, i) => {
+  card.style.animationDelay = (i * 0.05) + 's';
+});
+
+// Trigger XP fill animation on screen activate
+const observer = new MutationObserver(() => {
+  const fill = document.querySelector('.xp-fill');
+  if (fill) {
+    fill.style.animation = 'none';
+    void fill.offsetWidth;
+    fill.style.animation = 'xp-fill .8s .3s cubic-bezier(.34,1.56,.64,1) both';
+  }
+});
+
+const perfilScreen = document.getElementById('screen-perfil');
+if (perfilScreen) {
+  observer.observe(perfilScreen, { attributes: true, attributeFilter: ['class'] });
+}
+
+// Add Notificações button to profile hero
+(function addNotifBtn() {
+  const heroTop = document.querySelector('#screen-perfil .hero .hero-top');
+  if (!heroTop) return;
+  const btn = document.createElement('button');
+  btn.innerHTML = '🔔';
+  btn.style.cssText = 'background:rgba(255,255,255,.15);border:none;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;';
+  btn.onclick = () => goTo('notificacoes');
+  heroTop.appendChild(btn);
+})();
+</script>
+</body>
+</html>

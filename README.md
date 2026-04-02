@@ -1,108 +1,79 @@
-# 🇧🇷 Greenlight Brasil
+# GRANIX — Educacao Financeira para a Nova Geracao Brasileira
 
-> Fintech de educação financeira familiar para o Brasil - inspirado no [Greenlight](https://greenlight.com/)
+> Plataforma B2B2C de educacao financeira familiar. GRANIX fornece a inteligencia (AI, gamificacao, conteudo) como SDK embarcado no app de bancos e instituicoes financeiras parceiras.
 
-## 🎯 Visão
+## Visao
 
-Criar uma plataforma digital que permita pais ensinarem educação financeira aos filhos através de:
-
-- **Conta digital para menores** (6-17 anos) com supervisão parental
-- **Cartão de débito** físico e virtual
-- **Sistema de 4 Baldes** (Gastar/Guardar/Doar/Investir)
-- **Mesada digital** automatizada
-- **Tarefas e recompensas** gamificadas
-- **Educação financeira** através de jogos
-
-## 🌟 Diferencial: Sistema de 4 Baldes
-
-O coração do produto - cada mesada é automaticamente dividida em:
+Transformar a relacao de familias brasileiras com dinheiro atraves de um **ciclo virtuoso** que conecta pais, filhos e instituicoes financeiras:
 
 ```
-💳 GASTAR   → Saldo disponível para cartão
-🐷 GUARDAR  → Poupança com metas visuais
-🎁 DOAR     → Reserva para doações
-📈 INVESTIR → Aplicações com aprovação parental
+Pai cria tarefa → Filho completa → Pai aprova (abre o app!) → Mesada liberada → 4 Potes → Aprende fazendo → Quer mais!
 ```
 
-**Nenhum concorrente brasileiro tem isso!** (Nubank, C6, Inter = saldo único)
+**Principio fundamental:** GRANIX nao movimenta recursos. Toda parte financeira (contas, saldos, transacoes) fica dentro da instituicao financeira parceira. GRANIX gera informacoes e comandos.
 
-## 📁 Estrutura do Projeto
+## Modelo de Negocio (Pivot v2 — Mar 2026)
+
+| Componente | Descricao |
+|------------|-----------|
+| **SDK/WebView** | Experiencia GRANIX embarcada no app do banco com skin customizavel |
+| **AI Engine** | Personalizacao de conteudo, anti-churn, recomendacao de trilhas |
+| **Component Library** | Modulos independentes (Tarefas, 4 Potes, Academy, Gamificacao) |
+| **Revenue** | SaaS para banco + revenue share em assinaturas premium |
+
+## Estrutura do Projeto
 
 ```
-greenlight-brasil/
+Granix-App/
+├── README.md
+├── CLAUDE.md                        Instrucoes do projeto
+├── index.html                       Landing page
+├── teaser.html                      Teaser investidor
+│
+├── PRD-v2.md                        Product Requirements v2.0
+├── api-spec-v2.md                   API Specification v2.0
+├── mobile-architecture-v2.md        Mobile Architecture v2.0
+├── technical-spec-v2.md             Technical Spec v2.0
+│
 ├── docs/
-│   ├── PRD.md                    # Product Requirements Document
-│   ├── technical-spec.md         # Especificação técnica (futuro)
-│   └── api-spec.md               # Especificação de API (futuro)
-├── design/
-│   └── wireframes/               # Wireframes e mockups
-├── research/
-│   ├── competitors.md            # Análise de concorrentes
-│   └── regulations.md            # Regulamentação brasileira
-├── src/                          # Código fonte (futuro)
-│   ├── mobile/                   # App React Native
-│   ├── backend/                  # API NestJS
-│   └── web/                      # Landing page Next.js
-└── README.md
+│   ├── decks/                       Pitch decks e apresentacoes
+│   ├── arquitetura/                 Diagramas C4/UML + flow diagrams
+│   ├── estrategia/                  Pivot strategy, roteiros, design docs
+│   ├── investidor/                  Material para investidores
+│   └── scripts/                     Scripts de geracao de decks
+│
+├── branding/                        Identidade visual, logo, naming
+├── wireframes/                      Wireframes dos modulos (HTML)
+└── _archive/                        Documentos pre-pivot v1
 ```
 
-## 📊 Status do Projeto
+## Status do Projeto
 
-| Fase | Status | Descrição |
+| Fase | Status | Descricao |
 |------|--------|-----------|
-| Pesquisa | ✅ Completo | Análise Greenlight, mercado BR, regulação |
-| PRD | ✅ Completo | Documento de produto detalhado |
-| Design | 🔲 Pendente | UI/UX, wireframes de alta fidelidade |
-| Tech Spec | 🔲 Pendente | Arquitetura detalhada, APIs |
-| MVP | 🔲 Pendente | Desenvolvimento |
+| Pesquisa de mercado | Completo | Greenlight benchmark, concorrentes BR, LGPD/ECA Digital |
+| Pivot v2 (B2B2C) | Completo | Modelo component library + AI engine |
+| Documentacao tecnica v2 | Completo | PRD, API spec, tech spec, mobile arch |
+| Branding | Completo | Logo, identidade visual, naming |
+| Wireframes | Completo | Modulos tarefas, gamificacao, academy |
+| Pitch parceiros | Completo | Deck institucional, jornada interativa |
+| Arquitetura tecnica | Completo | Diagramas C4, fluxos, seguranca |
+| Modelo financeiro | Completo | Projecoes SaaS + revenue share |
+| Conversas com parceiros | Em andamento | Apresentacao para IFs |
+| Desenvolvimento MVP | Pendente | Apos fechamento de parceria |
 
-## 📄 Documentação
+## Documentacao Chave
 
-- [**PRD Completo**](docs/PRD.md) - Documento de requisitos do produto (1.800+ linhas)
-  - Análise do Greenlight e sistema de 4 baldes
-  - Análise de mercado brasileiro (8 concorrentes)
-  - Funcionalidades priorizadas (MVP, pós-MVP, futuro)
-  - Jornadas de usuário detalhadas
-  - Wireframes ASCII
-  - Stack técnico recomendado
-  - Regulamentação brasileira (Bacen, LGPD, PIX)
-  - Estratégia de monetização
-  - KPIs e métricas
-  - Timeline e orçamento MVP
-  - Backlog completo com user stories
-
-## 🛠 Tech Stack (Proposto)
-
-| Camada | Tecnologia |
-|--------|------------|
-| Mobile | React Native |
-| Backend | NestJS + TypeScript |
-| Database | PostgreSQL + Prisma |
-| Cache | Redis |
-| Cloud | AWS |
-| BaaS | Dock / Pismo / Matera |
-
-## 📈 Mercado
-
-- **TAM**: 50M famílias brasileiras
-- **SAM**: 15M famílias classes A/B/C com filhos 6-17 anos
-- **SOM (3 anos)**: 500k famílias ativas
-
-## 💰 Modelo de Negócio
-
-- **Assinaturas**: R$ 9,90 - R$ 34,90/mês
-- **Interchange**: ~1.5% por transação
-- **Parcerias B2B**: White-label para bancos/escolas
-
-## 🔗 Referências
-
-- [Greenlight](https://greenlight.com/) - Referência principal
-- [Greenlight Year in Review 2024](https://greenlight.com/learning-center/case-studies/year-in-review-2024)
-- [Nubank Conta para Menores](https://nubank.com.br/nu/conta/para-menor-de-18-anos)
-- [C6 Bank - Yellow](https://www.c6bank.com.br/conta-para-menor)
+- [PRD v2.0](PRD-v2.md) — Product Requirements Document atualizado
+- [API Spec v2.0](api-spec-v2.md) — Especificacao de API
+- [Tech Spec v2.0](technical-spec-v2.md) — Especificacao tecnica
+- [Mobile Arch v2.0](mobile-architecture-v2.md) — Arquitetura mobile
+- [Pitch Partners](docs/decks/pitch-partners-v2.html) — Deck para IFs
+- [Jornada Trilha Broto](docs/decks/jornada-trilha-broto.html) — Experiencia interativa
+- [Arquitetura](docs/arquitetura/) — Diagramas C4 e fluxos
+- [Strategy Pivot](docs/estrategia/strategy-pivot-saas-xp.md) — Documento do pivot v2
 
 ---
 
-**Autor:** Toto (CPO)
-**Data:** Janeiro 2026
-**Versão:** 1.0
+**Fundador:** Toto Busnello (CEO/CTO/CPO)
+**Versao:** 2.0 (Pivot B2B2C — Mar 2026)

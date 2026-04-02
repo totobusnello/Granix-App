@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRANIX - Modelo Financeiro SaaS | XP Investimentos</title>
+<style>
+:root {
+  --deep-blue: #1A237E;
+  --mid-blue: #283593;
+  --light-blue: #3949AB;
+  --accent-green: #00C853;
+  --accent-green-dim: #00C85333;
+  --dark-bg: #0D1117;
+  --card-bg: #161B22;
+  --card-border: #30363D;
+  --text-primary: #E6EDF3;
+  --text-secondary: #8B949E;
+  --text-muted: #6E7681;
+  --red: #F85149;
+  --yellow: #D29922;
+  --orange: #DB6D28;
+  --white: #FFFFFF;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: var(--dark-bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.header {
+  background: linear-gradient(135deg, var(--deep-blue) 0%, var(--mid-blue) 50%, var(--light-blue) 100%);
+  padding: 32px 40px;
+  border-bottom: 3px solid var(--accent-green);
+  position: relative;
+  overflow: hidden;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  background: repeating-linear-gradient(90deg, transparent, transparent 100px, rgba(255,255,255,0.02) 100px, rgba(255,255,255,0.02) 200px);
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.header h1 span { color: var(--accent-green); }
+
+.header-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 4px;
+}
+
+.header-badge {
+  background: rgba(0,200,83,0.15);
+  border: 1px solid var(--accent-green);
+  color: var(--accent-green);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 40px 60px;
+}
+
+/* KPI Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.kpi-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.kpi-card:hover { border-color: var(--accent-green); }
+
+.kpi-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.kpi-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent-green);
+}
+
+.kpi-value.negative { color: var(--red); }
+.kpi-value.warning { color: var(--yellow); }
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Sections */
+.section {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title .num {
+  background: var(--deep-blue);
+  color: var(--accent-green);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Sliders */
+.assumptions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slider-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.slider-label span:first-child { color: var(--text-secondary); }
+
+.slider-label .slider-val {
+  color: var(--accent-green);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  min-width: 80px;
+  text-align: right;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--card-border);
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  cursor: pointer;
+  border: 2px solid var(--dark-bg);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  cursor: pointer;
+  border: 2px solid var(--dark-bg);
+}
+
+/* Tables */
+.table-wrapper { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+thead th {
+  background: var(--deep-blue);
+  color: var(--white);
+  padding: 12px 16px;
+  text-align: right;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+thead th:first-child {
+  text-align: left;
+  border-radius: 8px 0 0 0;
+}
+
+thead th:last-child { border-radius: 0 8px 0 0; }
+
+tbody td {
+  padding: 10px 16px;
+  text-align: right;
+  border-bottom: 1px solid var(--card-border);
+  white-space: nowrap;
+}
+
+tbody td:first-child {
+  text-align: left;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+tbody tr:hover { background: rgba(0,200,83,0.03); }
+
+.row-highlight td {
+  font-weight: 700;
+  color: var(--accent-green) !important;
+  border-top: 2px solid var(--accent-green);
+}
+
+.row-subtotal td {
+  font-weight: 600;
+  border-top: 1px solid var(--text-muted);
+}
+
+.row-negative td:not(:first-child) { color: var(--red); }
+.row-muted td { color: var(--text-muted) !important; }
+
+.pos { color: var(--accent-green); }
+.neg { color: var(--red); }
+
+/* Charts */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.chart-container {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.chart-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+/* Bar Chart */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 220px;
+  padding: 0 10px;
+  gap: 8px;
+}
+
+.bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.bar-wrapper {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+}
+
+.bar {
+  width: 60%;
+  max-width: 60px;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.5s ease;
+  position: relative;
+}
+
+.bar-granix {
+  background: linear-gradient(to top, var(--deep-blue), var(--light-blue));
+}
+
+.bar-total {
+  background: linear-gradient(to top, #004D25, var(--accent-green));
+}
+
+.bar-value {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.bar-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Stacked bars */
+.stacked-bar {
+  width: 70%;
+  max-width: 65px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+  transition: height 0.5s ease;
+}
+
+.stacked-segment {
+  width: 100%;
+  transition: height 0.5s ease;
+}
+
+.seg-granix { background: var(--accent-green); }
+.seg-xp { background: var(--deep-blue); }
+
+/* Pie chart */
+.pie-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 20px 0;
+}
+
+.pie-svg { width: 160px; height: 160px; }
+
+.pie-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.legend-value {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Line Chart */
+.line-chart {
+  height: 200px;
+  position: relative;
+  padding: 10px 0;
+}
+
+.line-chart svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Area chart */
+.area-chart {
+  height: 200px;
+  position: relative;
+}
+
+.area-chart svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Waterfall */
+.waterfall-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  height: 250px;
+  padding: 0 5px;
+  position: relative;
+  gap: 4px;
+}
+
+.waterfall-bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.waterfall-bar {
+  width: 60%;
+  max-width: 50px;
+  border-radius: 3px;
+  transition: all 0.5s ease;
+}
+
+.waterfall-val {
+  font-size: 9px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.waterfall-lbl {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-align: center;
+  max-width: 60px;
+  word-wrap: break-word;
+}
+
+/* Funding section */
+.funding-timeline {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.funding-card {
+  flex: 1;
+  min-width: 250px;
+  background: var(--dark-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 20px;
+  border-left: 4px solid;
+}
+
+.funding-card.preseed { border-left-color: var(--accent-green); }
+.funding-card.seeda { border-left-color: var(--yellow); }
+.funding-card.seriesa { border-left-color: var(--orange); }
+
+.funding-card h4 {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.funding-card .amount {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.funding-card ul {
+  list-style: none;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.funding-card ul li {
+  padding: 3px 0;
+  padding-left: 16px;
+  position: relative;
+}
+
+.funding-card ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+/* Tabs */
+.tab-row {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  background: var(--dark-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-secondary);
+  padding: 8px 20px;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab-btn.active {
+  background: var(--deep-blue);
+  color: var(--white);
+  border-color: var(--deep-blue);
+}
+
+.tab-btn:hover:not(.active) {
+  background: var(--card-border);
+}
+
+/* Print */
+@media print {
+  body { background: #fff; color: #000; font-size: 11px; }
+  .header { background: var(--deep-blue) !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .section, .chart-container, .kpi-card { break-inside: avoid; border-color: #ccc; background: #fff; }
+  .kpi-value, .pos { color: #006633 !important; }
+  .neg, .row-negative td:not(:first-child) { color: #cc0000 !important; }
+  thead th { background: #1A237E !important; color: #fff !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  input[type="range"] { display: none; }
+  .container { padding: 10px 20px; }
+}
+
+@media (max-width: 768px) {
+  .container { padding: 16px; }
+  .header { padding: 20px 16px; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-grid { grid-template-columns: 1fr; }
+  .assumptions-grid { grid-template-columns: 1fr; }
+  table { font-size: 11px; }
+  thead th, tbody td { padding: 8px 10px; }
+}
+
+.disclaimer {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 20px;
+  border-top: 1px solid var(--card-border);
+  margin-top: 40px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-content">
+    <div>
+      <h1>GRAN<span>IX</span> | Modelo Financeiro</h1>
+      <div class="header-sub">SaaS Layer sobre XP Investimentos &mdash; Projecao 5 Anos &mdash; Subscription Only</div>
+    </div>
+    <div class="header-badge">Revenue Share 70/30</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-card">
+      <div class="kpi-label">ARR Ano 5 (Granix)</div>
+      <div class="kpi-value" id="kpiArr5">--</div>
+      <div class="kpi-sub">Receita liquida anual</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Familias Pagantes Ano 5</div>
+      <div class="kpi-value" id="kpiFam5">--</div>
+      <div class="kpi-sub">Assinantes ativos</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">EBITDA Margin Ano 5</div>
+      <div class="kpi-value" id="kpiEbitda5">--</div>
+      <div class="kpi-sub">Margem operacional</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">LTV/CAC Ano 3</div>
+      <div class="kpi-value" id="kpiLtvCac">--</div>
+      <div class="kpi-sub">Eficiencia de aquisicao</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Break-even</div>
+      <div class="kpi-value" id="kpiBreakeven">--</div>
+      <div class="kpi-sub">Mes de EBITDA positivo</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Caixa Minimo</div>
+      <div class="kpi-value" id="kpiMinCash">--</div>
+      <div class="kpi-sub">Ponto mais critico</div>
+    </div>
+  </div>
+
+  <!-- Section 1: Assumptions -->
+  <div class="section">
+    <div class="section-title"><div class="num">1</div>Premissas Editaveis</div>
+    <div class="assumptions-grid" id="sliders">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- Charts Row 1 -->
+  <div class="charts-grid">
+    <div class="chart-container">
+      <div class="chart-title">Receita Bruta Anual (R$ milhoes)</div>
+      <div class="bar-chart" id="chartRevenue"></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Revenue Share &mdash; Ano 5</div>
+      <div class="pie-container" id="chartPie"></div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-container">
+      <div class="chart-title">Margem EBITDA (%)</div>
+      <div class="line-chart" id="chartEbitdaMargin"></div>
+    </div>
+    <div class="chart-container">
+      <div class="chart-title">Posicao de Caixa Acumulada (R$ milhoes)</div>
+      <div class="line-chart" id="chartCash"></div>
+    </div>
+  </div>
+
+  <!-- Section 2: Revenue Model -->
+  <div class="section">
+    <div class="section-title"><div class="num">2</div>Modelo de Receita</div>
+    <div class="table-wrapper">
+      <table id="tableRevenue"></table>
+    </div>
+  </div>
+
+  <!-- Section 3: Cost Structure -->
+  <div class="section">
+    <div class="section-title"><div class="num">3</div>Estrutura de Custos</div>
+    <div class="table-wrapper">
+      <table id="tableCosts"></table>
+    </div>
+  </div>
+
+  <!-- Section 4: P&L -->
+  <div class="section">
+    <div class="section-title"><div class="num">4</div>Demonstrativo de Resultados (P&L)</div>
+    <div class="table-wrapper">
+      <table id="tablePL"></table>
+    </div>
+  </div>
+
+  <!-- Section 5: Unit Economics -->
+  <div class="section">
+    <div class="section-title"><div class="num">5</div>Unit Economics</div>
+    <div class="table-wrapper">
+      <table id="tableUnit"></table>
+    </div>
+  </div>
+
+  <!-- Section 6: Funding -->
+  <div class="section">
+    <div class="section-title"><div class="num">6</div>Necessidade de Capital e Rodadas</div>
+    <div id="fundingContent"></div>
+  </div>
+
+  <div class="disclaimer">
+    GRANIX &mdash; Modelo Financeiro Confidencial &mdash; Projecao baseada em premissas conservadoras &mdash; Dados nao auditados &mdash; Uso interno e para investidores<br>
+    Atualizado em Marco 2026
+  </div>
+
+</div>
+
+<script>
+// ================= FORMATTING =================
+function fmtBRL(v) {
+  if (v === null || v === undefined || isNaN(v)) return '--';
+  const neg = v < 0;
+  const abs = Math.abs(v);
+  const parts = abs.toFixed(2).split('.');
+  const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return (neg ? '-' : '') + 'R$' + intPart + ',' + parts[1];
+}
+
+function fmtM(v) {
+  if (v === null || isNaN(v)) return '--';
+  const neg = v < 0;
+  const abs = Math.abs(v);
+  if (abs >= 1e6) {
+    return (neg ? '-' : '') + 'R$' + (abs / 1e6).toFixed(1).replace('.', ',') + 'M';
+  }
+  if (abs >= 1e3) {
+    return (neg ? '-' : '') + 'R$' + (abs / 1e3).toFixed(0) + 'K';
+  }
+  return fmtBRL(v);
+}
+
+function fmtN(v) {
+  if (v === null || isNaN(v)) return '--';
+  return Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function fmtPct(v) {
+  if (v === null || isNaN(v)) return '--';
+  return (v * 100).toFixed(1).replace('.', ',') + '%';
+}
+
+function fmtPctInt(v) {
+  if (v === null || isNaN(v)) return '--';
+  return (v * 100).toFixed(0) + '%';
+}
+
+function fmtMonths(v) {
+  if (v === null || isNaN(v) || v <= 0) return 'N/A';
+  return v.toFixed(0) + ' meses';
+}
+
+// ================= ASSUMPTIONS =================
+const defaultAssumptions = {
+  xpBase: { label: 'Base XP clientes ativos', min: 2000000, max: 8000000, step: 100000, value: 4800000, fmt: v => fmtN(v) },
+  adoptY1: { label: 'Adocao Ano 1 (% base XP)', min: 0.005, max: 0.05, step: 0.001, value: 0.01, fmt: fmtPct },
+  adoptY2: { label: 'Adocao Ano 2', min: 0.01, max: 0.08, step: 0.005, value: 0.03, fmt: fmtPct },
+  adoptY3: { label: 'Adocao Ano 3', min: 0.02, max: 0.12, step: 0.005, value: 0.05, fmt: fmtPct },
+  adoptY4: { label: 'Adocao Ano 4', min: 0.03, max: 0.15, step: 0.005, value: 0.07, fmt: fmtPct },
+  adoptY5: { label: 'Adocao Ano 5', min: 0.05, max: 0.20, step: 0.005, value: 0.10, fmt: fmtPct },
+  mixFree: { label: 'Mix Free (%)', min: 0.30, max: 0.70, step: 0.01, value: 0.50, fmt: fmtPct },
+  mixFamilia: { label: 'Mix Familia (%)', min: 0.15, max: 0.50, step: 0.01, value: 0.35, fmt: fmtPct },
+  priceFamilia: { label: 'Preco Familia (R$/mes)', min: 9.90, max: 29.90, step: 1, value: 19.90, fmt: v => fmtBRL(v) },
+  priceFamiliaPlus: { label: 'Preco Familia+ (R$/mes)', min: 19.90, max: 59.90, step: 1, value: 39.90, fmt: v => fmtBRL(v) },
+  churnY1: { label: 'Churn mensal Ano 1', min: 0.02, max: 0.10, step: 0.005, value: 0.05, fmt: fmtPct },
+  churnY5: { label: 'Churn mensal Ano 5', min: 0.01, max: 0.05, step: 0.005, value: 0.02, fmt: fmtPct },
+  convY1: { label: 'Conversao Free->Paid Ano 1', min: 0.05, max: 0.30, step: 0.01, value: 0.15, fmt: fmtPct },
+  convY5: { label: 'Conversao Free->Paid Ano 5', min: 0.15, max: 0.50, step: 0.01, value: 0.30, fmt: fmtPct },
+  revShare: { label: 'Revenue Share Granix', min: 0.50, max: 0.85, step: 0.01, value: 0.70, fmt: fmtPct },
+  avgSalaryY1: { label: 'Salario medio Y1 (R$/mes)', min: 8000, max: 18000, step: 500, value: 12000, fmt: v => fmtBRL(v) },
+  salaryGrowth: { label: 'Crescimento salarial anual', min: 0.05, max: 0.15, step: 0.01, value: 0.08, fmt: fmtPct },
+  benefitsTax: { label: 'Encargos/Beneficios (% salario)', min: 0.50, max: 0.90, step: 0.05, value: 0.70, fmt: fmtPct },
+  cloudPerUser: { label: 'Cloud/infra por usuario (R$/mes)', min: 1, max: 8, step: 0.5, value: 3, fmt: v => fmtBRL(v) },
+  supportPerPaid: { label: 'Suporte por pagante (R$/mes)', min: 2, max: 10, step: 0.5, value: 5, fmt: v => fmtBRL(v) },
+  marketingPct: { label: 'Marketing (% receita bruta)', min: 0.05, max: 0.25, step: 0.01, value: 0.15, fmt: fmtPct },
+  preSeedCash: { label: 'Caixa Pre-Seed (R$)', min: 500000, max: 3000000, step: 100000, value: 1500000, fmt: v => fmtM(v) },
+};
+
+let A = {};
+for (const k in defaultAssumptions) A[k] = defaultAssumptions[k].value;
+
+// ================= SLIDER UI =================
+function buildSliders() {
+  const container = document.getElementById('sliders');
+  container.innerHTML = '';
+  for (const key in defaultAssumptions) {
+    const d = defaultAssumptions[key];
+    const group = document.createElement('div');
+    group.className = 'slider-group';
+    group.innerHTML = `
+      <div class="slider-label">
+        <span>${d.label}</span>
+        <span class="slider-val" id="sv_${key}">${d.fmt(d.value)}</span>
+      </div>
+      <input type="range" id="sl_${key}" min="${d.min}" max="${d.max}" step="${d.step}" value="${d.value}">
+    `;
+    container.appendChild(group);
+    const input = group.querySelector('input');
+    input.addEventListener('input', function() {
+      const v = parseFloat(this.value);
+      A[key] = v;
+      document.getElementById('sv_' + key).textContent = d.fmt(v);
+      recalculate();
+    });
+  }
+}
+
+// ================= MODEL =================
+let model = {};
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function recalculate() {
+  const years = [1, 2, 3, 4, 5];
+  const adoptRates = [A.adoptY1, A.adoptY2, A.adoptY3, A.adoptY4, A.adoptY5];
+  const churnRates = [];
+  const convRates = [];
+  for (let i = 0; i < 5; i++) {
+    churnRates.push(lerp(A.churnY1, A.churnY5, i / 4));
+    convRates.push(lerp(A.convY1, A.convY5, i / 4));
+  }
+
+  const mixFamiliaPlus = Math.max(0, 1 - A.mixFree - A.mixFamilia);
+  const teamSizes = [12, 20, 35, 50, 70];
+  const contentBase = 15000;
+  const legalBase = 10000;
+  const officeBase = 8000;
+
+  const data = [];
+
+  for (let i = 0; i < 5; i++) {
+    const y = {};
+    y.year = i + 1;
+    y.adoptRate = adoptRates[i];
+    y.churn = churnRates[i];
+    y.convRate = convRates[i];
+
+    // Families: target from XP base at end of year
+    y.targetFamilies = Math.round(A.xpBase * adoptRates[i]);
+
+    // Apply monthly churn to get steady-state active families
+    // Monthly retention = (1 - churn), annual retention = (1 - churn)^12
+    // Steady-state with constant acquisition and churn
+    // Simplified: net families considering churn
+    const annualRetention = Math.pow(1 - y.churn, 12);
+
+    if (i === 0) {
+      // Year 1: ramp up from 0 to target, with churn eating some
+      // Average families during the year = target * 0.6 (ramp factor)
+      y.totalFamilies = Math.round(y.targetFamilies * annualRetention * 0.85);
+    } else {
+      const prevEnd = data[i - 1].endFamilies;
+      const retained = Math.round(prevEnd * annualRetention);
+      const newTarget = y.targetFamilies - retained;
+      const netNew = Math.max(0, Math.round(newTarget * annualRetention * 0.9));
+      y.totalFamilies = retained + netNew;
+    }
+    y.endFamilies = y.totalFamilies;
+
+    // Free vs paid
+    y.freeFamilies = Math.round(y.totalFamilies * A.mixFree);
+    y.convertedFromFree = Math.round(y.freeFamilies * y.convRate);
+    y.paidDirectFamilia = Math.round(y.totalFamilies * A.mixFamilia);
+    y.paidDirectPlus = Math.round(y.totalFamilies * mixFamiliaPlus);
+    y.totalPaid = y.paidDirectFamilia + y.paidDirectPlus + y.convertedFromFree;
+    y.totalActive = y.totalFamilies;
+
+    // ARPU (blended across paid only)
+    const famRevenue = (y.paidDirectFamilia + y.convertedFromFree) * A.priceFamilia;
+    const plusRevenue = y.paidDirectPlus * A.priceFamiliaPlus;
+    y.monthlyGrossRevenue = famRevenue + plusRevenue;
+    y.arpu = y.totalPaid > 0 ? y.monthlyGrossRevenue / y.totalPaid : 0;
+    y.annualGrossRevenue = y.monthlyGrossRevenue * 12;
+    y.granixShare = y.annualGrossRevenue * A.revShare;
+    y.xpShare = y.annualGrossRevenue * (1 - A.revShare);
+
+    // Costs
+    const salaryMultiplier = Math.pow(1 + A.salaryGrowth, i);
+    y.teamSize = teamSizes[i];
+    y.avgSalary = A.avgSalaryY1 * salaryMultiplier;
+    y.totalPayroll = y.teamSize * y.avgSalary * (1 + A.benefitsTax) * 12;
+
+    y.cloudCost = y.totalActive * A.cloudPerUser * 12;
+    y.supportCost = y.totalPaid * A.supportPerPaid * 12;
+    y.contentCost = contentBase * Math.pow(1.20, i) * 12;
+    y.marketingCost = y.annualGrossRevenue * A.marketingPct;
+    y.legalCost = legalBase * Math.pow(1.10, i) * 12;
+    y.officeCost = officeBase * Math.pow(1.15, i) * 12;
+
+    // P&L
+    y.netRevenue = y.granixShare;
+    y.cogs = y.cloudCost + y.supportCost + y.contentCost;
+    y.grossProfit = y.netRevenue - y.cogs;
+    y.grossMargin = y.netRevenue > 0 ? y.grossProfit / y.netRevenue : 0;
+
+    y.opex = y.totalPayroll + y.marketingCost + y.legalCost + y.officeCost;
+    y.ebitda = y.grossProfit - y.opex;
+    y.ebitdaMargin = y.netRevenue > 0 ? y.ebitda / y.netRevenue : 0;
+    y.totalCosts = y.cogs + y.opex;
+    y.monthlyBurn = y.ebitda < 0 ? Math.abs(y.ebitda) / 12 : 0;
+
+    // New paying customers for CAC
+    if (i === 0) {
+      y.newPaidCustomers = y.totalPaid;
+    } else {
+      y.newPaidCustomers = Math.max(1, y.totalPaid - Math.round(data[i - 1].totalPaid * Math.pow(1 - y.churn, 12)));
+    }
+
+    // Unit economics
+    y.cac = y.newPaidCustomers > 0 ? y.marketingCost / y.newPaidCustomers : 0;
+    y.monthlyChurnRate = y.churn;
+    y.ltv = y.monthlyChurnRate > 0 ? (y.arpu * A.revShare * y.grossMargin) / y.monthlyChurnRate : 0;
+    y.ltvCac = y.cac > 0 ? y.ltv / y.cac : 0;
+    y.paybackMonths = y.arpu > 0 && y.grossMargin > 0 ? y.cac / (y.arpu * A.revShare * y.grossMargin) : 0;
+    y.revenuePerEmployee = y.teamSize > 0 ? y.netRevenue / y.teamSize : 0;
+
+    data.push(y);
+  }
+
+  // Cash position
+  let cash = A.preSeedCash;
+  for (let i = 0; i < 5; i++) {
+    data[i].startCash = cash;
+    cash += data[i].ebitda;
+    data[i].endCash = cash;
+    data[i].runway = data[i].monthlyBurn > 0 ? data[i].startCash / data[i].monthlyBurn : 999;
+  }
+
+  model = data;
+  renderAll();
+}
+
+// ================= RENDER =================
+function renderAll() {
+  renderKPIs();
+  renderRevenueTable();
+  renderCostTable();
+  renderPLTable();
+  renderUnitTable();
+  renderRevenueChart();
+  renderPieChart();
+  renderEbitdaMarginChart();
+  renderCashChart();
+  renderFunding();
+}
+
+function renderKPIs() {
+  const d5 = model[4];
+  const d3 = model[2];
+  document.getElementById('kpiArr5').textContent = fmtM(d5.granixShare);
+  document.getElementById('kpiFam5').textContent = fmtN(d5.totalPaid);
+
+  const em5 = document.getElementById('kpiEbitda5');
+  em5.textContent = fmtPctInt(d5.ebitdaMargin);
+  em5.className = 'kpi-value' + (d5.ebitdaMargin < 0 ? ' negative' : '');
+
+  document.getElementById('kpiLtvCac').textContent = d3.ltvCac.toFixed(1) + 'x';
+
+  // Find break-even month
+  let beMonth = 'N/A';
+  let cumCash = A.preSeedCash;
+  for (let i = 0; i < 5; i++) {
+    const monthlyEbitda = model[i].ebitda / 12;
+    for (let m = 1; m <= 12; m++) {
+      cumCash += monthlyEbitda;
+      if (monthlyEbitda > 0) {
+        beMonth = 'Mes ' + (i * 12 + m);
+        i = 5; // break outer
+        break;
+      }
+    }
+  }
+  document.getElementById('kpiBreakeven').textContent = beMonth;
+
+  // Min cash
+  let minCash = A.preSeedCash;
+  let mc = A.preSeedCash;
+  for (let i = 0; i < 5; i++) {
+    const me = model[i].ebitda / 12;
+    for (let m = 0; m < 12; m++) {
+      mc += me;
+      if (mc < minCash) minCash = mc;
+    }
+  }
+  const mcEl = document.getElementById('kpiMinCash');
+  mcEl.textContent = fmtM(minCash);
+  mcEl.className = 'kpi-value' + (minCash < 0 ? ' negative' : ' warning');
+}
+
+function renderRevenueTable() {
+  const t = document.getElementById('tableRevenue');
+  let html = '<thead><tr><th>Metrica</th>';
+  for (let i = 0; i < 5; i++) html += `<th>Ano ${i + 1}</th>`;
+  html += '</tr></thead><tbody>';
+
+  const rows = [
+    { label: 'Taxa de Adocao', key: 'adoptRate', fmt: fmtPct },
+    { label: 'Total Familias', key: 'totalActive', fmt: fmtN },
+    { label: 'Familias Free', key: 'freeFamilies', fmt: fmtN },
+    { label: 'Conversao Free->Paid', key: 'convertedFromFree', fmt: fmtN },
+    { label: 'Pagantes Familia', key: 'paidDirectFamilia', fmt: fmtN },
+    { label: 'Pagantes Familia+', key: 'paidDirectPlus', fmt: fmtN },
+    { label: 'Total Pagantes', key: 'totalPaid', fmt: fmtN, cls: 'row-subtotal' },
+    { label: 'ARPU Mensal (pagantes)', key: 'arpu', fmt: fmtBRL },
+    { label: 'Churn Mensal', key: 'churn', fmt: fmtPct },
+    { label: 'Receita Bruta Mensal', key: 'monthlyGrossRevenue', fmt: fmtM },
+    { label: 'Receita Bruta Anual', key: 'annualGrossRevenue', fmt: fmtM, cls: 'row-highlight' },
+    { label: 'Share Granix (70%)', key: 'granixShare', fmt: fmtM, cls: 'row-highlight' },
+    { label: 'Share XP (30%)', key: 'xpShare', fmt: fmtM, cls: 'row-muted' },
+  ];
+
+  for (const r of rows) {
+    html += `<tr class="${r.cls || ''}"><td>${r.label}</td>`;
+    for (let i = 0; i < 5; i++) html += `<td>${r.fmt(model[i][r.key])}</td>`;
+    html += '</tr>';
+  }
+  html += '</tbody>';
+  t.innerHTML = html;
+}
+
+function renderCostTable() {
+  const t = document.getElementById('tableCosts');
+  let html = '<thead><tr><th>Custo</th>';
+  for (let i = 0; i < 5; i++) html += `<th>Ano ${i + 1}</th>`;
+  html += '</tr></thead><tbody>';
+
+  const rows = [
+    { label: 'Time (headcount)', key: 'teamSize', fmt: fmtN },
+    { label: 'Salario Medio (R$/mes)', key: 'avgSalary', fmt: fmtBRL },
+    { label: 'Folha Total (c/ encargos)', key: 'totalPayroll', fmt: fmtM },
+    { label: 'Cloud/Infra', key: 'cloudCost', fmt: fmtM },
+    { label: 'Suporte ao Cliente', key: 'supportCost', fmt: fmtM },
+    { label: 'Producao de Conteudo', key: 'contentCost', fmt: fmtM },
+    { label: 'Marketing', key: 'marketingCost', fmt: fmtM },
+    { label: 'Legal/Compliance', key: 'legalCost', fmt: fmtM },
+    { label: 'Escritorio/Admin', key: 'officeCost', fmt: fmtM },
+    { label: 'CUSTO TOTAL', key: 'totalCosts', fmt: fmtM, cls: 'row-highlight' },
+  ];
+
+  for (const r of rows) {
+    html += `<tr class="${r.cls || ''}"><td>${r.label}</td>`;
+    for (let i = 0; i < 5; i++) html += `<td>${r.fmt(model[i][r.key])}</td>`;
+    html += '</tr>';
+  }
+  html += '</tbody>';
+  t.innerHTML = html;
+}
+
+function renderPLTable() {
+  const t = document.getElementById('tablePL');
+  let html = '<thead><tr><th>P&L</th>';
+  for (let i = 0; i < 5; i++) html += `<th>Ano ${i + 1}</th>`;
+  html += '</tr></thead><tbody>';
+
+  const rows = [
+    { label: 'Receita Bruta', get: d => d.annualGrossRevenue, fmt: fmtM },
+    { label: '(-) XP Share (30%)', get: d => -d.xpShare, fmt: fmtM, cls: 'row-negative' },
+    { label: 'Receita Liquida (Granix)', get: d => d.netRevenue, fmt: fmtM, cls: 'row-subtotal' },
+    { label: '(-) COGS', get: d => -d.cogs, fmt: fmtM, cls: 'row-negative' },
+    { label: '  Cloud/Infra', get: d => -d.cloudCost, fmt: fmtM, cls: 'row-muted' },
+    { label: '  Suporte', get: d => -d.supportCost, fmt: fmtM, cls: 'row-muted' },
+    { label: '  Conteudo', get: d => -d.contentCost, fmt: fmtM, cls: 'row-muted' },
+    { label: 'Lucro Bruto', get: d => d.grossProfit, fmt: fmtM, cls: 'row-subtotal' },
+    { label: 'Margem Bruta', get: d => d.grossMargin, fmt: fmtPct },
+    { label: '(-) OpEx Total', get: d => -d.opex, fmt: fmtM, cls: 'row-negative' },
+    { label: '  Folha Pagamento', get: d => -d.totalPayroll, fmt: fmtM, cls: 'row-muted' },
+    { label: '  Marketing', get: d => -d.marketingCost, fmt: fmtM, cls: 'row-muted' },
+    { label: '  Legal/Compliance', get: d => -d.legalCost, fmt: fmtM, cls: 'row-muted' },
+    { label: '  Escritorio/Admin', get: d => -d.officeCost, fmt: fmtM, cls: 'row-muted' },
+    { label: 'EBITDA', get: d => d.ebitda, fmt: fmtM, cls: 'row-highlight' },
+    { label: 'Margem EBITDA', get: d => d.ebitdaMargin, fmt: fmtPct },
+    { label: 'Burn Rate Mensal', get: d => d.monthlyBurn > 0 ? -d.monthlyBurn : 0, fmt: fmtM },
+    { label: 'Caixa Inicio do Ano', get: d => d.startCash, fmt: fmtM },
+    { label: 'Caixa Fim do Ano', get: d => d.endCash, fmt: fmtM, cls: 'row-highlight' },
+    { label: 'Runway (meses)', get: d => d.runway < 999 ? d.runway : null, fmt: v => v !== null ? v.toFixed(0) + ' meses' : 'Lucro' },
+  ];
+
+  for (const r of rows) {
+    html += `<tr class="${r.cls || ''}"><td>${r.label}</td>`;
+    for (let i = 0; i < 5; i++) {
+      const v = r.get(model[i]);
+      const formatted = r.fmt(v);
+      const colorCls = (typeof v === 'number' && v < 0 && !r.cls?.includes('negative') && !r.cls?.includes('muted')) ? ' class="neg"' : '';
+      html += `<td${colorCls}>${formatted}</td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody>';
+  t.innerHTML = html;
+}
+
+function renderUnitTable() {
+  const t = document.getElementById('tableUnit');
+  let html = '<thead><tr><th>Unit Economics</th>';
+  for (let i = 0; i < 5; i++) html += `<th>Ano ${i + 1}</th>`;
+  html += '</tr></thead><tbody>';
+
+  const rows = [
+    { label: 'ARPU Mensal', key: 'arpu', fmt: fmtBRL },
+    { label: 'CAC (Custo de Aquisicao)', key: 'cac', fmt: fmtBRL },
+    { label: 'LTV (Lifetime Value)', key: 'ltv', fmt: fmtBRL },
+    { label: 'LTV/CAC', key: 'ltvCac', fmt: v => v.toFixed(1) + 'x', cls: 'row-highlight' },
+    { label: 'Payback (meses)', key: 'paybackMonths', fmt: v => v.toFixed(1) },
+    { label: 'Margem Bruta', key: 'grossMargin', fmt: fmtPct },
+    { label: 'Churn Mensal', key: 'monthlyChurnRate', fmt: fmtPct },
+    { label: 'Receita por Funcionario', key: 'revenuePerEmployee', fmt: fmtM },
+    { label: 'Novos Pagantes no Ano', key: 'newPaidCustomers', fmt: fmtN },
+  ];
+
+  for (const r of rows) {
+    html += `<tr class="${r.cls || ''}"><td>${r.label}</td>`;
+    for (let i = 0; i < 5; i++) html += `<td>${r.fmt(model[i][r.key])}</td>`;
+    html += '</tr>';
+  }
+  html += '</tbody>';
+  t.innerHTML = html;
+}
+
+// ================= CHARTS =================
+function renderRevenueChart() {
+  const container = document.getElementById('chartRevenue');
+  const maxVal = Math.max(...model.map(d => d.annualGrossRevenue));
+  container.innerHTML = '';
+
+  for (let i = 0; i < 5; i++) {
+    const d = model[i];
+    const totalH = maxVal > 0 ? (d.annualGrossRevenue / maxVal) * 160 : 0;
+    const granixH = maxVal > 0 ? (d.granixShare / maxVal) * 160 : 0;
+    const xpH = totalH - granixH;
+
+    const group = document.createElement('div');
+    group.className = 'bar-group';
+    group.innerHTML = `
+      <div class="bar-value">${fmtM(d.annualGrossRevenue)}</div>
+      <div class="bar-wrapper">
+        <div class="stacked-bar" style="height:${totalH}px">
+          <div class="stacked-segment seg-xp" style="height:${xpH}px" title="XP: ${fmtM(d.xpShare)}"></div>
+          <div class="stacked-segment seg-granix" style="height:${granixH}px" title="Granix: ${fmtM(d.granixShare)}"></div>
+        </div>
+      </div>
+      <div class="bar-label">Ano ${i + 1}</div>
+    `;
+    container.appendChild(group);
+  }
+}
+
+function renderPieChart() {
+  const container = document.getElementById('chartPie');
+  const d = model[4];
+  const granixPct = A.revShare;
+  const xpPct = 1 - A.revShare;
+
+  // SVG pie with two segments
+  const r = 70;
+  const cx = 80, cy = 80;
+  const granixAngle = granixPct * 360;
+  const granixRad = (granixAngle - 90) * Math.PI / 180;
+  const largeArc = granixPct > 0.5 ? 1 : 0;
+
+  const x1 = cx, y1 = cy - r; // start at top
+  const x2 = cx + r * Math.cos((granixAngle - 90) * Math.PI / 180);
+  const y2 = cy + r * Math.sin((granixAngle - 90) * Math.PI / 180);
+
+  container.innerHTML = `
+    <svg class="pie-svg" viewBox="0 0 160 160">
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--deep-blue)" />
+      <path d="M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z" fill="var(--accent-green)" />
+      <circle cx="${cx}" cy="${cy}" r="30" fill="var(--card-bg)" />
+      <text x="${cx}" y="${cy - 4}" text-anchor="middle" fill="var(--text-primary)" font-size="10" font-weight="600">Ano 5</text>
+      <text x="${cx}" y="${cy + 10}" text-anchor="middle" fill="var(--text-muted)" font-size="8">${fmtM(d.annualGrossRevenue)}</text>
+    </svg>
+    <div class="pie-legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--accent-green)"></div>
+        <div>
+          <div class="legend-value">${fmtPctInt(granixPct)} GRANIX</div>
+          <div style="font-size:11px;color:var(--text-muted)">${fmtM(d.granixShare)}/ano</div>
+        </div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:var(--deep-blue)"></div>
+        <div>
+          <div class="legend-value">${fmtPctInt(xpPct)} XP</div>
+          <div style="font-size:11px;color:var(--text-muted)">${fmtM(d.xpShare)}/ano</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderEbitdaMarginChart() {
+  const container = document.getElementById('chartEbitdaMargin');
+  const margins = model.map(d => d.ebitdaMargin * 100);
+  const minM = Math.min(0, ...margins) - 10;
+  const maxM = Math.max(0, ...margins) + 10;
+  const range = maxM - minM;
+
+  const w = 100; // percent
+  const h = 180;
+  const padL = 50, padR = 20, padT = 20, padB = 30;
+  const plotW = 400 - padL - padR;
+  const plotH = h - padT - padB;
+
+  function xPos(i) { return padL + (i / 4) * plotW; }
+  function yPos(v) { return padT + ((maxM - v) / range) * plotH; }
+
+  const zeroY = yPos(0);
+  let pathD = '';
+  let areaD = `M ${xPos(0)} ${zeroY} `;
+  const dots = [];
+
+  for (let i = 0; i < 5; i++) {
+    const x = xPos(i);
+    const y = yPos(margins[i]);
+    if (i === 0) {
+      pathD += `M ${x} ${y}`;
+      areaD += `L ${x} ${y}`;
+    } else {
+      pathD += ` L ${x} ${y}`;
+      areaD += ` L ${x} ${y}`;
+    }
+    dots.push({ x, y, v: margins[i] });
+  }
+  areaD += ` L ${xPos(4)} ${zeroY} Z`;
+
+  // Grid lines
+  let gridLines = '';
+  const steps = [-40, -20, 0, 20, 40, 60];
+  for (const s of steps) {
+    if (s >= minM && s <= maxM) {
+      const gy = yPos(s);
+      gridLines += `<line x1="${padL}" y1="${gy}" x2="${400 - padR}" y2="${gy}" stroke="var(--card-border)" stroke-width="1" ${s === 0 ? 'stroke="var(--text-muted)" stroke-width="1.5"' : ''} />`;
+      gridLines += `<text x="${padL - 8}" y="${gy + 4}" text-anchor="end" fill="var(--text-muted)" font-size="10">${s}%</text>`;
+    }
+  }
+
+  let dotsHtml = '';
+  for (const d of dots) {
+    dotsHtml += `<circle cx="${d.x}" cy="${d.y}" r="5" fill="var(--accent-green)" stroke="var(--card-bg)" stroke-width="2" />`;
+    dotsHtml += `<text x="${d.x}" y="${d.y - 10}" text-anchor="middle" fill="var(--text-primary)" font-size="10" font-weight="600">${d.v.toFixed(0)}%</text>`;
+  }
+
+  // X labels
+  let xLabels = '';
+  for (let i = 0; i < 5; i++) {
+    xLabels += `<text x="${xPos(i)}" y="${h - 5}" text-anchor="middle" fill="var(--text-muted)" font-size="11">Ano ${i + 1}</text>`;
+  }
+
+  container.innerHTML = `<svg viewBox="0 0 400 ${h}" preserveAspectRatio="xMidYMid meet">
+    ${gridLines}
+    <path d="${areaD}" fill="var(--accent-green-dim)" />
+    <path d="${pathD}" fill="none" stroke="var(--accent-green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+    ${dotsHtml}
+    ${xLabels}
+  </svg>`;
+}
+
+function renderCashChart() {
+  const container = document.getElementById('chartCash');
+
+  // Build monthly cash positions
+  const monthly = [];
+  let cash = A.preSeedCash;
+  monthly.push(cash);
+  for (let i = 0; i < 5; i++) {
+    const me = model[i].ebitda / 12;
+    for (let m = 0; m < 12; m++) {
+      cash += me;
+      monthly.push(cash);
+    }
+  }
+
+  const minC = Math.min(...monthly);
+  const maxC = Math.max(...monthly);
+  const range = maxC - minC || 1;
+  const h = 180;
+  const padL = 55, padR = 15, padT = 15, padB = 30;
+  const plotW = 400 - padL - padR;
+  const plotH = h - padT - padB;
+
+  function xPos(i) { return padL + (i / 60) * plotW; }
+  function yPos(v) { return padT + ((maxC - v) / range) * plotH; }
+
+  const zeroY = yPos(0);
+  let pathD = '';
+  let areaD = `M ${xPos(0)} ${zeroY} `;
+
+  for (let i = 0; i <= 60; i++) {
+    const x = xPos(i);
+    const y = yPos(monthly[i]);
+    if (i === 0) {
+      pathD += `M ${x} ${y}`;
+      areaD += `L ${x} ${y}`;
+    } else {
+      pathD += ` L ${x} ${y}`;
+      areaD += ` L ${x} ${y}`;
+    }
+  }
+  areaD += ` L ${xPos(60)} ${zeroY} Z`;
+
+  // Zero line
+  let zeroLine = '';
+  if (minC < 0) {
+    zeroLine = `<line x1="${padL}" y1="${zeroY}" x2="${400 - padR}" y2="${zeroY}" stroke="var(--red)" stroke-width="1" stroke-dasharray="4,4" />`;
+    zeroLine += `<text x="${padL - 8}" y="${zeroY + 4}" text-anchor="end" fill="var(--red)" font-size="9">R$0</text>`;
+  }
+
+  // Grid
+  let grid = '';
+  const step = range / 4;
+  for (let i = 0; i <= 4; i++) {
+    const v = minC + step * i;
+    const gy = yPos(v);
+    grid += `<line x1="${padL}" y1="${gy}" x2="${400 - padR}" y2="${gy}" stroke="var(--card-border)" stroke-width="0.5" />`;
+    grid += `<text x="${padL - 8}" y="${gy + 4}" text-anchor="end" fill="var(--text-muted)" font-size="9">${fmtM(v)}</text>`;
+  }
+
+  // X labels
+  let xLabels = '';
+  for (let i = 0; i <= 5; i++) {
+    xLabels += `<text x="${xPos(i * 12)}" y="${h - 5}" text-anchor="middle" fill="var(--text-muted)" font-size="10">${i === 0 ? 'Inicio' : 'A' + i}</text>`;
+  }
+
+  // Dots at year-end
+  let dots = '';
+  for (let i = 0; i <= 5; i++) {
+    const idx = i * 12;
+    const x = xPos(idx);
+    const y = yPos(monthly[idx]);
+    const color = monthly[idx] >= 0 ? 'var(--accent-green)' : 'var(--red)';
+    dots += `<circle cx="${x}" cy="${y}" r="4" fill="${color}" stroke="var(--card-bg)" stroke-width="2" />`;
+    if (i > 0) {
+      dots += `<text x="${x}" y="${y - 10}" text-anchor="middle" fill="var(--text-primary)" font-size="9" font-weight="600">${fmtM(monthly[idx])}</text>`;
+    }
+  }
+
+  const pathColor = minC < 0 ? 'var(--yellow)' : 'var(--accent-green)';
+  const areaColor = minC < 0 ? 'rgba(210,153,34,0.15)' : 'var(--accent-green-dim)';
+
+  container.innerHTML = `<svg viewBox="0 0 400 ${h}" preserveAspectRatio="xMidYMid meet">
+    ${grid}
+    ${zeroLine}
+    <path d="${areaD}" fill="${areaColor}" />
+    <path d="${pathD}" fill="none" stroke="${pathColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    ${dots}
+    ${xLabels}
+  </svg>`;
+}
+
+// ================= FUNDING =================
+function renderFunding() {
+  const container = document.getElementById('fundingContent');
+
+  // Analyze cash: when does it go negative?
+  let cash = A.preSeedCash;
+  let cashOutMonth = -1;
+  let minCash = cash;
+  let minMonth = 0;
+  for (let i = 0; i < 5; i++) {
+    const me = model[i].ebitda / 12;
+    for (let m = 1; m <= 12; m++) {
+      cash += me;
+      if (cash < minCash) { minCash = cash; minMonth = i * 12 + m; }
+      if (cash < 0 && cashOutMonth < 0) cashOutMonth = i * 12 + m;
+    }
+  }
+
+  // Determine funding needs
+  let needsFunding = cashOutMonth > 0 || minCash < 200000;
+  let seriesAAmount = 0;
+  let seriesATiming = '';
+  let seedAmount = 0;
+  let seedTiming = '';
+
+  if (needsFunding) {
+    // Calculate seed need: cover until month 18
+    let cashAt18 = A.preSeedCash;
+    for (let i = 0; i < Math.min(2, 5); i++) {
+      const me = model[i].ebitda / 12;
+      const months = i === 0 ? 12 : 6;
+      for (let m = 0; m < months; m++) cashAt18 += me;
+    }
+    if (cashAt18 < 500000) {
+      seedAmount = Math.ceil(Math.abs(cashAt18) / 500000 + 1) * 500000 + 1000000;
+      seedTiming = 'Mes 10-12 (antes do caixa ficar critico)';
+    }
+
+    // Series A: cover growth years 2-3
+    let cashAt36 = A.preSeedCash + seedAmount;
+    for (let i = 0; i < 3; i++) {
+      cashAt36 += model[i].ebitda;
+    }
+    if (cashAt36 < 2000000) {
+      seriesAAmount = Math.ceil((Math.abs(cashAt36) + 5000000) / 1000000) * 1000000;
+      seriesATiming = 'Mes 18-24 (com metricas de traction)';
+    }
+  }
+
+  // Always show funding cards since pre-seed exists
+  let html = '<div class="funding-timeline">';
+
+  // Pre-seed (already done)
+  html += `
+    <div class="funding-card preseed">
+      <h4 style="color:var(--accent-green)">Pre-Seed (Captado)</h4>
+      <div class="amount" style="color:var(--accent-green)">${fmtM(A.preSeedCash)}</div>
+      <ul>
+        <li>MVP dos 3 modulos</li>
+        <li>12 meses de operacao</li>
+        <li>Integracao com XP</li>
+        <li>Primeiras 1.000 familias</li>
+      </ul>
+    </div>`;
+
+  if (seedAmount > 0) {
+    html += `
+      <div class="funding-card seeda">
+        <h4 style="color:var(--yellow)">Seed (Necessario)</h4>
+        <div class="amount" style="color:var(--yellow)">${fmtM(seedAmount)}</div>
+        <ul>
+          <li>${seedTiming}</li>
+          <li>Escalar para ${fmtN(model[1].totalPaid)} pagantes</li>
+          <li>Time de ${model[1].teamSize} pessoas</li>
+          <li>Academy completa + gamificacao</li>
+          <li>Caixa minimo projetado: ${fmtM(minCash)}</li>
+        </ul>
+      </div>`;
+  }
+
+  if (seriesAAmount > 0) {
+    html += `
+      <div class="funding-card seriesa">
+        <h4 style="color:var(--orange)">Series A (Projetado)</h4>
+        <div class="amount" style="color:var(--orange)">${fmtM(seriesAAmount)}</div>
+        <ul>
+          <li>${seriesATiming}</li>
+          <li>Meta: ${fmtN(model[2].totalPaid)} pagantes</li>
+          <li>ARR Granix: ${fmtM(model[2].granixShare)}</li>
+          <li>LTV/CAC: ${model[2].ltvCac.toFixed(1)}x</li>
+          <li>Expansao LATAM / white-label</li>
+        </ul>
+      </div>`;
+  }
+
+  if (!needsFunding || (seedAmount === 0 && seriesAAmount === 0)) {
+    html += `
+      <div class="funding-card preseed">
+        <h4 style="color:var(--accent-green)">Auto-sustentavel</h4>
+        <div class="amount" style="color:var(--accent-green)">R$0</div>
+        <ul>
+          <li>Modelo se paga com pre-seed</li>
+          <li>Caixa minimo: ${fmtM(minCash)}</li>
+          <li>Break-even antes do caixa acabar</li>
+          <li>Fundraising opcional para crescimento</li>
+        </ul>
+      </div>`;
+  }
+
+  html += '</div>';
+
+  // Summary table
+  html += `
+    <div style="margin-top:24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Analise de Caixa</th>
+            <th>Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Caixa inicial (Pre-Seed)</td><td>${fmtM(A.preSeedCash)}</td></tr>
+          <tr><td>Caixa minimo projetado</td><td class="${minCash < 0 ? 'neg' : ''}">${fmtM(minCash)}</td></tr>
+          <tr><td>Mes do caixa minimo</td><td>Mes ${minMonth}</td></tr>
+          <tr><td>Caixa acaba?</td><td class="${cashOutMonth > 0 ? 'neg' : 'pos'}">${cashOutMonth > 0 ? 'Sim, Mes ' + cashOutMonth : 'Nao (no cenario base)'}</td></tr>
+          ${seedAmount > 0 ? `<tr class="row-highlight"><td>Seed necessario</td><td>${fmtM(seedAmount)}</td></tr>` : ''}
+          ${seriesAAmount > 0 ? `<tr class="row-highlight"><td>Series A necessario</td><td>${fmtM(seriesAAmount)}</td></tr>` : ''}
+          <tr><td>EBITDA positivo a partir de</td><td>${model.findIndex(d => d.ebitda > 0) >= 0 ? 'Ano ' + (model.findIndex(d => d.ebitda > 0) + 1) : 'Apos Ano 5'}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:20px; padding:16px; background:var(--dark-bg); border-radius:8px; border-left:3px solid var(--accent-green);">
+      <div style="font-size:13px; font-weight:600; margin-bottom:8px; color:var(--accent-green);">Milestones para Fundraising</div>
+      <div style="font-size:12px; color:var(--text-secondary); line-height:1.8;">
+        <strong>Seed:</strong> 5.000+ familias ativas, NPS > 50, churn < 5%, parceria XP formalizada, Academy com 30+ licoes<br>
+        <strong>Series A:</strong> 30.000+ pagantes, ARR > R$5M, LTV/CAC > 3x, unit economics positivo, margem bruta > 60%<br>
+        <strong>Series B:</strong> 100.000+ pagantes, EBITDA positivo, expansao white-label iniciada, receita > R$20M
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = html;
+}
+
+// ================= INIT =================
+buildSliders();
+recalculate();
+</script>
+</body>
+</html>
